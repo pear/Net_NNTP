@@ -14,7 +14,7 @@
 // | license@php.net so we can mail you a copy immediately.               |
 // +----------------------------------------------------------------------+
 // | Authors: Alexander Merz <alexmerz@php.net>                           |
-// |                                                                      |
+// |          Heino H. Gehlsen <heino@gehlsen.dk>                         |
 // +----------------------------------------------------------------------+
 //
 // $Id$
@@ -25,9 +25,9 @@
 </head>
 <body>
 <?php
-require_once "Net/NNTP.php";
+require_once "Net/NNTP/Realtime.php";
 
-$nntp = new Net_NNTP;
+$nntp = new Net_NNTP_Realtime;
 
 $ret = $nntp->connect("news.php.net");
 if( PEAR::isError($ret)) {

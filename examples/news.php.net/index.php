@@ -14,7 +14,7 @@
 // | license@php.net so we can mail you a copy immediately.               |
 // +----------------------------------------------------------------------+
 // | Authors: Alexander Merz <alexmerz@php.net>                           |
-// |                                                                      |
+// |          Heino H. Gehlsen <heino@gehlsen.dk>                         |
 // +----------------------------------------------------------------------+
 //
 // $Id$
@@ -25,9 +25,9 @@
 </head>
 <body>
 <?php
-require_once "Net/NNTP.php";
+require_once "Net/NNTP/Realtime.php";
 
-$nntp = new Net_NNTP;
+$nntp = new Net_NNTP_Realtime;
 
 $ret = $nntp->connect("news.php.net");
 if( PEAR::isError($ret)) {
@@ -36,13 +36,14 @@ if( PEAR::isError($ret)) {
 } else {
     echo "<h1>Avaible groups</h1>";    
     $groups = $nntp->getGroups();
+    $descriptions = $nntp->getDescriptions();
     foreach($groups as $group) {
         echo '<a href="group.php?group='.urlencode($group['group']).
             '&writable='.urlencode($group['posting_allowed']).'">'.
             $group['group'].'</a>' ;
         $msgcount = $group['last']-$group['first']; 
         echo '&nbsp;('.$msgcount.' messages)<br>';
-        echo $group['desc'].'<br><br>';
+        echo $descriptions[$group['group']].'<br><br>';
     }
     $nntp->quit();
 }    
