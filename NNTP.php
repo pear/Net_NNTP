@@ -35,10 +35,17 @@ define('PEAR_NNTP_AUTHGENERIC',  NET_NNTP_AUTHGENERIC);
 
 
 /**
- * The NNTP:: class fetches UseNet news articles acording to the standard
- * based on RFC 977, RFC 1036 and RFC 1980.
+ * The Net_NNTP class is an almost 100 % backward compatible 
+ * frontend class to the Net_NNTP_Protocol class.
+ * 
+ * ATTENTION!!!
+ * This class should NOT be used in new projects. It is meant
+ * as a drop in replacement to the outdated v0.2, and uses 
+ * excatly the same protocol implementation as the new 
+ * Net_NNTP_Realtime class, but has a lot of deprecated 
+ * methods etc. While this class is still maintained, it is
+ * officially dead...
  *
- * @version 0.3.3
  * @author Martin Kaltoft   <martin@nitro.dk>
  * @author Tomas V.V.Cox    <cox@idecnet.com>
  * @author Heino H. Gehlsen <heino@gehlsen.dk>
@@ -51,14 +58,14 @@ class Net_NNTP extends Net_NNTP_Protocol
     /**
      * @var int
      * @access public
-     * @deprecated use getLast() instead
+     * @deprecated use last() instead
      */
     var $max;
 
     /**
      * @var int
      * @access public
-     * @deprecated use getFirst() instead
+     * @deprecated use first() instead
      */
     var $min;
 
@@ -75,7 +82,7 @@ class Net_NNTP extends Net_NNTP_Protocol
     // {{{ constructor
 
     /**
-     * 
+     * Constructor
      */
     function Net_NNTP()
     {
@@ -102,9 +109,9 @@ class Net_NNTP extends Net_NNTP_Protocol
      *
      * @return mixed (bool) true on success or (object) pear_error on failure
      * @access public
-     * @see Net_Nntp::quit()
-     * @see Net_Nntp::connectAuthenticated()
-     * @see Net_Nntp::authenticate()
+     * @see Net_NNTP::quit()
+     * @see Net_NNTP::connectAuthenticated()
+     * @see Net_NNTP::authenticate()
      */
     function connect($host = NET_NNTP_PROTOCOL_DEFAULT_HOST,
                      $port = NET_NNTP_PROTOCOL_DEFAULT_PORT,
@@ -126,15 +133,15 @@ class Net_NNTP extends Net_NNTP_Protocol
      * @param optional string $user The user name to authenticate with
      * @param optional string $pass The password
      * @param optional string $host The adress of the NNTP-server to connect to.
-     * @param optional int $port The port to connect to, defaults to 119.
+     * @param optional int $port The port to connect to.
      * @param optional string $authmode The authentication mode
      *
      * @return mixed (bool) true on success or (object) pear_error on failure
      * @access public
      * @since 0.3
-     * @see Net_Nntp::connect()
-     * @see Net_Nntp::authenticate()
-     * @see Net_Nntp::quit()
+     * @see Net_NNTP::connect()
+     * @see Net_NNTP::authenticate()
+     * @see Net_NNTP::quit()
      */
     function connectAuthenticated($user = null,
             			  $pass = null,
@@ -166,7 +173,7 @@ class Net_NNTP extends Net_NNTP_Protocol
      * Close connection to the newsserver
      *
      * @access public
-     * @see Net_Nntp::connect()
+     * @see Net_NNTP::connect()
      */
     function quit()
     {
@@ -233,7 +240,7 @@ class Net_NNTP extends Net_NNTP_Protocol
      * @return mixed (bool) true on success or (object) pear_error on failure
      * @access public
      * @since 0.3
-     * @see Net_Nntp::connect()
+     * @see Net_NNTP::connect()
      */
     function authenticate($user, $pass, $mode = NET_NNTP_AUTHORIGINAL)
     {
@@ -266,8 +273,8 @@ class Net_NNTP extends Net_NNTP_Protocol
      *
      * @return bool true or false
      * @access public
-     * @see Net_Nntp::connect()
-     * @see Net_Nntp::quit()
+     * @see Net_NNTP::connect()
+     * @see Net_NNTP::quit()
      */
     function isConnected()
     {
@@ -284,6 +291,10 @@ class Net_NNTP extends Net_NNTP_Protocol
      *
      * @return mixed (array) Groups info on success or (object) pear_error on failure
      * @access public
+     * @see group()
+     * @see count()
+     * @see first()
+     * @see last()
      */
     function selectGroup($newsgroup)
     {
@@ -355,6 +366,8 @@ class Net_NNTP extends Net_NNTP_Protocol
      *
      * @return mixed (array) nested array of message and there headers on success or (object) pear_error on failure
      * @access public
+     * @see Net_NNTP::getOverviewFormat()
+     * @see Net_NNTP::getReferencesOverview()
      */
     function getOverview($first, $last)
     {
@@ -367,6 +380,21 @@ class Net_NNTP extends Net_NNTP_Protocol
     }
 
     // }}}
+    // {{{ getOverviewFormat()
+
+    /**
+     * Returns a list of avaible headers which are send from newsserver to client for every news message
+     *
+     * @return mixed (array) header names on success or (object) pear_error on failure
+     * @access public
+     * @see Net_NNTP::getOverview()
+     */
+    function getOverviewFormat()
+    {
+	return $this->cmdListOverviewFMT();
+    }
+
+    // }}}
     // {{{ getOverviewFmt()
 
     /**
@@ -374,26 +402,27 @@ class Net_NNTP extends Net_NNTP_Protocol
      *
      * @return mixed (array) header names on success or (object) pear_error on failure
      * @access public
+     * @deprecated use getOverviewFormat() instead
      */
     function getOverviewFmt()
     {
-	return $this->cmdListOverviewFMT();
+	return $this->getOverviewFormat();
     }
 
     // }}}
     // {{{ getReferencesOverview()
 
     /**
-     * Fetch message header from message number $first to $last
-     *
-     * The format of the returned array is:
-     * $messages[message_id][header_name]
+     * Fetch a list of each message's reference header.
      *
      * @param integer $first first article to fetch
      * @param integer $last  last article to fetch
      *
+     * @return mixed (array) nested array of references on success or (object) pear_error on failure
+     *
      * @return mixed (array) nested array of message and there headers on success or (object) pear_error on failure
      * @access public
+     * @see Net_NNTP::getOverview()
      */
     function getReferencesOverview($first, $last)
     {
@@ -409,12 +438,13 @@ class Net_NNTP extends Net_NNTP_Protocol
     // {{{ post()
 
     /**
-     * Post an article to a newsgroup.
-     * Among the aditional headers you might think of adding could be:
+     * Post an article to a number of newsgroups.
+     *
+     * (Among the aditional headers you might think of adding could be:
      * "NNTP-Posting-Host: <ip-of-author>", which should contain the IP-adress
      * of the author of the post, so the message can be traced back to him.
      * Or "Organization: <org>" which contain the name of the organization
-     * the post originates from.
+     * the post originates from)
      *
      * @param string $subject The subject of the post.
      * @param string $newsgroup The newsgroup to post to.
@@ -434,7 +464,7 @@ class Net_NNTP extends Net_NNTP_Protocol
     // {{{ getArticleRaw()
 
     /**
-     * Get an article from the currently open connection.
+     * Get an article (raw data)
      *
      * @param mixed $article Either the message-id or the message-number on the server of the article to fetch.
      * @param bool  $implode When true the result array is imploded to a string, defaults to true.
@@ -442,6 +472,8 @@ class Net_NNTP extends Net_NNTP_Protocol
      * @return mixed (array/string) The headers on success or (object) pear_error on failure
      * @access public
      * @since 0.3
+     * @see getHeaderRaw()
+     * @see getBodyRaw()
      */
     function getArticleRaw($article, $implode = true)
     {
@@ -459,7 +491,7 @@ class Net_NNTP extends Net_NNTP_Protocol
     // {{{ getArticle()
 
     /**
-     * Get an article from the currently open connection.
+     * Get an article (deprecated)
      *
      * @param mixed $article Either the message-id or the message-number on the server of the article to fetch.
      *
@@ -476,7 +508,7 @@ class Net_NNTP extends Net_NNTP_Protocol
     // {{{ getHeaderRaw()
 
     /**
-     * Get the headers of an article from the currently open connection
+     * Get the headers of an article (raw data)
      *
      * @param mixed $article Either the (string) message-id or the (int) message-number on the server of the article to fetch.
      * @param bool  $implode When true the result array is imploded to a string, defaults to true.
@@ -484,6 +516,8 @@ class Net_NNTP extends Net_NNTP_Protocol
      * @return mixed (array/string) headers on success or (object) pear_error on failure
      * @access public
      * @since 0.3
+     * @see getArticleRaw()
+     * @see getBodyRaw()
      */
     function getHeaderRaw($article, $implode = true)
     {
@@ -501,7 +535,7 @@ class Net_NNTP extends Net_NNTP_Protocol
     // {{{ getHeaders()
 
     /**
-     * Get the headers of an article from the currently open connection
+     * Get the headers of an article (deprecated)
      *
      * @param mixed $article Either the (string) message-id or the (int) message-number on the server of the article to fetch.
      *
@@ -518,7 +552,7 @@ class Net_NNTP extends Net_NNTP_Protocol
     // {{{ getBodyRaw()
 
     /**
-     * Get the body of an article from the currently open connection.
+     * Get the body of an article (raw data)
      *
      * @param mixed $article Either the message-id or the message-number on the server of the article to fetch.
      * @param bool  $implode When true the result array is imploded to a string, defaults to true.
@@ -526,6 +560,8 @@ class Net_NNTP extends Net_NNTP_Protocol
      * @return mixed (array/string) headers on success or (object) pear_error on failure
      * @access public
      * @since 0.3
+     * @see getHeaderRaw()
+     * @see getArticleRaw()
      */
     function getBodyRaw($article, $implode = true)
     {
@@ -543,7 +579,7 @@ class Net_NNTP extends Net_NNTP_Protocol
     // {{{ getBody()
 
     /**
-     * Get the body of an article from the currently open connection.
+     * Get the body of an article (deprecated)
      *
      * @param mixed $article Either the message-id or the message-number on the server of the article to fetch.
      *
@@ -560,6 +596,7 @@ class Net_NNTP extends Net_NNTP_Protocol
     // {{{ getGroupArticles()
 
     /**
+     * Experimental
      *
      * @access public
      * @since 0.3
@@ -573,6 +610,7 @@ class Net_NNTP extends Net_NNTP_Protocol
     // {{{ getNewGroups()
 
     /**
+     * Experimental
      *
      * @access public
      * @since 0.3
@@ -596,6 +634,7 @@ class Net_NNTP extends Net_NNTP_Protocol
     // {{{ getNewNews()
 
     /**
+     * Experimental
      *
      * @access public
      * @since 0.3
@@ -619,23 +658,37 @@ class Net_NNTP extends Net_NNTP_Protocol
     // {{{ getDate()
 
     /**
-     * Get the date from the newsserver format of returned date:
-     * $date['']  - timestamp
-     * $date['y'] - year
-     * $date['m'] - month
-     * $date['d'] - day
+     * Get the NNTP-server's internal date
      *
-     * @return mixed (array) date on success or (object) pear_error on failure
+     * Get the date from the newsserver format of returned date:
+     *
+     * @param optional int $format
+     *  - 0: $date - timestamp
+     *  - 1: $date['y'] - year
+     *       $date['m'] - month
+     *       $date['d'] - day
+     *
+     * @return mixed (mixed) date on success or (object) pear_error on failure
      * @access public
      * @since 0.3
      */
-    function getDate()
+    function getDate($format = 1)
     {
         $date = $this->cmdDate();
         if (PEAR::isError($date)) {
 	    return $date;
 	}
-	return array ('y' => substr($date, 0, 4), 'm' => substr($date, 4, 2), 'd' => substr($date, 6, 2));
+
+	switch ($format) {
+	    case 1:
+	        return array('y' => substr($date, 0, 4), 'm' => substr($date, 4, 2), 'd' => substr($date, 6, 2));
+	        break;
+
+	    case 0:
+	    default:
+	        return $date;
+	        break;
+	}
     }
 
     // }}}
@@ -656,11 +709,15 @@ class Net_NNTP extends Net_NNTP_Protocol
     // {{{ count()
 
     /**
-     * Number of articles in currently selectd group
+     * Number of articles in currently selected group
      *
      * @return integer count
      * @access public
      * @since 0.3
+     * @see Net_NNTP::selectGroup()
+     * @see Net_NNTP::group()
+     * @see Net_NNTP::first()
+     * @see Net_NNTP::last()
      */
     function count()
     {
@@ -677,7 +734,10 @@ class Net_NNTP extends Net_NNTP_Protocol
      * @return integer maximum
      * @access public
      * @since 0.3
-     * @see Net_Nntp::first()
+     * @see Net_NNTP::selectGroup()
+     * @see Net_NNTP::group()
+     * @see Net_NNTP::first()
+     * @see Net_NNTP::count()
      */
     function last()
     {
@@ -707,7 +767,10 @@ class Net_NNTP extends Net_NNTP_Protocol
      * @return integer minimum
      * @access public
      * @since 0.3
-     * @see Net_Nntp::last()
+     * @see Net_NNTP::selectGroup()
+     * @see Net_NNTP::group()
+     * @see Net_NNTP::last()
+     * @see Net_NNTP::count()
      */
     function first()
     {
@@ -737,6 +800,10 @@ class Net_NNTP extends Net_NNTP_Protocol
      * @return string group
      * @access public
      * @since 0.3
+     * @see Net_NNTP::selectGroup()
+     * @see Net_NNTP::first()
+     * @see Net_NNTP::last()
+     * @see Net_NNTP::count()
      */
     function group()
     {
@@ -753,7 +820,6 @@ class Net_NNTP extends Net_NNTP_Protocol
      *
      * @return mixed (array) Assoc array with headers names as key on success or (object) pear_error on failure
      * @access public
-     * @deprecated
      */
     function splitHeaders($article)
     {
