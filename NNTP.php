@@ -84,7 +84,7 @@ class Net_NNTP extends PEAR
         if (!$fp) {
             return $this->raiseError('Not connected');
         }
-        $response = fgets($fp, 128);
+        $response = fgets($fp, 256);
         if ($this->_debug) {
             print "<< $response\n";
         }
@@ -541,8 +541,12 @@ class Net_NNTP extends PEAR
             $messages[$message["Message-ID"]] = $message;
         }
 
-        $this->command("XROVER $first-$last");
-        foreach($this->_getData() as $line) {
+        $response = $this->command("XROVER $first-$last");
+        $code =  $this->responseCode($response);
+        if ($code == 500) {
+              return $messages;
+        }
+	foreach($this->_getData() as $line) {
             $i=0;
             foreach(explode("\t",$line) as $line) {
                 $message[$format[$i++]] = $line;

@@ -36,7 +36,7 @@
       pearified API (mj)
     </notes>
     <filelist>
-      <dir name="/" baseinstall="Net">
+      <dir name="/" baseinstalldir="Net">
         <file role="php">NNTP.php</file>
         <file role="doc">README</file>
       </dir>
