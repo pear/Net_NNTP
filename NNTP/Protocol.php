@@ -62,6 +62,10 @@
 require_once 'PEAR.php';
 require_once 'Net/Socket.php';
 
+
+define('NET_NNTP_PROTOCOL_DEFAULT_HOST', 'localhost');
+define('NET_NNTP_PROTOCOL_DEFAULT_PORT', '119');
+
 /**
  * The Net_NNTP_Protocol:: class fetches UseNet news articles
  * acording to the standard based on RFC 1036.
@@ -69,7 +73,6 @@ require_once 'Net/Socket.php';
  * @version 0.0.1
  * @author Heino H. Gehlsen <heino@gehlsen.dk>
  */
-
 class Net_NNTP_Protocol extends PEAR
 {
     // {{{ properties
@@ -114,7 +117,7 @@ class Net_NNTP_Protocol extends PEAR
      * @return mixed (bool) true on success or (object) pear_error on failure
      * @access public
      */
-    function connect($host = 'localhost', $port = 119)
+    function connect($host = NET_NNTP_PROTOCOL_DEFAULT_HOST, $port = NET_NNTP_PROTOCOL_DEFAULT_PORT)
     {
         if ($this->isConnected() ) {
 	    return $this->throwError('Already connected, disconnect first!', null);
@@ -145,7 +148,7 @@ class Net_NNTP_Protocol extends PEAR
 		return $this->throwError('Server refused connection', $response, $this->currentStatusResponse());
 		break;
 	    default:
-		return $this->throwError('.....................', $response, $this->currentStatusResponse());
+		return $this->throwError('Unidentified response code', $response, $this->currentStatusResponse());
 	}
     }
 
@@ -187,7 +190,7 @@ class Net_NNTP_Protocol extends PEAR
 		return true;
 		break;
 	    default:
-		return $this->throwError('.....................', $response, $this->currentStatusResponse());
+		return $this->throwError('Unidentified response code', $response, $this->currentStatusResponse());
 	}
 
     }
@@ -305,7 +308,7 @@ class Net_NNTP_Protocol extends PEAR
 	    case 201: // RFC2980: 'Hello, you can't post'
 		break;
 	    default:
-		return $this->throwError('................', $response, $this->currentStatusResponse());
+		return $this->throwError('Unidentified response code', $response, $this->currentStatusResponse());
 	}
 
     }
@@ -353,7 +356,7 @@ class Net_NNTP_Protocol extends PEAR
 		return $this->throwError('No such article found', $response, $this->currentStatusResponse());
 		break;
 	    default:
-		return $this->throwError('................', $response, $this->currentStatusResponse());
+		return $this->throwError('Unidentified response code', $response, $this->currentStatusResponse());
 	}
 
     }
@@ -401,7 +404,7 @@ class Net_NNTP_Protocol extends PEAR
 		return $this->throwError('No such article found', $response, $this->currentStatusResponse());
 		break;
 	    default:
-		return $this->throwError('................', $response, $this->currentStatusResponse());
+		return $this->throwError('Unidentified response code', $response, $this->currentStatusResponse());
 	}
     }
 
@@ -448,7 +451,7 @@ class Net_NNTP_Protocol extends PEAR
 		return $this->throwError('No such article found', $response, $this->currentStatusResponse());
 		break;
 	    default:
-		return $this->throwError('................', $response, $this->currentStatusResponse());
+		return $this->throwError('Unidentified response code', $response, $this->currentStatusResponse());
 	}
     }
 
@@ -488,7 +491,7 @@ class Net_NNTP_Protocol extends PEAR
             $this->_socket->write("Newsgroups: $newsgroup\r\n");
             $this->_socket->write("Subject: $subject\r\n");
     	    $this->_socket->write("From: $from\r\n");
-            $this->_socket->write("X-poster: PEAR::Net_NNTP (0.1)\r\n");
+            $this->_socket->write("X-poster: PEAR::Net_NNTP\r\n");
             $this->_socket->write("$aditional\r\n");
             $this->_socket->write("\r\n");
             $this->_socket->write("$body\r\n");
@@ -516,7 +519,7 @@ class Net_NNTP_Protocol extends PEAR
 		return $this->throwError('Posting failed', $response, $this->currentStatusResponse());
 		break;
 	    default:
-		return $this->throwError('................', $response, $this->currentStatusResponse());
+		return $this->throwError('Unidentified response code', $response, $this->currentStatusResponse());
 	}
     }
 
@@ -551,7 +554,7 @@ class Net_NNTP_Protocol extends PEAR
 		return $this->throwError('No such news group', $response, $this->currentStatusResponse());
 		break;
 	    default:
-		return $this->throwError('................', $response, $this->currentStatusResponse());
+		return $this->throwError('Unidentified response code', $response, $this->currentStatusResponse());
 	}
 	
     }
@@ -589,7 +592,7 @@ class Net_NNTP_Protocol extends PEAR
 	        return $groups;
 		break;
 	    default:
-		return $this->throwError('................', $response, $this->currentStatusResponse());
+		return $this->throwError('Unidentified response code', $response, $this->currentStatusResponse());
 	}
     }
 
@@ -629,7 +632,7 @@ class Net_NNTP_Protocol extends PEAR
 		return $this->throwError('Internal server error, function not performed', $response, $this->currentStatusResponse());
 		break;
 	    default:
-		return $this->throwError('................', $response, $this->currentStatusResponse());
+		return $this->throwError('Unidentified response code', $response, $this->currentStatusResponse());
 	}
 
     }
@@ -670,7 +673,7 @@ class Net_NNTP_Protocol extends PEAR
 		return $this->throwError('Groups and descriptions unavailable', $response, $this->currentStatusResponse());
 		break;
 	    default:
-		return $this->throwError('................', $response, $this->currentStatusResponse());
+		return $this->throwError('Unidentified response code', $response, $this->currentStatusResponse());
 	}
 
     }
@@ -701,12 +704,12 @@ class Net_NNTP_Protocol extends PEAR
 		    $groups[$arr[0]]['group'] = $arr[0];
 		    $groups[$arr[0]]['last'] = $arr[1];
 		    $groups[$arr[0]]['first'] = $arr[2];
-		    $groups[$arr[0]]['posting_allowed'] = $arr[3];
+		    $groups[$arr[0]]['posting'] = $arr[3];
 		}
 		return $groups;
 		break;
 	    default:
-		return $this->throwError('................', $response, $this->currentStatusResponse());
+		return $this->throwError('Unidentified response code', $response, $this->currentStatusResponse());
 	}
     }
 
@@ -746,7 +749,7 @@ class Net_NNTP_Protocol extends PEAR
 		return $this->throwError('Internal server error, function not performed', $response, $this->currentStatusResponse());
 		break;
 	    default:
-		return $this->throwError('................', $response, $this->currentStatusResponse());
+		return $this->throwError('Unidentified response code', $response, $this->currentStatusResponse());
 	}
     }
 
@@ -803,7 +806,7 @@ class Net_NNTP_Protocol extends PEAR
 		return $this->throwError('No permission', $response, $this->currentStatusResponse());
 		break;
 	    default:
-		return $this->throwError('................', $response, $this->currentStatusResponse());
+		return $this->throwError('Unidentified response code', $response, $this->currentStatusResponse());
 	}
     }
     
@@ -853,7 +856,7 @@ class Net_NNTP_Protocol extends PEAR
 		return $this->throwError('No permission', $response, $this->currentStatusResponse());
 		break;
 	    default:
-		return $this->throwError('................', $response, $this->currentStatusResponse());
+		return $this->throwError('Unidentified response code', $response, $this->currentStatusResponse());
 	}
     }
 
@@ -888,7 +891,7 @@ class Net_NNTP_Protocol extends PEAR
 		return $this->throwError('No permission', $response, $this->currentStatusResponse());
 		break;
 	    default:
-		return $this->throwError('................', $response, $this->currentStatusResponse());
+		return $this->throwError('Unidentified response code', $response, $this->currentStatusResponse());
 	}
     }
 
@@ -916,7 +919,7 @@ class Net_NNTP_Protocol extends PEAR
 		return $messages;
 		break;
 	    default:
-		return $this->throwError('................', $response, $this->currentStatusResponse());
+		return $this->throwError('Unidentified response code', $response, $this->currentStatusResponse());
 	}
     }
 
@@ -948,7 +951,7 @@ class Net_NNTP_Protocol extends PEAR
 		}
 		break;
 	    default:
-		return $this->throwError('................', $response, $this->currentStatusResponse());
+		return $this->throwError('Unidentified response code', $response, $this->currentStatusResponse());
 	}
     }
     // }}}
