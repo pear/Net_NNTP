@@ -10,12 +10,6 @@
   <license>PHP 2.0</license>
   <maintainers>
     <maintainer>
-      <user>kaltroft</user>
-      <name>Martin Kaltroft</name>
-      <email>martin@nitro.dk</email>
-      <role>lead</role>
-    </maintainer>
-    <maintainer>
       <user>heino</user>
       <name>Heino H. Gehlsen</name>
       <email>heino@gehlsen.dk</email>
@@ -38,11 +32,11 @@
    <dep type="pkg" rel="ge" version="1.0">Net_Socket</dep>
   </deps>
   <release>
-    <version>0.3.1</version>
-    <date>2002-08-31</date>
+    <version>0.3.2</version>
+    <date>2002-09-13</date>
     <state>beta</state>
     <notes>
-      Uses the new protocol implementation from 0.9.*, but preserves backward compatibility with 0.2, since the experimental header and message classes are not used. Deprecated/historical methods that didn't follow PEAR's coding standard have been removed. (heino)
+      Incorrect handling of the XROVER extension corrected in cmdXROver() and removed in getOverview(). (heino)
     </notes>
     <filelist>
       <dir name="/" baseinstalldir="Net">
@@ -62,6 +56,22 @@
     </filelist>
   </release>
   <changelog>
+  <release>
+    <version>0.3.1</version>
+    <date>2002-08-31</date>
+    <state>beta</state>
+    <notes>
+      Uses the new protocol implementation from 0.9.*, but preserves backward compatibility with 0.2, since the experimental header and message classes are not used. Deprecated/historical methods that didn't follow PEAR's coding standard have been removed. (heino)
+    </notes>
+  </release>
+  <release>
+    <version>0.2.3</version>
+    <date>2002-09-13</date>
+    <state>stable</state>
+    <notes>
+      Incorrect handling of the XROVER extension in getOverview() removed (heino)
+    </notes>
+  </release>
   <release>
     <version>0.2.2</version>
     <date>2002-08-31</date>
