@@ -38,7 +38,7 @@ define('PEAR_NNTP_AUTHGENERIC',  NET_NNTP_AUTHGENERIC);
  * The NNTP:: class fetches UseNet news articles acording to the standard
  * based on RFC 977, RFC 1036 and RFC 1980.
  *
- * @version 0.3
+ * @version 0.3.1
  * @author Martin Kaltoft   <martin@nitro.dk>
  * @author Tomas V.V.Cox    <cox@idecnet.com>
  * @author Heino H. Gehlsen <heino@gehlsen.dk>

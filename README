@@ -1,8 +1,17 @@
 The code is still to be considered alpha state code!
 
-A lot of changes has been made since version 0.2.1!
+A lot of changes has been made since version 0.2.*!
 
 If you choose to try/use the code, please read the info above each function!
+
+-------------------------------------------------------------
+
+Version 0.3.* uses the new protocol implementation from 0.9.*, 
+but preserves backward compatibility with 0.2, since the 
+experimental header and message classes are not used.
+
+Deprecated/historical methods that didn't follow PEAR's coding 
+standard have been removed.
 
 -------------------------------------------------------------
 
@@ -23,11 +32,9 @@ The functions getArticle(), getHeaders() and getBody() have been
 These new functions have a second boolean parameter, which comes 
 in handy, if one prefer the returned data in the original array, 
 and thus prevent the array from being imploded into a string.
-
-The function getArticle() has been replaced, and now returns a 
-message object. Both getHeaders() and getBody() still works, but 
-is consideres depresated - in the future getBody() might return 
-an object like getArticle.
+The old function names will still work in version 0.3.*, but are 
+to be considered deprecated, since they return objects instead 
+of strings in version 0.9.*.
 
 The authentication is now automatically performed, when the 
 connection is etablished, or when authenticate() is called - it 
