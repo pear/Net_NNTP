@@ -134,28 +134,38 @@ class Net_NNTP_Header // extends PEAR
      */
     function & create($input = null)
     {
-	if ($input == null) {
-	    $Object = new Net_NNTP_Header();
-	    return $Object;
-	}
+	switch (true) {
 
-	switch (gettype($input)) {
+	    // Null
+	    case is_null($input);
+		$Object = new Net_NNTP_Header();
+	        return $Object;
+		break;
 
-	    case 'object':
+
+	    // Object
+	    case is_object($input);
 		switch (true) {
+		    
+		    // Header
 		    case is_a($input, 'net_nntp_header'):
 			return $input;
 			break;
+			
+		    // Message
 		    case is_a($input, 'net_nntp_message'):
 			return $input->getHeader();
 			break;
+			
+		    // Unknown object/class
 		    default:
 			return PEAR::throwError('Unsupported object/class: '.get_class($input), null);
 		}
 		break;
 
-	    case 'string':
-	    case 'array':
+	    // String & Array
+	    case is_string($input);
+	    case is_array($input);
 	        $Object = new Net_NNTP_Header();
 		$R = $Object->setFields($input)
 ;
@@ -164,7 +174,8 @@ class Net_NNTP_Header // extends PEAR
 		}
 		return $Object;
 		break;
-		
+
+	    // Unknown type
 	    default:
 		return PEAR::throwError('Unsupported object/class: '.get_class($input), null);
 	}
@@ -395,13 +406,19 @@ class Net_NNTP_Header // extends PEAR
      */
     function setFields($input)
     {
-	switch (gettype($input)) {
-	    case 'string':
+	switch (true) {
+
+	    // String
+	    case is_string($input):
 		$this->fields =& $this->_parseString(&$input);
 		break;
-	    case 'array':
+
+	    // Array
+	    case is_array($input):
 		$this->fields =& $this->_parseArray(&$input);
 		break;
+
+	    // Unknown type
 	    default:
 		return PEAR::throwError('Unsupported type: '.gettype($input), null);
 	}
@@ -776,6 +793,7 @@ class Net_NNTP_Header // extends PEAR
             $text     = $matches[4];
 
             switch (strtolower($encoding)) {
+
                 case 'b':
  // RFC2047 4.1
                     $text = base64_decode($text);

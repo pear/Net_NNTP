@@ -128,8 +128,9 @@ class Net_NNTP_Message // extends PEAR
      */
     function setMessage($message)
     {
-	switch (gettype($message)) {
-	    case 'object':
+	switch (true) {
+
+	    case is_object($message);
 	        switch (true) {
 		    case is_a($input, 'net_nntp_message'):
 		        $this =& $message;
@@ -139,8 +140,8 @@ class Net_NNTP_Message // extends PEAR
 		}
 		break;
 
-	    case 'array':
-	    case 'string':
+	    case is_array($message):
+	    case is_string($message):
     		$array =& $this->splitMessage(&$message);
 		$this->setHeader(&$array['header']);
 	        $this->setBody(&$array['body']);
@@ -193,27 +194,42 @@ class Net_NNTP_Message // extends PEAR
      */
     function setHeader($input)
     {
-	if (is_a($input, 'net_nntp_header')) {
+	    switch (true) {
 
-	    $this->header = $input;
+		// Object
+		case is_object($input):
+		    switch (true) {
+		    
+			// Header
+			case is_a($input, 'net_nntp_header'):
+		    	    $this->header = $input;
+			    break;
 
-	} else {
+			// Unknown object/class
+			default:
+			    return PEAR::throwError('Unsupported object/class: '. get_class($input), null);
+		    }
+		    break;
 
-	    switch (strtolower(gettype($input))) {
-		case 'string':
+
+		// String
+		case is_string($input):
 		    $string = $this->header->cleanString($input);
 		    $this->header->setFields($string);
 		    break;
 
-		case 'array':
+
+		// Array
+		case is_array($input):
 		    $array = $this->header->cleanArray($input);
 		    $this->header->setFields($array);
 		    break;
 
+
+		// Unknown type
 		default:
 		    return PEAR::throwError('Unsupported type: '. gettype($input), null);
 	    }
-	}
     }
 
     // }}}
@@ -278,8 +294,10 @@ s in same type as $input
      */
     function splitMessage($input)
     {
-	switch (gettype($input)) {
-	    case 'string':
+	switch (true) {
+
+	    // String
+	    case is_string($input);
     		if (preg_match("/^(.*?)\r?\n\r?\n(.*)/s", $input, $matches)) {
     		    return array('header' => &$matches[1], 'body' => &$matches[2]);
     		}
@@ -288,14 +306,16 @@ s in same type as $input
 		}
 		break;
 		
-	    case 'array':
+	    // Array
+	    case is_array($input);
 		$header = array();
 		while (($line = array_shift($input)) != '') {
 		    $header[] = $line;
 		}
     		return array('header' => &$header, 'body' => $input);
 		break;
-		
+
+	    // Unknown type
 	    default:
 	        return PEAR::throwError('Unsupported type: '.gettype($input));
 	}
