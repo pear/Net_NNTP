@@ -607,7 +607,12 @@ class Net_NNTP_Protocol
      */
     function cmdListNewsgroups($wildmat = '')
     {
-        $response = $this->_sendCommand('LIST NEWSGROUPS '.$wildmat);
+        if (empty($wildmat)) {
+            $command = 'LIST NEWSGROUPS';
+        } else {
+            $command = 'LIST NEWSGROUPS '.$wildmat;
+        }
+        $response = $this->_sendCommand($command);
         if (PEAR::isError($response)){
             return $response;
         }
