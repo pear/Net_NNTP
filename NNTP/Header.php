@@ -64,11 +64,13 @@ require_once 'PEAR.php';
 /**
  * The Net_NNTP_Header class
  *
- * @version 0.0.1
+ * @version $Revision$
+ * @package Net_NNTP
+ *
  * @author Heino H. Gehlsen <heino@gehlsen.dk>
  */
 
-class Net_NNTP_Header extends PEAR
+class Net_NNTP_Header // extends PEAR
 {
     // {{{ properties
 
@@ -91,17 +93,18 @@ class Net_NNTP_Header extends PEAR
      */
     function Net_NNTP_Header()
     {
-	parent::PEAR();
+//	parent::PEAR();
 	
 	// Reset object
 	$this->reset();
 
 	// Set default values;
 	$this->_modifyHeaderNameCase = true;
+	$this->_cleanBeforeParse = true;
 	$this->_unfoldOnParse = true;
 	$this->_decodeOnParse = true;
-	$this->_encodeOnRegenerate = false;
-	$this->_foldOnRegenerate = false;
+	$this->_encodeOnRegenerate = false; // TODO; When implemented, set to true
+	$this->_foldOnRegenerate = false;   // TODO; When implemented, set to true
     }
 
     // }}}
@@ -119,10 +122,36 @@ class Net_NNTP_Header extends PEAR
     }
 
     // }}}
+    // {{{ create()
+    
+    /**
+     * Create a new instance of Net_NNTP_Header
+     *
+     * @param optional mixed $input RFC2822 style header lines in for om either a string or an array
+     * 
+     * @access public
+     * @since 0.1
+     */
+    function & create($input = null)
+    {
+	$Object = new Net_NNTP_Header();
+
+	if ($Object != null) { 
+	    $R = $Object->setFields($input)
+;
+	    if (PEAR::isError($R)) {
+		return $R;
+	    }
+	}
+	
+	return $Object;
+    }
+
+    // }}}
     // {{{ add()
     
     /**
-     * Add a new line to the header
+     * Add a new field
      * 
      * @param string $tag
      * @param string $value
@@ -150,7 +179,7 @@ class Net_NNTP_Header extends PEAR
     // {{{ replace()
     
     /**
-     * Replace a line in the header
+     * Replace a field's value
      * 
      * @param string $tag
      * @param string $value
@@ -181,7 +210,7 @@ class Net_NNTP_Header extends PEAR
     // {{{ delete()
     
     /**
-     * Delete a tag from the header
+     * Delete a field
      * 
      * @param string $tag
      * @param optional int $index
@@ -207,10 +236,67 @@ class Net_NNTP_Header extends PEAR
     }
 
     // }}}
+    // {{{ get()
+    
+    /**
+     * Gets the value of a header field
+     * 
+     * @param string $tag
+     * @param optional int $index (defaults to 0)
+     * 
+     * @return string
+     * @access public
+     * @since 0.1
+     */
+    function get($tag, $index = 0)
+    {
+	if (!isset($this->fields[$tag])) {
+	    return null;
+	}
+
+	if (is_array($this->fields[$tag])) {
+	    return $this->fields[$tag][$index];
+	} else {
+	    if ($index == 0) {
+		return $this->fields[$tag];
+	    } else {
+	        return null;
+	    }
+	}
+    }
+
+    // }}}
+    // {{{ getAll()
+    
+    /**
+     * Gets the values of a all occurences of a field
+     * 
+     * @param string $tag
+     * @param optional int $index
+     * 
+     * @return array
+     * @access public
+     * @since 0.1
+     */
+    function getAll($tag)
+    {
+	if (!isset($this->fields[$tag])) {
+	    array();
+	}
+
+	if (is_array($this->fields[$tag])) {
+	    return $this->fields[$tag];
+	} else {
+// TODO: What to do, when not array but index is set...
+	    return array($this->fields[$tag]);
+	}
+    }
+
+    // }}}
     // {{{ count()
     
     /**
-     * Returns the number of times the given tag appears in the header.
+     * Returns the number of times the given field tag appears in the header.
      * 
      * @param string $tag
      * 
@@ -220,14 +306,14 @@ class Net_NNTP_Header extends PEAR
      */
     function count($tag)
     {
-	if (isset($this->fields[$tag])) {
-	    if (is_array($this->fields[$tag])) {
-		return count($this->fields[$tag]);
-	    } else {
-		return 1;
-	    }
+	if (!isset($this->fields[$tag])) {
+	    return 0;
+	}
+
+	if (is_array($this->fields[$tag])) {
+	    return count($this->fields[$tag]);
 	} else {
-	    return false;
+	    return 1;
 	}
     }
 
@@ -235,7 +321,7 @@ class Net_NNTP_Header extends PEAR
     // {{{ tags()
     
     /**
-     * Retruns an array of all the tags that exist in the header.
+     * Returns an array of all the tags that exist in the header.
      * Each tag will only appear in the list once.
      * 
      * @return array
@@ -251,21 +337,33 @@ class Net_NNTP_Header extends PEAR
     // {{{ clean()
     
     /**
-     * Remove any header line that, other than the tag, only contains whitespace.
+     * Remove any header field that only contains whitespace.
      * 
      * @access public
      * @since 0.1
      */
     function clean()
     {
-// TODO:
+	foreach (array_keys($this->fields) as $tag) {
+	    if (is_array($this->fields[$tag])) {
+		foreach (array_keys($this->fields[$tag]) as $i) {
+		    if (trim($this->fields[$tag][$i]) == '') {
+			unset($this->fields[$tag][$i]);
+		    }
+		}
+	    } else {
+		if (trim($this->fields[$tag]) == '') {
+		    unset($this->fields[$tag]);
+		}
+	    }
+	}
     }
 
     // }}}
     // {{{ setFields()
     
     /**
-     * Import RFC2822 style header lines given in $string into the object
+     * Import RFC2822 style header lines given in $input into the object
      * 
      * @param mixed $input RFC2822 style header lines as string (CRLF included) or array (CRLF not included)
      * 
@@ -276,11 +374,13 @@ class Net_NNTP_Header extends PEAR
     {
 	switch (gettype($input)) {
 	    case 'string':
-		$this->fields =& $this->parseString(&$input);
+		$this->fields =& $this->_parseString(&$input);
 		break;
 	    case 'array':
-		$this->fields =& $this->parseArray(&$input);
+		$this->fields =& $this->_parseArray(&$input);
 		break;
+	    default:
+		return PEAR::throwError('Unsupported type: '.gettype($input), null);
 	}
     }
 
@@ -288,7 +388,7 @@ class Net_NNTP_Header extends PEAR
     // {{{ getFields()
 
     /**
-     *
+     * Get the array of header fields.
      * 
      * @return array
      * @access public
@@ -311,7 +411,7 @@ class Net_NNTP_Header extends PEAR
      */
     function getFieldsString()
     {
-	return $this->regenerateString(
+	return $this->_regenerateString(
 &$this->fields);
     }
 
@@ -327,62 +427,92 @@ class Net_NNTP_Header extends PEAR
      */
     function getFieldsArray()
     {
-	return $this->regenerateArray(&$this->fields
+	return $this->_regenerateArray(&$this->fields
 );
     }
 
     // }}}
-    // {{{ parseString()
+    // {{{ _parseString()
     
     /**
      * Parse a string of RFC2822 style header lines into a 'header array' with the header names as keys.
-     * When header names a'pear more the once, the resulting array will have the values nested in the order of a'pear'ence.
      * 
      * @param string $string RFC2822 style header lines (CRLF included)
      * 
      * @return array 'header array' with the header names as keys, values may be nested.
-     * @access public
+     * @access private
      * @since 0.1
      */
-    function parseString($string)
+    function _parseString($string)
     {
+    	// Clean the header lines
+	if ($this->_cleanBeforeParse == true) {
+	    $string =& $this->cleanString($string);
+	}
+
+    	// Unfold the header lines
+	if ($this->_unfoldOnParse == true) {
+	    $string =& $this->unfoldString(&$string);
+	}
+
 	// Convert to array
 	$array =& explode("\r\n", &$string);
 
-	// Forward to parseArray()
-	return $this->parseArray(&$array);
+	// Forward to _parse()
+	return $this->_parse(&$array);
     }
 
     // }}}
-    // {{{ parseArray()
+    // {{{ _parseArray()
 
     /**
      * Parse an array of RFC2822 style header lines into a 'header array' with the header names as keys.
+     * 
+     * @param array $array RFC2822 style header lines (CRLF not included)
+     *
+     * @return array 'header array' with the header names as keys, values may be nested.
+     * @access private
+     * @since 0.1
+     */
+    function _parseArray($array)
+    {
+    	// Clean the header lines
+	if ($this->_cleanBeforeParse == true) {
+	    $array =& $this->cleanArray($array);
+	}
+
+    	// Unfold the header lines
+	if ($this->_unfoldOnParse == true) {
+	    $array =& $this->unfoldArray(&$array);
+	}
+
+	// Forward to _parse()
+	return $this->_parse(&$array);
+    }
+
+    // }}}
+    // {{{ _parse()
+
+    /**
+     * Parse a cleaned and unfolded array of RFC2822 style header lines into a 'header array' with the header names as keys.
      * When header names a'pear more the once, the resulting array will have the values nested in the order of a'pear'ence.
      * 
      * @param array $array RFC2822 style header lines (CRLF not included)
      *
      * @return array 'header array' with the header names as keys, values may be nested.
-     * @access public
+     * @access private
      * @since 0.1
      */
-    function parseArray($array)
+    function _parse($array)
     {
-	// Duplicate to prevent any modification af the original array, if user parses by reference
-	$headers = $array;
-    	// Unfold the headers
-	if ($this->_unfoldOnParse == true) {
-	    $headers =& $this->unfoldArray(&$headers);
-	}
-
 	// Init return variable
 	$return = array();
 
 	// Loop through all headers
-        foreach ($headers as $header) {
+        foreach ($array as $field) {
 	    // Separate header name and value
-            $name = substr($header, 0, $pos = strpos($header, ':'));
-            $value = substr($header, $pos + 1);
+            $name = substr($field, 0, $pos = strpos($field, ':'));
+            $value = substr($field, $pos + 1);
 
 	    // Change header name to lower case
 	    if ($this->_modifyHeaderNameCase == true) {
@@ -398,7 +528,7 @@ class Net_NNTP_Header extends PEAR
 	    // Decode header value acording to RFC 2047
 	    if ($this->_decodeOnParse == true) {
 		$value
- =& $this->_decodeString(&$value);
+ =& $this->decodeString(&$value);
 	    }
 	    
 	    // Add header to $return array
@@ -418,50 +548,48 @@ class Net_NNTP_Header extends PEAR
     }
 
     // }}}
-    // {{{ regenerateString()
+    // {{{ _regenerateString()
     
     /**
      * Generate a string of RFC2822 style header lines from the 'header array' given in $array.
      * 
-     * @param array 'headers array'
+     * @param array 'header field array'
      *
      * @return string RFC822 style header lines (CRLF included).
-     * @access public
+     * @access private
      * @since 0.1
      */
-    function regenerateString($array)
+    function _regenerateString($array)
     {
-	// ( Forward to parseArray() and then convert to string )
-	return implode("\r\n", $this->regenerateArray(&$array));
+	// ( Forward to _regenerateArray() and then convert to string )
+	return implode("\r\n", $this->_regenerateArray(&$array));
     }
 
     // }}}
-    // {{{ regenerateArray()
+    // {{{ _regenerateArray()
 
     /**
      * Generate an array of RFC2822 style header lines from the array given in $array.
      *
-     * @param array 'headers array'
+     * @param array 'header field array'
      *
      * @return array RFC822 style header lines (CRLF not included).
-     * @access public
+     * @access private
      * @since 0.1
      */
-    function regenerateArray($array)
+    function _regenerateArray($array)
     {
-	// Duplicate to prevent any modification af the original array, if user parses by reference
-	$header = $array;
-
-	// Encode header values acording to RFC 2047
-        if ($this->_encodeOnParse == true) {
-	    $header =& $this->encode(&$header);
-	}
-
 	// Init return variable
 	$return = array();
 
 	// Loop through headers
-        foreach ($header as $name => $value) {
+        foreach ($array as $name => $value) {
+
+	    // Encode header values acording to RFC 2047
+    	    if ($this->_encodeOnParse == true) {
+		$value =& $this->encodeString(&$value);
+	    }
+
 	    if (is_array($value)) {
     		foreach ($value as $sub_value) {
         	    $return[] = $name.': '.$sub_value;
@@ -545,34 +673,19 @@ class Net_NNTP_Header extends PEAR
      *
  !!! DONT USE, function not properly implemented !!!
      *
+     * DUMMY / NOT IMPLEMENTED
+     *
      * @param array $array
+     * @param optional int $lenght
      *
      * @return array 
      * @access public
      * @since 0.1
      */
-    function foldArray($array = null)
+    function foldArray($array, $length = 78)
     {
+	//TODO: fold to prefered 78-whitespace chars & max 998 chars
 	return $array;	
-
-	if ($array == null) {
-	    $header = $this->header;
-	} else {
-	    $header = $array;
-	}
-	
-        foreach (array_keys($header) as $name) {
-
-	    if (!is_array($header[$name])) {
-        	$header[$name] = $this->_foldString($header[$name], $name);
-	    } else { // It's an array
-		foreach (array_keys($header[$name]) as $number) {
-    			$header[$name][$number] = $this->_foldString($header[$name][$number], $name);
-		}
-	    }
-        }
-	
-	return $header;	
     }
 
     // }}}
@@ -583,49 +696,23 @@ class Net_NNTP_Header extends PEAR
  !!! DONT USE, function not properly implemented !!!
      *
      * DUMMY / NOT IMPLEMENTED
+     *
+     * @param string $string
+     * @param optional int $lenght
+     *
+     * @return string 
+     * @access public
+     * @since 0.1
      */
-    function _foldString($string)
+    function foldString($string, $length = 78
+)
     {
 	//TODO: fold to prefered 78-whitespace chars & max 998 chars
 	return $string;
     }
 
     // }}}
-    // {{{ decodeArray()
-
-    /**
-     * Decodes the values in a 'header array' as per RFC2047
-     * 
-     * @param array $array The 'header array' to encode
-, if null use objects internal
-     *
-     * @return array Encoded version of $array
-     * @access public
-     * @since 0.1
-     */
-    function decode($array = null)
-    {
-	if ($array == null) {
-	    $array =& $this->header;
-	}
-
-        foreach ($array as $hdr_name => $hdr_value) {
-
-	    if (!is_array($hdr_value)) {
-        	$array[$hdr_name] = $this->_decodeString($hdr_value);
-	    } else { // Array
-    		foreach ($hdr_value as $hdr2_name => $hdr2_value) {
-        	    $array[$hdr_name][$hdr2_name] = $this->_decodeString($hdr2_value);
-		}
-	    }
-
-        }
-        
-        return $array;
-    }
-
-    // }}}
-    // {{{ _decodeString()
+    // {{{ decodeString()
 
     /**
      * Given a header/string, this function will decode it
@@ -637,10 +724,10 @@ class Net_NNTP_Header extends PEAR
      * @param string $input Input header value to decode
      *
      * @return string Decoded header value
-     * @access private
+     * @access public
      * @since 0.1
      */
-    function _decodeString($input)
+    function decodeString($input)
     {
         // Remove white space between encoded-words
         $input = preg_replace('/(=\?[^?]+\?(q|b)\?[^?]*\?=)(\s)+=\?/i', '\1=?', $input);
@@ -674,41 +761,7 @@ class Net_NNTP_Header extends PEAR
     }
 
     // }}}
-    // {{{ encode()
-
-    /**
-     * Encodes the values in a 'header array' as per RFC2047
-     *
-     * @param array $array The 'header array' to decode
-, if null use objects internal
-     *
-     * @return array Decoded version of $array
-     * @access public
-     * @since 0.1
-     */
-    function encode($array = null)
-    {
-	if ($array == null) {
-	    $array =& $this->header;
-	}
-
-        foreach ($array as $hdr_name => $hdr_value) {
-
-	    if (!is_array($hdr_value)) {
-        	$array[$hdr_name] = $this->_encodeString($hdr_value);
-	    } else { // Array
-    		foreach ($hdr_value as $hdr2_name => $hdr2_value) {
-        	    $array[$hdr_name][$hdr2_name] = $this->_encodeString($hdr2_value);
-		}
-	    }
-
-        }
-        
-        return $array;
-    }
-
-    // }}}
-    // {{{ _encodeString()
+    // {{{ encodeString()
 
     /**
      * Encodes the string given in $string as per RFC2047
@@ -716,10 +769,10 @@ class Net_NNTP_Header extends PEAR
      * @param string $string The string to encode
      *
      * @return string Encoded string
-     * @access private
+     * @access public
      * @since 0.1
      */
-    function _encodeString($string)
+    function encodeString($string)
     {
 	// TODO: could be better! (Look into CPAN's Encode::MIME::Header)
 	
