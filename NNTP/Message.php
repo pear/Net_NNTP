@@ -71,7 +71,6 @@ require_once 'Net/NNTP/Header.php';
  *
  * @author  Heino H. Gehlsen <heino@gehlsen.dk>
  */
-
 class Net_NNTP_Message
 {
     // {{{ properties
@@ -238,9 +237,9 @@ class Net_NNTP_Message
 	    // Array & String
 	    case is_array($message):
 	    case is_string($message):
-    		$array =& $this->splitMessage(&$message);
-		$this->setHeader(&$array['header']);
-	        $this->setBody(&$array['body']);
+		$array = $this->splitMessage($message);
+		$this->setHeader($array['header']);
+		$this->setBody($array['body']);
 	        break;
 		
 	    // Unknown type
@@ -350,16 +349,17 @@ class Net_NNTP_Message
     /**
      * Sets the body
      *
-     * @param string $body
+     * @param mixed $body
+ Array or string
      *
      * @access public
      */
     function setBody($body)
     {
 	if (is_array($body)) {
-	    $this->body =& implode("\r\n", &$body);
+	    $this->body = implode("\r\n", $body);
 	} else {
-	    $this->body =& $body;
+	    $this->body = $body;
 	}
     }
 
@@ -397,7 +397,7 @@ s in same type as $input
 	    // String
 	    case is_string($input);
     		if (preg_match("/^(.*?)\r?\n\r?\n(.*)/s", $input, $matches)) {
-    		    return array('header' => &$matches[1], 'body' => &$matches[2]);
+    		    return array('header' => $matches[1], 'body' => $matches[2]);
     		}
  else {
 	    	    return PEAR::throwError('Could not split header and body');

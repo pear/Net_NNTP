@@ -415,7 +415,7 @@ class Net_NNTP_Header
      * @access public
      * @since 0.1
      */
-    function setFields($input, $flags = NET_NNTP_HEADER_SET_DEFAULT)
+    function setFields(&$input, $flags = NET_NNTP_HEADER_SET_DEFAULT)
     {
 	switch (true) {
 
@@ -438,12 +438,12 @@ class Net_NNTP_Header
 
 	    // String
 	    case is_string($input):
-		$this->fields =& $this->_parseString(&$input, $flags);
+		$this->fields = $this->_parseString($input, $flags);
 		break;
 
 	    // Array
 	    case is_array($input):
-		$this->fields =& $this->_parseArray(&$input, $flags);
+		$this->fields = $this->_parseArray($input, $flags);
 		break;
 
 	    // Unknown type
@@ -483,7 +483,7 @@ class Net_NNTP_Header
      */
     function getFieldsString($flags = NET_NNTP_HEADER_GET_DEFAULT)
     {
-	return $this->_regenerateString(&$this->fields, &$flags);
+	return $this->_regenerateString($this->fields, $flags);
     }
 
     // }}}
@@ -500,7 +500,7 @@ class Net_NNTP_Header
      */
     function getFieldsArray($flags = NET_NNTP_HEADER_GET_DEFAULT)
     {
-	return $this->_regenerateArray(&$this->fields, &$flags);
+	return $this->_regenerateArray($this->fields, $flags);
     }
 
     // }}}
@@ -520,16 +520,16 @@ class Net_NNTP_Header
     {
     	// Clean the header lines
 	if (($flags & NET_NNTP_HEADER_SET_CLEAN) == NET_NNTP_HEADER_SET_CLEAN) {
-	    $string =& $this->cleanString($string);
+	    $string = $this->cleanString($string);
 	}
 
     	// Unfold the header lines
 	if (($flags & NET_NNTP_HEADER_SET_UNFOLD) == NET_NNTP_HEADER_SET_UNFOLD) {
-	    $string =& $this->unfoldString(&$string);
+	    $string = $this->unfoldString($string);
 	}
 
 	// Convert to array
-	$array =& explode("\r\n", &$string);
+	$array = explode("\r\n", $string);
 
 	// Remove body if present
 	$i = array_search('', $array);
@@ -538,7 +538,7 @@ class Net_NNTP_Header
 	}
 
 	// Forward to _parse()
-	return $this->_parse(&$array, &$flags);
+	return $this->_parse($array, $flags);
     }
 
     // }}}
@@ -558,12 +558,12 @@ class Net_NNTP_Header
     {
     	// Clean the header lines
 	if (($flags & NET_NNTP_HEADER_SET_CLEAN) == NET_NNTP_HEADER_SET_CLEAN) {
-	    $array =& $this->cleanArray($array);
+	    $array = $this->cleanArray($array);
 	}
 
     	// Unfold the header lines
 	if (($flags & NET_NNTP_HEADER_SET_UNFOLD) == NET_NNTP_HEADER_SET_UNFOLD) {
-	    $array =& $this->unfoldArray(&$array);
+	    $array = $this->unfoldArray($array);
 	}
 
 	// Remove body if present
@@ -573,7 +573,7 @@ class Net_NNTP_Header
 	}
 
 	// Forward to _parse()
-	return $this->_parse(&$array, &$flags);
+	return $this->_parse($array, $flags);
     }
 
     // }}}
@@ -613,7 +613,7 @@ class Net_NNTP_Header
 	    // Decode header value acording to RFC 2047
 	    if (($flags & NET_NNTP_HEADER_SET_DECODE) == NET_NNTP_HEADER_SET_UNFOLD) {
 		$value
- =& $this->decodeString(&$value);
+ = $this->decodeString($value);
 	    }
 	    
 	    // Add header to $return array
@@ -648,7 +648,7 @@ class Net_NNTP_Header
     function _regenerateString($array, $flags)
     {
 	// ( Forward to _regenerateArray() and then convert to string )
-	return implode("\r\n", $this->_regenerateArray(&$array, &$flags));
+	return implode("\r\n", $this->_regenerateArray($array, $flags));
     }
 
     // }}}
@@ -674,7 +674,7 @@ class Net_NNTP_Header
 
 	    // Encode header values acording to RFC 2047
 	    if (($flags & NET_NNTP_HEADER_GET_ENCODE) == NET_NNTP_HEADER_GET_ENCODE) {
-		$value =& $this->encodeString(&$value);
+		$value = $this->encodeString($value);
 	    }
 
 	    if (is_array($value)) {
@@ -688,7 +688,7 @@ class Net_NNTP_Header
 
 	// Fold headers
 	if (($flags & NET_NNTP_HEADER_GET_FOLD) == NET_NNTP_HEADER_GET_FOLD) {
-	    $return =& $this->foldArray(&$return);
+	    $return = $this->foldArray($return);
 	}
 
         return $return;
@@ -771,7 +771,7 @@ class Net_NNTP_Header
 	$return = array();
 
 	foreach (array_keys($array) as $key) {
-	    $tmp = & $this->_foldExplode(&$array[$key], &$maxlen);
+	    $tmp = $this->_foldExplode($array[$key], $maxlen);
 	    $prepend = '';
 	    foreach (array_keys($tmp) as $key2) {
 		$return[] = $prepend.$tmp[$key2];
@@ -797,8 +797,8 @@ class Net_NNTP_Header
      */
     function foldString($string, $maxlen = 78)
     {
-	$array = & $this->_foldExplode(&$string, &$maxlen);
-	$return = &implode("\r\n\t", &$array);
+	$array = $this->_foldExplode($string, $maxlen);
+	$return = implode("\r\n\t", $array);
 	return $return;
     }
 
@@ -851,8 +851,8 @@ class Net_NNTP_Header
 	$return = array();
 
 	while ((strlen($tmp) > $max) && (preg_match($exp, $tmp, $match))) {
-	    $return[] = & $match[1];
-	    $tmp = & $match[2];
+	    $return[] = $match[1];
+	    $tmp = $match[2];
 	}
 
 	$return[] = $tmp;
@@ -952,11 +952,11 @@ class Net_NNTP_Header
     function cleanString($string)
     {
 	// Correct missing CR's before LF's
-        $string = &preg_replace("!\r?\n!", "\r\n", &$string);
+        $string = preg_replace("!\r?\n!", "\r\n", $string);
 
 	// Remove empty lines from start and end.
 	// TODO: This should be done better...
-	$string =& trim(&$string, "\r\n");
+	$string = trim($string, "\r\n");
 
         return $string
 ;
