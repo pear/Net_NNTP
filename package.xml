@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!-- $Id: package.xml,v 1.19.2.1 2005-01-14 17:20:50 heino Exp $ -->
+<!-- $Id: package.xml,v 1.19.2.2 2005-03-28 16:49:53 heino Exp $ -->
 <package version="1.0">
   <name>Net_NNTP</name>
   <summary>Implementation of the NNTP protocol</summary>
@@ -19,12 +19,12 @@
    <dep type="pkg" rel="ge" version="1.0.3">Net_Socket</dep>
   </deps>
   <release>
-    <version>1.1.0</version>
-    <date>2005-01-14</date>
+    <version>1.1.1</version>
+    <date>2005-03-28</date>
     <license>W3C</license>
     <state>beta</state>
     <notes>
-      - This release is NOT fully backward compatible with v0.11.3, since experimental features (Net_NNTP_Message and Net_NNTP_Header and related methods Net_NNTP_Client::getArticle() and Net_NNTP_Client::getHeader()) have been removed. Users of those features should consider v1.2.x in stead.
+      - Net_NNTP_Client::connectAuthenticated() removed - it should only exist in the MAINT_1_2 branch for now (was not removed by mistake in the v1.1.0 release)
     </notes>
     <filelist>
       <dir name="/" baseinstalldir="Net">
@@ -48,9 +48,47 @@
   </release>
   <changelog>
   <release>
+    <version>1.1.0</version>
+    <date>2005-01-14</date>
+    <state>beta</state>
+    <notes>
+      - This release is NOT fully backward compatible with v0.11.3, since experimental features (Net_NNTP_Message and Net_NNTP_Header and related methods Net_NNTP_Client::getArticle() and Net_NNTP_Client::getHeader()) have been removed. Users of those features should consider v1.2.x in stead.
+    </notes>
+  </release>
+  <release>
+    <version>1.0.1</version>
+    <date>2005-03-28</date>
+    <license>W3C</license>
+    <state>stable</state>
+    <notes>
+      - Fix lack of $fp property in historical Net_NNTP class (only relevant for backward compatibility with v0.2.5)
+      - Fix typo in examples.
+    </notes>
+  </release>
+  <release>
+    <version>1.0.0</version>
+    <date>2005-01-18</date>
+    <state>stable</state>
+    <notes>
+      - This release is NOT backward compatible with v0.11.3, since all non-stable features (classes, methods etc.) have been removed!!!
+      - Users of releases between 0.3.x and 0.11.x should consider v1.1.x or v1.2.x in stead. (This release is meant only as a final replacement for v0.2.5 - and of cause as a way to finally get rid of the former protocol implementation).
+      - Backward compatible with v0.2.5 (this is ONLY guarantied in v1.0.x releases, and may be removed in the future).
+    </notes>
+  </release>
+  <release>
+    <version>1.0.0RC1</version>
+    <date>2005-01-14</date>
+    <state>beta</state>
+    <notes>
+      - This release is NOT backward compatible with v0.11.3, since all non-stable features (classes, methods etc.) have been removed!!!
+      - Users of releases between 0.3.x and 0.11.x should consider v1.1.x or v1.2.x in stead. (This release is meant only as a final replacement for v0.2.5 - and of cause as a way to finally get rid of the former protocol implementation).
+      - Backward compatible with v0.2.5 (this is ONLY guarantied in v1.0.x releases, and may be removed in the future).
+    </notes>
+  </release>
+  <release>
     <version>0.11.3</version>
     <date>2004-09-06</date>
-    <state>alpha</state>
+    <state>beta</state>
     <notes>
       - Going beta (features not documented in the manual should still be considered experiemental)
       - Added the 'distributions' parameter to getNewGroups() and cmdNewGroups()
