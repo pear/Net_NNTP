@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <!-- do not use the "Type" attribute here, that one is only for
      generated package.xml files -->
-<!-- $Id: package.xml,v 1.16 2003-10-12 13:47:01 heino Exp $ -->
+<!-- $Id: package.xml,v 1.16.2.1 2003-11-24 21:44:48 heino Exp $ -->
 <package version="1.0">
   <name>Net_NNTP</name>
   <summary>Communicate with an NNTP server</summary>
@@ -21,12 +21,12 @@
    <dep type="pkg" rel="ge" version="1.0">Net_Socket</dep>
   </deps>
   <release>
-    <version>0.10.0</version>
-    <date>2003-10-12</date>
+    <version>0.10.1</version>
+    <date>2003-10-24</date>
     <license>W3C / PHP 2.0</license>
     <state>alpha</state>
     <notes>
-      Merges v0.3.3 and v0.9.4 into one package - The 'Net_NNTP' class from v0.9.x is now called 'Net_NNTP_Realtime'. (heino)
+      Fixes bug #7 (lines longer than 1000 chars no longer stop download)
     </notes>
     <filelist>
       <dir name="/" baseinstalldir="Net">
@@ -49,6 +49,14 @@
     </filelist>
   </release>
   <changelog>
+  <release>
+    <version>0.10.0</version>
+    <date>2003-10-12</date>
+    <state>alpha</state>
+    <notes>
+      Merges v0.3.3 and v0.9.4 into one package - The 'Net_NNTP' class from v0.9.x is now called 'Net_NNTP_Realtime'. (heino)
+    </notes>
+  </release>
   <release>
     <version>0.9.3</version>
     <date>2003-09-13</date>
