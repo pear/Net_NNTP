@@ -29,11 +29,11 @@
     </maintainer>
   </maintainers>
   <release>
-    <version>0.2.3</version>
-    <date>2002-09-13</date>
+    <version>0.2.4</version>
+    <date>2004-03-10</date>
     <state>stable</state>
     <notes>
-      Incorrect handling of the XROVER extension in getOverview() removed (heino)
+      post() rewritten to allow posting using authentication (bug #817)
     </notes>
     <filelist>
       <dir name="/" baseinstalldir="Net">
@@ -51,27 +51,35 @@
   </release>
   <changelog>
   <release>
-    <version>0.2.2</version>
-    <date>2002-08-31</date>
+    <version>0.2.3</version>
+    <date>2003-09-13</date>
     <state>stable</state>
     <notes>
-      Constant names pearified (heino)
+      Incorrect handling of the XROVER extension in getOverview() removed
+    </notes>
+  </release>
+  <release>
+    <version>0.2.2</version>
+    <date>2003-08-31</date>
+    <state>stable</state>
+    <notes>
+      Constant names pearified
     </notes>
   </release>
   <release>
     <version>0.2.1</version>
-    <date>2002-08-04</date>
+    <date>2003-08-04</date>
     <state>stable</state>
     <notes>
-      Fix binary safety (heino)
+      Fix binary safety
     </notes>
   </release>
   <release>
     <version>0.2</version>
-    <date>2002-01-27</date>
+    <date>2003-01-27</date>
     <state>stable</state>
     <notes>
-      pearified API (mj)
+      pearified API
     </notes>
   </release>
   <release>
