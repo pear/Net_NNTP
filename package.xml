@@ -30,10 +30,11 @@
   </maintainers>
   <release>
     <version>0.2.5</version>
-    <date>2004-07-01</date>
+    <date>2004-07-19</date>
     <state>stable</state>
     <notes>
-      Examples moved into docs to comply with the standard PEAR directory structure.
+      - post() rewritten to allow posting using authentication (bug #817)
+      - Examples moved into docs to comply with the standard PEAR directory structure.
     </notes>
     <filelist>
       <dir name="/" baseinstalldir="Net">
@@ -57,7 +58,7 @@
     <date>2004-03-10</date>
     <state>stable</state>
     <notes>
-      post() rewritten to allow posting using authentication (bug #817)
+      [Not released]
     </notes>
   </release>
   <release>
