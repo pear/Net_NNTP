@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!-- $Id: package.xml,v 1.18 2005-01-08 20:03:28 heino Exp $ -->
+<!-- $Id: package.xml,v 1.18.2.1 2005-01-08 21:36:01 heino Exp $ -->
 <package version="1.0">
   <name>Net_NNTP</name>
   <summary>Implementation of the NNTP protocol</summary>
@@ -19,13 +19,12 @@
    <dep type="pkg" rel="ge" version="1.0.2">Net_Socket</dep>
   </deps>
   <release>
-    <version>0.11.3</version>
-    <date>2004-09-06</date>
+    <version>1.0.0</version>
+    <date>2005-01-08</date>
     <license>W3C</license>
     <state>beta</state>
     <notes>
-      - Going beta (features not documented in the manual should still be considered experiemental)
-      - Added the 'distributions' parameter to getNewGroups() and cmdNewGroups()
+      -
     </notes>
     <filelist>
       <dir name="/" baseinstalldir="Net">
@@ -33,10 +32,6 @@
         <file role="doc">README</file>
         <dir name="NNTP" role="php">
           <file>Client.php</file>
-          <file>Header.php</file>
-          <file>Message.php</file>
-          <file>Protocol.php</file>
-          <file>Realtime.php</file>
           <dir name="Protocol">
             <file>Client.php</file>
           </dir>
@@ -47,7 +42,6 @@
               <file>index.php</file>
               <file>group.php</file>
               <file>read.php</file>
-              <file>README</file>
             </dir>
           </dir>
         </dir>
@@ -55,6 +49,15 @@
     </filelist>
   </release>
   <changelog>
+  <release>
+    <version>0.11.3</version>
+    <date>2004-09-06</date>
+    <state>beta</state>
+    <notes>
+      - Going beta (features not documented in the manual should still be considered experiemental)
+      - Added the 'distributions' parameter to getNewGroups() and cmdNewGroups()
+    </notes>
+  </release>
   <release>
     <version>0.11.2</version>
     <date>2004-08-22</date>
