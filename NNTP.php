@@ -22,9 +22,9 @@
 
 require_once 'PEAR.php';
 
-define("NNTP_ALL"0,);
-define("NNTP_NAMES",1);
-define("NNTP_LIST",2);
+define('NNTP_ALL',   0);
+define('NNTP_NAMES', 1);
+define('NNTP_LIST',  2);
 /**
  * The NNTP:: class fetches UseNet news articles acording to the standard
  * based on RFC 1036.
@@ -347,7 +347,8 @@ class Net_Nntp extends PEAR
      *
      * @author Morgan Christiansson <mog@linux.nu>
      */
-    function get_data()    {
+    function get_data()
+    {
         $body = array();
         while(!feof($this->fp)) {
             $line = trim(fgets($this->fp, 256));
@@ -375,43 +376,45 @@ class Net_Nntp extends PEAR
         $this->max = $response_arr[3];
         $this->min = $response_arr[2];
 
-	return array(
-		     "first" => $response_arr[2],
-		     "last" => $response_arr[3]
-		     );
+        return array(
+                     "first" => $response_arr[2],
+                     "last"  => $response_arr[3]
+                    );
     }
 
     /**
-     * 
+     *
      * @param int $fetch NNTP_ALL NNTP_NAMES NNTP_LIST
      * @author Morgan Christiansson <mog@linux.nu>
      */
-    function get_groups($fetch=TRUE) {
-      $this->command("LIST");
-      foreach($this->get_data() as $line) {
-	$arr = explode(" ",$line);
-	$groups[$arr[0]]["group"] = $arr[0];
-	$groups[$arr[0]]["last"] = $arr[1];
-	$groups[$arr[0]]["first"] = $arr[2];
-	$groups[$arr[0]]["posting_allowed"] = $arr[3];
-      }
+    function get_groups($fetch = true)
+    {
+        $this->command("LIST");
+        foreach($this->get_data() as $line) {
+            $arr = explode(" ",$line);
+            $groups[$arr[0]]["group"] = $arr[0];
+            $groups[$arr[0]]["last"] = $arr[1];
+            $groups[$arr[0]]["first"] = $arr[2];
+            $groups[$arr[0]]["posting_allowed"] = $arr[3];
+        }
 
-      $this->command("LIST NEWSGROUPS");
-      foreach($this->get_data() as $line) {
-	preg_match("/^(.*?)\s(.*?$)/",$line,$matches);
-	$groups[$matches[1]]["desc"] = $matches[2];
-      }
-      return $groups;
+        $this->command("LIST NEWSGROUPS");
+        foreach($this->get_data() as $line) {
+            preg_match("/^(.*?)\s(.*?$)/",$line,$matches);
+            $groups[$matches[1]]["desc"] = $matches[2];
+        }
+        return $groups;
     }
 
-    function get_overview_fmt() {
+    function get_overview_fmt()
+    {
         $this->command("LIST OVERVIEW.FMT");
         $format = array("number");
         foreach($body = $this->get_data() as $line) {
             $line = current(explode(":",$line));
             $format[] = $line;
         }
-	return $format;
+        return $format;
     }
 
     function get_overview($first,$last) {
