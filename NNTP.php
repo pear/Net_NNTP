@@ -20,7 +20,7 @@
 //
 // $Id$
 
-require_once 'Net/NNTP/Protocol.php';
+require_once 'Net/NNTP/Protocol/Client.php';
 
 
 /* NNTP Authentication modes */
@@ -36,7 +36,7 @@ define('PEAR_NNTP_AUTHGENERIC',  NET_NNTP_AUTHGENERIC);
 
 /**
  * The Net_NNTP class is an almost 100 % backward compatible 
- * frontend class to the Net_NNTP_Protocol class.
+ * frontend class to the Net_NNTP_Protocol_Client class.
  * 
  * ATTENTION!!!
  * This class should NOT be used in new projects. It is meant
@@ -51,7 +51,7 @@ define('PEAR_NNTP_AUTHGENERIC',  NET_NNTP_AUTHGENERIC);
  * @author Heino H. Gehlsen <heino@gehlsen.dk>
  */
 
-class Net_NNTP extends Net_NNTP_Protocol
+class Net_NNTP extends Net_NNTP_Protocol_Client
 {
     // {{{ properties
 
@@ -86,7 +86,7 @@ class Net_NNTP extends Net_NNTP_Protocol
      */
     function Net_NNTP()
     {
-	parent::Net_NNTP_Protocol();
+	parent::Net_NNTP_Protocol_Client();
     }
 
     // }}}
@@ -113,8 +113,8 @@ class Net_NNTP extends Net_NNTP_Protocol
      * @see Net_NNTP::connectAuthenticated()
      * @see Net_NNTP::authenticate()
      */
-    function connect($host = NET_NNTP_PROTOCOL_DEFAULT_HOST,
-                     $port = NET_NNTP_PROTOCOL_DEFAULT_PORT,
+    function connect($host = NET_NNTP_PROTOCOL_CLIENT_DEFAULT_HOST,
+                     $port = NET_NNTP_PROTOCOL_CLIENT_DEFAULT_PORT,
                      $user = null,
                      $pass = null,
                      $authmode = NET_NNTP_AUTHORIGINAL)
@@ -145,8 +145,8 @@ class Net_NNTP extends Net_NNTP_Protocol
      */
     function connectAuthenticated($user = null,
             			  $pass = null,
-            			  $host = NET_NNTP_PROTOCOL_DEFAULT_HOST,
-                		  $port = NET_NNTP_PROTOCOL_DEFAULT_PORT,
+            			  $host = NET_NNTP_PROTOCOL_CLIENT_DEFAULT_HOST,
+                		  $port = NET_NNTP_PROTOCOL_CLIENT_DEFAULT_PORT,
                 		  $authmode = NET_NNTP_AUTHORIGINAL)
     {
 	// Until connect() is changed, connect() is called directly from the parent...

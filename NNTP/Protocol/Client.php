@@ -63,17 +63,17 @@ require_once 'PEAR.php';
 require_once 'Net/Socket.php';
 
 
-define('NET_NNTP_PROTOCOL_DEFAULT_HOST', 'localhost');
-define('NET_NNTP_PROTOCOL_DEFAULT_PORT', '119');
+define('NET_NNTP_PROTOCOL_CLIENT_DEFAULT_HOST', 'localhost');
+define('NET_NNTP_PROTOCOL_CLIENT_DEFAULT_PORT', '119');
 
 /**
- * The Net_NNTP_Protocol class implements the NNTP standard acording to
+ * The Net_NNTP_Protocol_Client class implements the NNTP standard acording to
  * RFX 977, RFC 2980, RFC 850/1036, and RFC 822/2822
  *
  * @version 0.0.1
  * @author Heino H. Gehlsen <heino@gehlsen.dk>
  */
-class Net_NNTP_Protocol
+class Net_NNTP_Protocol_Client
 {
     // {{{ properties
 
@@ -107,7 +107,7 @@ class Net_NNTP_Protocol
     /**
      *
      */
-    function Net_NNTP_Protocol() {
+    function Net_NNTP_Protocol_Client() {
 	$this->_socket = new Net_Socket();
     }
 
@@ -123,7 +123,7 @@ class Net_NNTP_Protocol
      * @return mixed (bool) true on success or (object) pear_error on failure
      * @access public
      */
-    function connect($host = NET_NNTP_PROTOCOL_DEFAULT_HOST, $port = NET_NNTP_PROTOCOL_DEFAULT_PORT)
+    function connect($host = NET_NNTP_PROTOCOL_CLIENT_DEFAULT_HOST, $port = NET_NNTP_PROTOCOL_CLIENT_DEFAULT_PORT)
     {
         if ($this->isConnected() ) {
 	    return PEAR::throwError('Already connected, disconnect first!', null);

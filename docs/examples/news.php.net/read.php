@@ -26,9 +26,9 @@
 <body>
 <h1>Message</h1>
 <?php
-require_once "Net/NNTP/Realtime.php";
+require_once "Net/NNTP/Client.php";
 
-$nntp = new Net_NNTP_Realtime;
+$nntp = new Net_NNTP_Client();
 
 $ret = $nntp->connect("news.php.net");
 if( PEAR::isError($ret)) {

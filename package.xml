@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!-- do not use the "Type" attribute here, that one is only for
-     generated package.xml files -->
-<!-- $Id: package.xml,v 1.16.2.4 2004-07-14 15:59:02 heino Exp $ -->
+<!-- $Id: package.xml,v 1.16.2.4.2.1 2004-07-19 14:53:00 heino Exp $ -->
 <package version="1.0">
   <name>Net_NNTP</name>
   <summary>Implementation of the NNTP protocol</summary>
@@ -21,21 +19,25 @@
    <dep type="pkg" rel="ge" version="1.0">Net_Socket</dep>
   </deps>
   <release>
-    <version>0.10.3</version>
+    <version>0.11.0</version>
     <date>2004-07-14</date>
-    <license>W3C / PHP 2.0</license>
-    <state>alpha</state>
+    <license>W3C</license>
+    <state>devel</state>
     <notes>
-      - Fixes undefined property warning
+      - 
     </notes>
     <filelist>
       <dir name="/" baseinstalldir="Net">
         <file role="php">NNTP.php</file>
         <dir name="NNTP" role="php">
-          <file role="php">Protocol.php</file>
-          <file role="php">Realtime.php</file>
-          <file role="php">Header.php</file>
-          <file role="php">Message.php</file>
+          <file>Client.php</file>
+          <file>Header.php</file>
+          <file>Message.php</file>
+          <file>Protocol.php</file>
+          <file>Realtime.php</file>
+          <dir name="Protocol">
+            <file>Client.php</file>
+          </dir>
         </dir>
         <dir name="docs" role="doc">
           <dir name="examples">
@@ -51,6 +53,14 @@
     </filelist>
   </release>
   <changelog>
+  <release>
+    <version>0.10.3</version>
+    <date>2004-07-14</date>
+    <state>alpha</state>
+    <notes>
+      - Fixes undefined property warning
+    </notes>
+  </release>
   <release>
     <version>0.10.2</version>
     <date>2004-07-06</date>

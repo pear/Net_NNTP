@@ -59,7 +59,7 @@
 // +-----------------------------------------------------------------------+
 // $Id$
 
-require_once 'Net/NNTP/Protocol.php';
+require_once 'Net/NNTP/Protocol/Client.php';
 require_once 'Net/NNTP/Header.php';
 require_once 'Net/NNTP/Message.php';
 
@@ -70,12 +70,12 @@ define('NET_NNTP_AUTHSIMPLE',   'simple');
 define('NET_NNTP_AUTHGENERIC',  'generic');
 
 /**
- * The Net_NNTP_Realtime class is a frontend class to the 
- * Net_NNTP_Protocol class. It does everything in realtime...
+ * The Net_NNTP_Client class is a frontend class to the 
+ * Net_NNTP_Protocol_Client class. It does everything in realtime...
  *
  * @author Heino H. Gehlsen <heino@gehlsen.dk>
  */
-class Net_NNTP_Realtime extends Net_NNTP_Protocol
+class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 {
     // {{{ properties
 
@@ -94,9 +94,9 @@ class Net_NNTP_Realtime extends Net_NNTP_Protocol
     /**
      * Constructor
      */
-    function Net_NNTP_Realtime()
+    function Net_NNTP_Client()
     {
-	parent::Net_NNTP_Protocol();
+	parent::Net_NNTP_Protocol_Client();
     }
 
     // }}}
@@ -114,8 +114,8 @@ class Net_NNTP_Realtime extends Net_NNTP_Protocol
      * @see Net_NNTP::authenticate()
      * @see Net_NNTP::connectAuthenticated()
      */
-    function connect($host = NET_NNTP_PROTOCOL_DEFAULT_HOST,
-                     $port = NET_NNTP_PROTOCOL_DEFAULT_PORT)
+    function connect($host = NET_NNTP_PROTOCOL_CLIENT_DEFAULT_HOST,
+                     $port = NET_NNTP_PROTOCOL_CLIENT_DEFAULT_PORT)
     {
 	return parent::connect($host, $port);
     }
@@ -141,8 +141,8 @@ class Net_NNTP_Realtime extends Net_NNTP_Protocol
      */
     function connectAuthenticated($user = null,
             			  $pass = null,
-				  $host = NET_NNTP_PROTOCOL_DEFAULT_HOST,
-                		  $port = NET_NNTP_PROTOCOL_DEFAULT_PORT,
+				  $host = NET_NNTP_PROTOCOL_CLIENT_DEFAULT_HOST,
+                		  $port = NET_NNTP_PROTOCOL_CLIENT_DEFAULT_PORT,
                 		  $authmode = NET_NNTP_AUTHORIGINAL)
     {
 	$R = $this->connect($host, $port);
