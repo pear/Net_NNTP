@@ -44,9 +44,8 @@ define('PEAR_NNTP_AUTHGENERIC',  NET_NNTP_AUTHGENERIC);
  * This class should NOT be used in new projects. It is meant
  * as a drop in replacement to the outdated v0.2, and uses 
  * excatly the same protocol implementation as the new 
- * Net_NNTP_Realtime class, but has a lot of deprecated 
- * methods etc. While this class is still maintained, it is
- * officially dead...
+ * Net_NNTP_Client class, but has a lot of deprecated 
+ * methods etc.
  *
  * @category   Net
  * @package    Net_NNTP
