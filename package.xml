@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!-- $Id: package.xml,v 1.20 2005-01-14 17:21:42 heino Exp $ -->
+<!-- $Id: package.xml,v 1.20.2.1 2005-03-13 18:19:19 heino Exp $ -->
 <package version="1.0">
   <name>Net_NNTP</name>
   <summary>Implementation of the NNTP protocol</summary>
@@ -19,12 +19,13 @@
    <dep type="pkg" rel="ge" version="1.0.3">Net_Socket</dep>
   </deps>
   <release>
-    <version>1.2.0</version>
-    <date>2005-01-14</date>
+    <version>1.2.1</version>
+    <date>2005-03-13</date>
     <license>W3C</license>
     <state>alpha</state>
     <notes>
-      - Corresponds to v0.11.3 (exact feature match)
+      - New methods in Net_NNTP_Client: selectArticle(), selectNextArticle() and selectPreviousArticle().
+      - New methods in Net_NNTP_Protocol_Client: cmdStat(), cmdNext() and cmdLast().
     </notes>
     <filelist>
       <dir name="/" baseinstalldir="Net">
@@ -49,6 +50,14 @@
     </filelist>
   </release>
   <changelog>
+  <release>
+    <version>1.2.0</version>
+    <date>2005-01-14</date>
+    <state>alpha</state>
+    <notes>
+      - Corresponds to v0.11.3 (exact feature match)
+    </notes>
+  </release>
   <release>
     <version>0.11.3</version>
     <date>2004-09-06</date>
