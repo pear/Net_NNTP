@@ -44,7 +44,14 @@
     <filelist>
       <dir name="/" baseinstalldir="Net">
         <file role="php">NNTP.php</file>
-        <file role="doc">README</file>
+        <dir name="examples">
+          <dir name="news.php.net" role="doc">
+            <file>index.php</file>
+            <file>group.php</file>
+            <file>read.php</file>
+            <file>README</file>
+          </dir>
+        </dir>
       </dir>
     </filelist>
   </release>
