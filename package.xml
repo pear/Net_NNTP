@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!DOCTYPE package SYSTEM "../package.dtd">
 <!-- do not use the "Type" attribute here, that one is only for
      generated package.xml files -->
 <package version="1.0">
@@ -8,6 +7,7 @@
   <description>
   Complete class for communicating with an NNTP server (this is: the USENET), including: post, view, list, authentication, overview, header manipulation, NNTP commands debugger, etc.
   </description>
+  <license>PHP 2.0</license>
   <maintainers>
     <maintainer>
       <user>kaltroft</user>
@@ -31,25 +31,9 @@
   <release>
     <version>0.2</version>
     <date>2002-02-20</date>
-    <license>PHP 2.0</license>
     <state>stable</state>
     <notes>
-      pearified API 
-    </notes>
-    <filelist>
-      <dir name="/" baseinstall="Net">
-        <file role="php">NNTP.php</file>
-        <file role="doc">README</file>
-      </dir>
-    </filelist>
-  </release>  
-  <release>
-    <version>0.1</version>
-    <date>2002-01-27</date>
-    <license>PHP 2.0</license>
-    <state>stable</state>
-    <notes>
-      This is the initial independent release of the NNTP package.
+      pearified API (mj)
     </notes>
     <filelist>
       <dir name="/" baseinstall="Net">
@@ -58,4 +42,14 @@
       </dir>
     </filelist>
   </release>
+  <changelog>
+  <release>
+    <version>0.1</version>
+    <date>2002-01-27</date>
+    <state>stable</state>
+    <notes>
+      This is the initial independent release of the NNTP package.
+    </notes>
+  </release>
+  </changelog>
 </package>
