@@ -18,7 +18,6 @@
 // +----------------------------------------------------------------------+
 //
 // $Id$
-*/
 ?>
 <html>
 <head>
@@ -26,7 +25,7 @@
 </head>
 <body>
 <?php
-require_once "Net/NNTP.php";
+require_once "Net_NNTP/NNTP.php";
 
 $nntp = new Net_NNTP;
 
@@ -41,8 +40,9 @@ if( PEAR::isError($ret)) {
         echo '<a href="group.php?group='.urlencode($group['group']).
             '&writable='.urlencode($group['posting_allowed']).'">'.
             $group['group'].'</a>' ;
-        $msgcount =$group['last']-$group['first']; 
+        $msgcount = $group['last']-$group['first']; 
         echo '&nbsp;('.$msgcount.' messages)<br>';
+        echo $group['desc'].'<br><br>';
     }
     $nntp->quit();
 }    
