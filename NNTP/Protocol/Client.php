@@ -845,7 +845,7 @@ class Net_NNTP_Protocol_Client
     {
 	// Warn about deprecated API (the code _is_ still in alpha state)
     	if (func_num_args() > 1 ) {
-    	    die('The second parameter in cmdXOver() has been deprecated!');
+    	    die('The second parameter in cmdXROver() has been deprecated!');
     	}
 
         $response = $this->_sendCommand('XROVER '.$range);
