@@ -29,11 +29,11 @@
     </maintainer>
   </maintainers>
   <release>
-    <version>0.2</version>
-    <date>2002-02-20</date>
+    <version>0.2.1</version>
+    <date>2002-08-04</date>
     <state>stable</state>
     <notes>
-      pearified API (mj)
+      Fix binary safety (heino)
     </notes>
     <filelist>
       <dir name="/" baseinstalldir="Net">
@@ -43,6 +43,14 @@
     </filelist>
   </release>
   <changelog>
+  <release>
+    <version>0.2</version>
+    <date>2002-01-27</date>
+    <state>stable</state>
+    <notes>
+      pearified API (mj)
+    </notes>
+  </release>
   <release>
     <version>0.1</version>
     <date>2002-01-27</date>
