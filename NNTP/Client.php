@@ -417,36 +417,6 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     }
 
     // }}}
-    // {{{ getArticle()
-
-    /**
-     * Get an article
-     *
-     * Experimental
-     *
-     * The v0.2 version of the this function (which returned the article as a string) has been renamed to getArticleRaw().
-     *
-     * @param mixed $article Either the message-id or the message-number on the server of the article to fetch.
-     *
-     * @return mixed (object) message object on success or (object) pear_error on failure
-     * @access public
-     * @see Net_NNTP_Client::getArticleRaw()
-     * @see Net_NNTP_Client::getHeader()
-     * @see Net_NNTP_Client::getBody()
-     */
-    function getArticle($article)
-    {
-        $message = $this->getArticleRaw($article, false);
-        if (PEAR::isError($message)) {
-    	    return $data;
-    	}
-	
-    	$M = Net_NNTP_Message::create($message);
-	
-    	return $M;
-    }
-
-    // }}}
     // {{{ getArticleRaw()
 
     /**
@@ -473,34 +443,6 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	}
 
     	return $data;
-    }
-
-    // }}}
-    // {{{ getHeader()
-
-    /**
-     * Get the header of an article
-     *
-     * Experimental
-     *
-     * @param mixed $article Either the (string) message-id or the (int) message-number on the server of the article to fetch.
-     *
-     * @return mixed (object) header object on success or (object) pear_error on failure
-     * @access public
-     * @see Net_NNTP_Client::getHeaderRaw()
-     * @see Net_NNTP_Client::getArticle()
-     * @see Net_NNTP_Client::getBody()
-     */
-    function getHeader($article)
-    {
-        $header = $this->getHeaderRaw($article, false);
-        if (PEAR::isError($header)) {
-    	    return $header;
-    	}
-
-    	$H = Net_NNTP_Header::create($header);
-
-    	return $H;
     }
 
     // }}}
