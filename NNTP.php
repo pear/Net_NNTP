@@ -345,7 +345,7 @@ class Net_NNTP extends Net_NNTP_Protocol
     // {{{ getOverview()
 
     /**
-     * Fetch message header from message number $first until $last
+     * Fetch message header from message number $first to $last
      *
      * The format of the returned array is:
      * $messages[message_id][header_name]
@@ -358,19 +358,12 @@ class Net_NNTP extends Net_NNTP_Protocol
      */
     function getOverview($first, $last)
     {
-	$XOver = $this->cmdXOver($first, $last);
-	if (PEAR::isError($XOver)) {
-	    return $XOver;
+	$overview = $this->cmdXOver($first, $last);
+	if (PEAR::isError($overview)) {
+	    return $overview;
 	}
 
-	$result = $XOver;
-	
-	$XROver = $this->cmdXROver($first, $last);
-	if (!PEAR::isError($XROver)) {
-	    $result = array_merge($result, $XROver);
-	}
-	
-	return $result;
+	return $overview;
     }
 
     // }}}
