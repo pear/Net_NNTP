@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!-- $Id: package.xml,v 1.19 2005-01-14 16:47:34 heino Exp $ -->
+<!-- $Id: package.xml,v 1.20 2005-01-14 17:21:42 heino Exp $ -->
 <package version="1.0">
   <name>Net_NNTP</name>
   <summary>Implementation of the NNTP protocol</summary>
@@ -16,15 +16,15 @@
     </maintainer>
   </maintainers>
   <deps>
-   <dep type="pkg" rel="ge" version="1.0.2">Net_Socket</dep>
+   <dep type="pkg" rel="ge" version="1.0.3">Net_Socket</dep>
   </deps>
   <release>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
     <date>2005-01-14</date>
     <license>W3C</license>
-    <state>beta</state>
+    <state>alpha</state>
     <notes>
-      - This release is NOT fully backward compatible with v0.11.3, since experimental features (Net_NNTP_Message and Net_NNTP_Header and related methods Net_NNTP_Client::getArticle() and Net_NNTP_Client::getHeader()) have been removed. Users of those features should consider v1.2.x in stead.
+      - Corresponds to v0.11.3 (exact feature match)
     </notes>
     <filelist>
       <dir name="/" baseinstalldir="Net">
