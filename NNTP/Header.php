@@ -671,10 +671,15 @@ class Net_NNTP_Header
 
 	// Loop through headers
         foreach ($array as $name => $value) {
-
 	    // Encode header values acording to RFC 2047
 	    if (($flags & NET_NNTP_HEADER_GET_ENCODE) == NET_NNTP_HEADER_GET_ENCODE) {
-		$value = $this->encodeString($value);
+		if (is_array($value)) {
+		    foreach(array_keys($value) as $key) {
+			$value[$key] = $this->encodeString($value[$key]);
+		    }
+		} else {
+		    $value = $this->encodeString($value);
+		}
 	    }
 
 	    if (is_array($value)) {
