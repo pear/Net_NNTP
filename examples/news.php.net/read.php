@@ -41,12 +41,14 @@ if( PEAR::isError($ret)) {
             echo '<font color="red">'.$msgdata->getMessage().'</font><br>' ;        
         } else {
             $header = $nntp->getHeader($_GET['msgid']);
-            $fields = $header->getFieldsArray();
-            echo '<h2>Headers:</h2>';
-            foreach( $fields as $fieldname => $fieldcontent) {
-                echo '<b>'.$fieldname.'</b>:&nbsp;'.$fieldcontent."<br>";
+            echo '<hr>';
+            echo '<h2>Header</h2>';
+            echo '<pre>';
+            foreach( $header->getFieldsArray() as $line) {
+                echo $line.'<br>';
             }              
-            echo "<hr>";
+            echo '</pre>';
+            echo '<hr>';
             echo '<h2>Body</h2>';
             echo '<form><textarea wrap="off" cols="79", rows="25">'.
                     $nntp->getBodyRaw($_GET['msgid'], true).
