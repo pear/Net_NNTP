@@ -103,7 +103,7 @@ class Net_NNTP_Message // extends PEAR
      *
      * @access public
      */
-    function Net_NNTP_Message($header = null, $body = '')
+    function Net_NNTP_Message ($header = null, $body = '')
     {
 //	parent::Pear();
 
@@ -128,20 +128,26 @@ class Net_NNTP_Message // extends PEAR
      */
     function setMessage($message)
     {
-	if (is_a($input, 'net_nntp_message')) {
-	    $this =& $message;
-	} else {
-	    switch (gettype($message)) {
-		case 'array':
-		case 'string':
-    		    $array =& $this->splitMessage(&$message);
-	    	    $this->setHeader(&$array['header']);
-		    $this->setBody(&$array['body']);
-		    break;
+	switch (gettype($message)) {
+	    case 'object':
+	        switch (true) {
+		    case is_a($input, 'net_nntp_message'):
+		        $this =& $message;
+		        break;
+		    default:
+		        return PEAR::throwError('Unsupported object/class: '.get_class($message), null);
+		}
+		break;
+
+	    case 'array':
+	    case 'string':
+    		$array =& $this->splitMessage(&$message);
+		$this->setHeader(&$array['header']);
+	        $this->setBody(&$array['body']);
+	        break;
 		
-		default:
-		    return PEAR::throwError('Unsupported type: '.gettype($message), null);
-	    }
+	    default:
+	        return PEAR::throwError('Unsupported type: '.gettype($message), null);
 	}
     }
 
