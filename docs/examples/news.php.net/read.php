@@ -40,11 +40,11 @@ if( PEAR::isError($ret)) {
         if(PEAR::isError($msgdata)) {
             echo '<font color="red">'.$msgdata->getMessage().'</font><br>' ;        
         } else {
-            $header = $nntp->getHeader($_GET['msgid']);
+            $header = $nntp->getHeaderRaw($_GET['msgid']);
             echo '<hr>';
             echo '<h2>Header</h2>';
             echo '<pre>';
-            foreach( $header->getFieldsArray() as $line) {
+            foreach( $header as $line) {
                 echo $line.'<br>';
             }              
             echo '</pre>';
