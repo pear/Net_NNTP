@@ -492,8 +492,7 @@ class Net_NNTP extends Net_NNTP_Protocol
 	    return $data;
 	}
 	
-	$M = new Net_NNTP_Message();
-	$M->setMessage($message);
+	$M = Net_NNTP_Message::create($message);
 	
 	return $M;
     }
@@ -559,9 +558,7 @@ class Net_NNTP extends Net_NNTP_Protocol
 ;
 	}
 
-	$H = new Net_NNTP_Header();
-	$header = $H->cleanArray($header);
-	$H->setFieldsArray($header);
+	$H = Net_NNTP_Header::create($header);
 
 	return $H;
     }
