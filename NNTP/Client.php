@@ -155,6 +155,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @return mixed (bool) true on success or (object) pear_error on failure
      * @access public
      * @since 0.3
+     * @deprecated use connect() and authenticate() instead
      * @see Net_NNTP_Client::connect()
      * @see Net_NNTP_Client::authenticate()
      * @see Net_NNTP_Client::quit()
@@ -421,6 +422,8 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     /**
      * Get an article
      *
+     * Experimental
+     *
      * The v0.2 version of the this function (which returned the article as a string) has been renamed to getArticleRaw().
      *
      * @param mixed $article Either the message-id or the message-number on the server of the article to fetch.
@@ -477,6 +480,8 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 
     /**
      * Get the header of an article
+     *
+     * Experimental
      *
      * @param mixed $article Either the (string) message-id or the (int) message-number on the server of the article to fetch.
      *

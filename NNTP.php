@@ -150,6 +150,7 @@ class Net_NNTP extends Net_NNTP_Protocol_Client
      * @see Net_NNTP::connect()
      * @see Net_NNTP::authenticate()
      * @see Net_NNTP::quit()
+     * @deprecated use connect() and authenticate() instead
      */
     function connectAuthenticated($user = null,
             	    	    	  $pass = null,
