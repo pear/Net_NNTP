@@ -1,11 +1,20 @@
-v0.3.x and v0.9.x have been merged!
+Some of code is still to be considered alpha state code!
 
-'Net_NNTP' v0.9 has been renamed into Net_NNTP_Realtime
-(Net_NNTP_cached is still to come).
+A lot of changes has been made since version 0.2.*!
 
-No changes has been made to 'Net_NNTP' v0.3, which means that 
-complete backward compatibility is almost a reality.
+Only methods documented in the online documentation should 
+be considered stable (or beta). Please read the phpdoc above 
+each method...
 
+-------------------------------------------------------------
+
+v0.10.x is actually a merge of v0.3.3 and v0.9.4.
+
+The 'Net_NNTP' class in v0.9.x ha been renamed into 
+'Net_NNTP_Realtime' (Net_NNTP_cached is still to come) so that 
+both versions can exist together. The v0.3.x 'Net_NNTP' class is 
+only provided so that backward compatibility is not broken, and 
+it should not be used in new projects.
 
 -------------------------------------------------------------
 
@@ -24,7 +33,7 @@ of the header and message classes - their API might still change
 a little...
 
 Those of you, who choose to use Net_NNTP_Realtime, please read 
-the info above phpdoc function! And those of you who choose to 
+the phpdoc above each function! And those of you who choose to 
 use Net_NNTP in new projects, be aware that this class is 
 officially dead - it's only provided for backward compatibility
 with older v0.2 based projects... 
