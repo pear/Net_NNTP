@@ -13,9 +13,9 @@
 // | obtain it through the world-wide-web, please send a note to          |
 // | license@php.net so we can mail you a copy immediately.               |
 // +----------------------------------------------------------------------+
-// | Authors: Martin Kaltoft <martin@nitro.dk>                            |
-// |          Tomas V.V.Cox  <cox@idecnet.com>                            |
-// |                                                                      |
+// | Authors: Martin Kaltoft   <martin@nitro.dk>                          |
+// |          Tomas V.V.Cox    <cox@idecnet.com>                          |
+// |          Heino H. Gehlsen <heino@gehlsen.dk>                         |
 // +----------------------------------------------------------------------+
 //
 // $Id$
@@ -41,9 +41,10 @@ define('PEAR_NNTP_AUTHGENERIC',  NET_NNTP_AUTHGENERIC);
  * The NNTP:: class fetches UseNet news articles acording to the standard
  * based on RFC 1036.
  *
- * @version 0.2
- * @author Martin Kaltoft <martin@nitro.dk>
- * @author Tomas V.V.Cox  <cox@idecnet.com>
+ * @version 0.2.2
+ * @author Martin Kaltoft   <martin@nitro.dk>
+ * @author Tomas V.V.Cox    <cox@idecnet.com>
+ * @author Heino H. Gehlsen <heino@gehlsen.dk>
  */
 
 class Net_NNTP extends PEAR
@@ -57,12 +58,6 @@ class Net_NNTP extends PEAR
 
     /** File pointer of the nntp-connection */
     var $fp = null;
-
-    /**
-    * Output or not debug information
-    * @see Net_Nntp::set_debug()
-    */
-    var $_debug = false;
 
     /**
      * Connect to the newsserver
