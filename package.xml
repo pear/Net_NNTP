@@ -16,6 +16,12 @@
       <role>lead</role>
     </maintainer>
     <maintainer>
+      <user>heino</user>
+      <name>Heino H. Gehlsen</name>
+      <email>heino@gehlsen.dk</email>
+      <role>lead</role>
+    </maintainer>
+    <maintainer>
       <user>cox</user>
       <name>Tomas V.V.Cox</name>
       <email>cox@idecnet.com</email>
@@ -28,6 +34,27 @@
       <role>contributor</role>
     </maintainer>
   </maintainers>
+  <deps>
+   <dep type="pkg" rel="ge" version="1.0">Net_Socket</dep>
+  </deps>
+  <release>
+    <version>0.9.0</version>
+    <date>2003-08-04</date>
+    <license>PHP 2.0</license>
+    <state>alpha</state>
+    <notes>Major rewrite, yet still generaly backward compatible - now uses Net_Socket, handles authentication diffrently, returns pear_error objects of failure, and handles the server's responses individually. (heino)</notes>
+    <filelist>
+      <dir name="/" baseinstalldir="Net">
+        <file role="php">NNTP.php</file>
+        <dir name="NNTP" role="php">
+          <file role="php">Protocol.php</file>
+          <file role="php">Header.php</file>
+        </dir>
+        <file role="doc">README</file>
+      </dir>
+    </filelist>
+  </release>
+  <changelog>
   <release>
     <version>0.2.1</version>
     <date>2002-08-04</date>
@@ -35,14 +62,7 @@
     <notes>
       Fix binary safety (heino)
     </notes>
-    <filelist>
-      <dir name="/" baseinstalldir="Net">
-        <file role="php">NNTP.php</file>
-        <file role="doc">README</file>
-      </dir>
-    </filelist>
   </release>
-  <changelog>
   <release>
     <version>0.2</version>
     <date>2002-01-27</date>
