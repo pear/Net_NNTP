@@ -267,7 +267,25 @@ class Net_NNTP extends Net_NNTP_Protocol
      */
     function authenticate($user, $pass, $mode = NET_NNTP_AUTHORIGINAL)
     {
-	return $this->cmdAuthinfo($user, $pass, $mode);
+        // Username is a must...
+        if ($user == null) {
+            return $this->throwError('No username supplied', null);
+        }
+
+        // Use selected authentication method
+        switch ($mode) {
+            case NET_NNTP_AUTHORIGINAL:
+                return $this->cmdAuthinfo($user, $pass);
+                break;
+            case NET_NNTP_AUTHSIMPLE:
+                return $this->cmdAuthinfoSimple($user, $pass);
+                break;
+            case NET_NNTP_AUTHGENERIC:
+                return $this->cmdAuthinfoGeneric($user, $pass);
+                break;
+            default:
+                return $this->throwError("The auth mode: '$mode' is unknown", null);
+        }
     }
 
     // }}}
