@@ -26,7 +26,10 @@ define('PEAR_NNTP_ALL',   0);
 define('PEAR_NNTP_NAMES', 1);
 define('PEAR_NNTP_LIST',  2);
 
+/* NNTP Authentication modes */
 define('PEAR_NNTP_AUTHORIGINAL', 'original');
+define('PEAR_NNTP_AUTHSIMPLE',   'simple');
+define('PEAR_NNTP_AUTHGENERIC',  'generic');
 
 /**
  * The NNTP:: class fetches UseNet news articles acording to the standard
@@ -114,11 +117,11 @@ class Net_NNTP extends PEAR
      * @deprecated Use connect() instead
      */
     function prepareConnection($nntpserver,
-                                $port = 119,                                
-                                $newsgroup,                                
+                                $port = 119,
+                                $newsgroup,
                                 $user = null,
                                 $pass = null,
-                                $authmode = 'original')
+                                $authmode = PEAR_NNTP_AUTHORIGINAL)
     {
         /* connect to the server */
         $err = $this->connect($nntpserver, $port, $user, $pass, $authmode);
@@ -138,7 +141,7 @@ class Net_NNTP extends PEAR
 
         return true;
     }
-    
+
     /**
     * @deprecated
     */
@@ -147,11 +150,11 @@ class Net_NNTP extends PEAR
                                 $newsgroup,
                                 $user = null,
                                 $pass = null,
-                                $authmode = 'original')
+                                $authmode = PEAR_NNTP_AUTHORIGINAL)
     {
         return $this->prepareConnection($nntpserver, $port, $newsgroup, $user, $pass, $authmode);
     }
-    
+
     /**
     * Auth process (not yet standarized but used any way)
     * http://www.mibsoftware.com/userkt/nntpext/index.html
@@ -162,13 +165,13 @@ class Net_NNTP extends PEAR
     * @return mixed (bool) true on success or Pear Error obj on fail
     * @access public
     */
-    function authenticate($user = null, $pass = null, $mode = 'original')
+    function authenticate($user = null, $pass = null, $mode = PEAR_NNTP_AUTHORIGINAL)
     {
         if ($user === null) {
             return $this->raiseError('Authentication required but no user supplied');
         }
         switch ($mode) {
-            case 'original':
+            case PEAR_NNTP_AUTHORIGINAL:
                 /*
                     281 Authentication accepted
                     381 More authentication information required
@@ -187,8 +190,8 @@ class Net_NNTP extends PEAR
                 }
                 return true;
                 break;
-            case 'simple':
-            case 'generic':
+            case PEAR_NNTP_AUTHSIMPLE:
+            case PEAR_NNTP_AUTHGENERIC:
             default:
                 $this->raiseError("The auth mode: $mode isn't implemented");
         }
@@ -211,7 +214,7 @@ class Net_NNTP extends PEAR
             return $this->raiseError($r);
         }
         $post = null;
-        while(!feof($this->fp)) {
+        while (!feof($this->fp)) {
             $line = trim(fgets($this->fp, 256));
 
             if ($line == ".") {
@@ -230,7 +233,7 @@ class Net_NNTP extends PEAR
     {
         return $this->getArticle($article);
     }
-    
+
     /**
      * Post an article to a newsgroup.
      * Among the aditional headers you might think of adding could be:
@@ -348,13 +351,13 @@ class Net_NNTP extends PEAR
         }
         return $ret;
     }
-    
+
     /**
     * @deprecated
     */
     function split_headers($article) {
         return $this->splitHeaders($article);
-    }    
+    }
 
     /**
      * Get the body of an article from the currently open connection.
@@ -373,7 +376,7 @@ class Net_NNTP extends PEAR
         }
 
         $body = null;
-        while(!feof($this->fp)) {
+        while (!feof($this->fp)) {
             $line = trim(fgets($this->fp, 256));
 
             if ($line == '.') {
@@ -423,7 +426,7 @@ class Net_NNTP extends PEAR
     /**
     * Selects a news group (issue a GROUP command to the server)
     *
-    * @param string $newsgroup The newsgroup name    
+    * @param string $newsgroup The newsgroup name
     * @return mixed Array on success or Pear Error object on failure
     */
     function selectGroup($newsgroup)
@@ -441,14 +444,14 @@ class Net_NNTP extends PEAR
                      "last"  => $response_arr[3]
                     );
     }
-    
+
     /**
     * @deprecated
     */
     function select_group($newsgroup) {
         return $this->selectGroup($newsgroup);
     }
-    
+
     /**
      * Fetches a list of all avaible newsgroups
      *
@@ -495,13 +498,15 @@ class Net_NNTP extends PEAR
     {
         $this->command("LIST OVERVIEW.FMT");
         $format = array("number");
-        foreach($body = $this->_getData() as $line) {
+        // XXX Use the splitHeaders() algorithm for supporting
+        //     multiline headers?
+        foreach ($body = $this->_getData() as $line) {
             $line = current(explode(":",$line));
             $format[] = $line;
         }
         return $format;
     }
-    
+
     /**
     * @deprecated
     */
@@ -512,16 +517,16 @@ class Net_NNTP extends PEAR
     /**
     * Fetch message header
     * from message number $first until $last
-    * 
+    *
     * The format of the returned array is:
     * $messages[message_id][header_name]
-    *    
+    *
     * @param integer $first first article to fetch
     * @param integer $last  last article to fetch
     * @return array  nested array of message and
     *                there headers
-    * @access public 
-    */    
+    * @access public
+    */
     function getOverview($first,$last) {
         $format = $this->getOverviewFmt();
 
@@ -556,11 +561,11 @@ class Net_NNTP extends PEAR
      * Get the date from the newsserver
      * format of returned date:
      * $date['y'] - year
-     * $date['m'] - month     
-     * $date['d'] - day     
+     * $date['m'] - month
+     * $date['d'] - day
      *
      * @return array date
-     * @access public     
+     * @access public
      */
     function date()
     {
@@ -570,15 +575,15 @@ class Net_NNTP extends PEAR
         }
         $data = explode(' ',$r);
         $date['y']=substr($data[1],0,4);
-        $date['m']=substr($data[1],4,2);        
-        $date['d']=substr($data[1],6,2);        
+        $date['m']=substr($data[1],4,2);
+        $date['d']=substr($data[1],6,2);
         return $date;
     }
 
     /**
      * Maximum article number in current group
      *
-     * @return integer maximum 
+     * @return integer maximum
      * @access public
      */
     function max()
@@ -592,7 +597,7 @@ class Net_NNTP extends PEAR
     /**
      * Minimum article number in current group
      *
-     * @return integer minimum  
+     * @return integer minimum
      * @access public
      */
     function min()
@@ -616,13 +621,13 @@ class Net_NNTP extends PEAR
         }
         return false;
     }
-    
+
     /**
     * @deprecated
     */
     function is_connected() {
-        return $this->isConnected(); 
-    }    
+        return $this->isConnected();
+    }
 
     /**
      * Close connection to the newsserver
@@ -636,12 +641,12 @@ class Net_NNTP extends PEAR
     }
 
     /**
-    * returns the response code 
+    * returns the response code
     * of a newsserver command
     *
     * @param string $response newsserver answer
     * @return integer response code
-    * @access private
+    * @access public
     */
     function responseCode($response)
     {
@@ -659,11 +664,11 @@ class Net_NNTP extends PEAR
     {
         $this->_debug = $on;
     }
-    
+
     /**
     * @deprecated
     */
-    function set_debug($on = true) {    
+    function set_debug($on = true) {
         return $this->setDebug();
     }
 
@@ -673,7 +678,7 @@ class Net_NNTP extends PEAR
     * @param string $cmd The command to launch, ie: "ARTICLE 1004853"
     * @param bool $testauth Test or not the auth
     * @return mixed True on success or Pear Error object on failure
-    * @access private
+    * @access public
     */
     function command($cmd, $testauth = true)
     {
