@@ -379,7 +379,7 @@ class Net_NNTP extends Net_NNTP_Protocol_Client
      */
     function getOverview($first, $last)
     {
-    	$overview = $this->cmdXOver($first, $last);
+    	$overview = $this->cmdXOver($first.'-'.$last);
     	if (PEAR::isError($overview)) {
     	    return $overview;
     	}
@@ -434,7 +434,7 @@ class Net_NNTP extends Net_NNTP_Protocol_Client
      */
     function getReferencesOverview($first, $last)
     {
-    	$overview = $this->cmdXROver($first, $last);
+    	$overview = $this->cmdXROver($first.'-'.$last);
     	if (PEAR::isError($overview)) {
     	    return $overview;
     	}

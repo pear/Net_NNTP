@@ -777,20 +777,24 @@ class Net_NNTP_Protocol_Client
      * The format of the returned array is:
      * $messages[message_id][header_name]
      *
-     * @param integer $first first article to fetch
-     * @param integer $last  last article to fetch
+     * @param string $range articles to fetch
      *
      * @return mixed (array) nested array of message and there headers on success or (object) pear_error on failure
      * @access public
      */
-    function cmdXOver($first, $last)
+    function cmdXOver($range)
     {
+	// deprecated API (the code _is_ still in alpha state)
+    	if (func_num_args() > 1 ) {
+    	    die('The second parameter in cmdXOver() has been deprecated!');
+    	}
+
         $format = $this->cmdListOverviewFmt();
         if (PEAR::isError($format)){
             return $formt;
         }
 
-        $response = $this->_sendCommand('XOVER '.$first.'-'.$last);
+        $response = $this->_sendCommand('XOVER '.$range);
         if (PEAR::isError($response)){
             return $response;
         }
@@ -831,15 +835,19 @@ class Net_NNTP_Protocol_Client
     /**
      * Fetch message references from message number $first to $last
      *
-     * @param integer $first first article to fetch
-     * @param integer $last  last article to fetch
+     * @param string $range articles to fetch
      *
      * @return mixed (array) assoc. array of message references on success or (object) pear_error on failure
      * @access public
      */
-    function cmdXROver($first, $last)
+    function cmdXROver($range)
     {
-        $response = $this->_sendCommand('XROVER '.$first.'-'.$last);
+	// Warn about deprecated API (the code _is_ still in alpha state)
+    	if (func_num_args() > 1 ) {
+    	    die('The second parameter in cmdXOver() has been deprecated!');
+    	}
+
+        $response = $this->_sendCommand('XROVER '.$range);
         if (PEAR::isError($response)){
             return $response;
         }
