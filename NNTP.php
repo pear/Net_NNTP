@@ -542,18 +542,6 @@ class Net_NNTP extends PEAR
             $messages[$message["Message-ID"]] = $message;
         }
 
-        $response = $this->command("XROVER $first-$last");
-        $code =  $this->responseCode($response);
-        if ($code == 500) {
-              return $messages;
-        }
-	foreach($this->_getData() as $line) {
-            $i=0;
-            foreach(explode("\t",$line) as $line) {
-                $message[$format[$i++]] = $line;
-            }
-            $messages[$message["Message-ID"]] = $message;
-        }
         return $messages;
     }
 
