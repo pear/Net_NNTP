@@ -93,6 +93,14 @@ class Net_NNTP_Protocol
      */
     var $_currentStatusResponse = null;
 
+    /**
+     * Whether to enable internal debug messages.
+     *
+     * @var     bool
+     * @access  private
+     */
+    var $_debug = false;
+
     // }}}
     // {{{ constructor
 	    
