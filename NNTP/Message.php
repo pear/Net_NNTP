@@ -107,22 +107,82 @@ class Net_NNTP_Message // extends PEAR
     {
 //	parent::Pear();
 
-	$this->header = $header;
-	$this->body   = $body;
-	
-	if ($this->header == null) {
+	if ($this->header != null) {
+    	    $this->header = $header;
+	} else {
 	    $this->header = new Net_NNTP_Header();
 	}
+
+	$this->body   = $body;
     }
 
     // }}}
 
 /*-------------------------------------------------------------------------------------------------*/
 
+    // {{{ setMessage()
+
+    /**
+     * Sets the header and body grom the given $message
+     *
+     * @param string $message
+     *
+     * @access public
+     */
+    function setMessage($message)
+    {
+	if (is_a($input, 'net_nntp_message')) {
+	    $this =& $message;
+	} else {
+	    switch (gettype($message)) {
+		case 'array':
+		case 'string':
+    		    $array =& $this->splitMessage(&$message);
+	    	    $this->setHeader(&$array['header']);
+		    $this->setBody(&$array['body']);
+		    break;
+		
+		default:
+		    return PEAR::throwError('Unsupported type: '.gettype($message), null);
+	    }
+	}
+    }
+
+    // }}}
+    // {{{ getMessageString()
+
+    /**
+     * Get the complete transport-ready message as a string
+     *
+     * @return string
+     * @access public
+     */
+    function getMessageString()
+    {
+	return $this->header->getFieldsString()."\r\n".$this->body;
+    }
+
+    // }}}
+    // {{{ getMessageArray()
+
+    /**
+     * Get the complete transport-ready message as an array
+     *
+     * @return string
+     * @access public
+     */
+    function getMessageArray()
+    {
+	$header = $this->header->getFieldsArray();
+	$header[] = "";
+	return array_merge($header, explode("\r\n", $this->body));
+    }
+
+    // }}}
     // {{{ setHeader()
 
     /**
-     * 
+     * Sets the header's fields from the given $input
      *
      * @param mixed $input
      *
@@ -139,16 +199,16 @@ class Net_NNTP_Message // extends PEAR
 	    switch (strtolower(gettype($input))) {
 		case 'string':
 		    $string = $this->header->cleanString($input);
-		    $this->header->importString($string);
+		    $this->header->setFields($string);
 		    break;
 
 		case 'array':
-		    $array = $this->header->cleanString($input);
-		    $this->header->importArray($array);
+		    $array = $this->header->cleanArray($input);
+		    $this->header->setFields($array);
 		    break;
 
 		default:
-// TODO: Fail
+		    return PEAR::throwError('Unsupported type: '. gettype($input), null);
 	    }
 	}
     }
@@ -157,7 +217,7 @@ class Net_NNTP_Message // extends PEAR
     // {{{ getHeader()
 
     /**
-     * 
+     * Gets the header object
      *
      * @return object
      * @access public
@@ -171,7 +231,7 @@ class Net_NNTP_Message // extends PEAR
     // {{{ setBody()
 
     /**
-     * 
+     * Sets the body
      *
      * @param string $body
      *
@@ -179,14 +239,18 @@ class Net_NNTP_Message // extends PEAR
      */
     function setBody($body)
     {
-	$this->body =& $body;
+	if (is_array($body)) {
+	    $this->body =& implode("\r\n", &$body);
+	} else {
+	    $this->body =& $body;
+	}
     }
 
     // }}}
     // {{{ getBody()
 
     /**
-     * 
+     * Gets the body
      *
      * @return string
      * @access public
@@ -197,43 +261,11 @@ class Net_NNTP_Message // extends PEAR
     }
 
     // }}}
-    // {{{ setMessage()
-
-    /**
-     * 
-     *
-     * @param string $message
-     *
-     * @access public
-     */
-    function setMessage($message)
-    {
-	$array =& $this->splitMessage(&$message);
-	$this->setHeader($array['header']);
-	$this->setBody($array['body']);	
-    }
-
-    // }}}
-    // {{{ getMessage()
-
-    /**
-     * 
-     *
-     * @return string
-     * @access public
-     */
-    function getMessage()
-    {
-	return $this->header->exportString()."\r\n".implode("\r\n", $this->body);
-    }
-
-    // }}}
     // {{{ splitMessage()
 
     /**
-     * Given a string containing a header and body
-     * section, this function will split them (at the first
-     * blank line) and return them.
+     * Splits the header and body as given in $input apart (at the first
+     * blank line) and return them in the same type as $input.
      *
      * @param mixed $input Message in form of eiter string or array
      *
@@ -252,6 +284,7 @@ s in same type as $input
 	    	    return PEAR::throwError('Could not split header and body');
 		}
 		break;
+		
 	    case 'array':
 		$header = array();
 		while (($line = array_shift($input)) != '') {
@@ -259,6 +292,7 @@ s in same type as $input
 		}
     		return array('header' => &$header, 'body' => $input);
 		break;
+		
 	    default:
 	        return PEAR::throwError('Unsupported type: '.gettype($input));
 	}

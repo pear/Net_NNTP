@@ -262,39 +262,45 @@ class Net_NNTP_Header extends PEAR
     }
 
     // }}}
-    // {{{ importString()
+    // {{{ setFields()
     
     /**
      * Import RFC2822 style header lines given in $string into the object
      * 
-     * @param string $string RFC2822 style header lines (CRLF included)
+     * @param mixed $input RFC2822 style header lines as string (CRLF included) or array (CRLF not included)
      * 
      * @access public
      * @since 0.1
      */
-    function importString($string)
+    function setFields($input)
     {
-	$this->fields =& $this->parseString(&$string);
+	switch (gettype($input)) {
+	    case 'string':
+		$this->fields =& $this->parseString(&$input);
+		break;
+	    case 'array':
+		$this->fields =& $this->parseArray(&$input);
+		break;
+	}
     }
 
     // }}}
-    // {{{ importArray()
+    // {{{ getFields()
 
     /**
-     * Import RFC2822 header style lines given in $array into the object
      *
-     * @param array $array RFC2822 style header lines (CRLF not included)
-     *
+     * 
+     * @return array
      * @access public
      * @since 0.1
      */
-    function importArray($array)
+    function getFields()
     {
-	$this->fields =& $this->parseArray(&$array);
+	return $this->fields;
     }
 
     // }}}
-    // {{{ exportString()
+    // {{{ getFieldsString()
 
     /**
      * Export a string of RFC2822 style header style lines from the object.
@@ -303,14 +309,14 @@ class Net_NNTP_Header extends PEAR
      * @access public
      * @since 0.1
      */
-    function exportString()
+    function getFieldsString()
     {
 	return $this->regenerateString(
 &$this->fields);
     }
 
     // }}}
-    // {{{ exportArray()
+    // {{{ getFieldsArray()
 
     /**
      * Export an array of RFC2822 style header style lines from the object.
@@ -319,7 +325,7 @@ class Net_NNTP_Header extends PEAR
      * @access public
      * @since 0.1
      */
-    function exportArray()
+    function getFieldsArray()
     {
 	return $this->regenerateArray(&$this->fields
 );
@@ -371,7 +377,7 @@ class Net_NNTP_Header extends PEAR
 
 	// Init return variable
 	$return = array();
-	
+
 	// Loop through all headers
         foreach ($headers as $header) {
 	    // Separate header name and value
