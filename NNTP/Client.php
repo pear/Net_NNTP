@@ -412,6 +412,83 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     }
 
     // }}}
+    // {{{ selectArticle()
+
+    /**
+     * Selects article
+     *
+     * @param int $article The message-number on the server of the article to fetch.
+     *
+     * @return mixed (???) ??? or (object) pear_error on failure
+     * @access public
+     * @see Net_NNTP_Client::lastArticle()
+     */
+    function selectArticle($article)
+    {
+        $response_arr = $this->cmdStat($article);
+
+    	if (PEAR::isError($response_arr)) {
+    	    return $response_arr;
+	}
+
+    	return $response_arr;
+    }
+
+    // }}}
+    // {{{ selectNextArticle()
+
+    /**
+     * Selects next article
+     *
+     * @return mixed (???) ??? or (object) pear_error on failure
+     * @access public
+     * @see Net_NNTP_Client::lastArticle()
+     */
+    function selectNextArticle()
+    {
+        $response_arr = $this->cmdNext();
+
+    	if (PEAR::isError($response_arr)) {
+    	    switch ($response_arr->getCode()) {
+    	    	case 421:
+    	    	    return false;
+    	    	    break;
+    	    	default:
+    	    	    return $response_arr;
+    	    }
+	}
+
+    	return $response_arr;
+    }
+
+    // }}}
+    // {{{ selectPreviousArticle()
+
+    /**
+     * Selects previous article
+     *
+     * @return mixed (???) ??? or (object) pear_error on failure
+     * @access public
+     * @see Net_NNTP_Client::lastArticle()
+     */
+    function selectPreviousArticle()
+    {
+        $response_arr = $this->cmdLast();
+
+    	if (PEAR::isError($response_arr)) {
+    	    switch ($response_arr->getCode()) {
+    	    	case 422:
+    	    	    return false;
+    	    	    break;
+    	    	default:
+    	    	    return $response_arr;
+    	    }
+    	}
+
+    	return $response_arr;
+    }
+
+    // }}}
     // {{{ getArticle()
 
     /**
