@@ -598,7 +598,7 @@ class Net_NNTP_Protocol_Client
     	    	    $arr['group']    =& $arr[0];
     	    	    $arr['last']     =& $arr[1];
     	    	    $arr['first']    =& $arr[2];
-    	    	    $arr['posting' ] = (bool) ($arr[3] == 'y');
+    	    	    $arr['posting' ] =& $arr[3];
     	    	    $groups[$arr[0]] = $arr;
     	    	}
     	        return $groups;
