@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!-- $Id: package.xml,v 1.16.2.4.2.1 2004-07-19 14:53:00 heino Exp $ -->
+<!-- $Id: package.xml,v 1.16.2.4.2.2 2004-07-19 15:13:07 heino Exp $ -->
 <package version="1.0">
   <name>Net_NNTP</name>
   <summary>Implementation of the NNTP protocol</summary>
   <description>
     Package for communicating with NNTP/Usenet servers
   </description>
-  <license>W3C / PHP 2.0</license>
+  <license>W3C</license>
   <maintainers>
     <maintainer>
       <user>heino</user>
@@ -16,15 +16,15 @@
     </maintainer>
   </maintainers>
   <deps>
-   <dep type="pkg" rel="ge" version="1.0">Net_Socket</dep>
+   <dep type="pkg" rel="ge" version="1.0.2">Net_Socket</dep>
   </deps>
   <release>
     <version>0.11.0</version>
-    <date>2004-07-14</date>
+    <date>2004-07-19</date>
     <license>W3C</license>
     <state>devel</state>
     <notes>
-      - 
+      - New directory structure (classes/files renamed/moved) to allow future server class (dummy files preserves backward compatibility)
     </notes>
     <filelist>
       <dir name="/" baseinstalldir="Net">
@@ -145,10 +145,11 @@
   </release>
   <release>
     <version>0.2.5</version>
-    <date>2004-07-01</date>
+    <date>2004-07-19</date>
     <state>stable</state>
     <notes>
-      Examples moved into docs to comply with the standard PEAR directory structure.
+      - post() rewritten to allow posting using authentication (bug #817)
+      - Examples moved into docs to comply with the standard PEAR directory structure.
     </notes>
   </release>
   <release>
@@ -156,7 +157,7 @@
     <date>2004-03-10</date>
     <state>stable</state>
     <notes>
-      post() rewritten to allow posting using authentication (bug #817)
+      [Not released]
     </notes>
   </release>
   <release>
