@@ -36,11 +36,56 @@ class Net_Nntp extends PEAR
 
     var $max = '';
     var $min = '';
+    var $user = null;
+    var $pass = null;
+    var $authmode = null;
 
     /** File pointer of the nntp-connection */
     var $fp = null;
 
+    /**
+    * Output or not debug information
+    * @see Net_Nntp::set_debug()
+    */
     var $_debug = false;
+
+    /**
+     * Connect to the newsserver
+     *
+     * @param string $nntpserver The adress of the NNTP-server to connect to.
+     * @param int $port (optional) the port-number to connect to, defaults to 119.
+     * @param string $user (optional) The user name to authenticate with
+     * @param string $pass (optional) The password
+     * @param string $authmode (optional) The authentication mode
+     * @return mixed True on success or Pear Error object on failure
+     * @see Net_Nntp::authenticate()
+     * @access public
+     */
+    function connect($nntpserver,
+                     $port = 119,
+                     $user = null,
+                     $pass = null,
+                     $authmode = 'original')
+    {
+        $fp = @fsockopen($nntpserver, $port, $errno, $errstr, 15);
+        if (!is_resource($fp)) {
+            return $this->raiseError("Could not connect to NNTP-server $nntpserver");
+        }
+        socket_set_blocking($fp, true);
+        if (!$fp) {
+            return $this->raiseError('Not connected');
+        }
+        $response = fgets($fp, 128);
+        if ($this->_debug) {
+            print "<< $response\n";
+        }
+        $this->fp   = $fp;
+        $this->user = $user;
+        $this->pass = $pass;
+        $this->authmode = $authmode;
+
+        return true;
+    }
 
     /**
      * Connect to the newsserver, and issue a GROUP command
@@ -54,6 +99,11 @@ class Net_Nntp extends PEAR
      * @param string $nntpserver The adress of the NNTP-server to connect to.
      * @param int $port (optional) the port-number to connect to, defaults to 119.
      * @param string $newsgroup The name of the newsgroup to use.
+     * @param string $user (optional) The user name to authenticate with
+     * @param string $pass (optional) The password
+     * @param string $authmode (optional) The authentication mode
+     * @return mixed True on success or Pear Error object on failure
+     * @see Net_Nntp::authenticate()
      * @access public
      */
     function prepare_connection($nntpserver,
@@ -64,40 +114,18 @@ class Net_Nntp extends PEAR
                                 $authmode = 'original')
     {
         /* connect to the server */
-        $fp = @fsockopen($nntpserver, $port, $errno, $errstr, 15);
-        if (!is_resource($fp)) {
-            return $this->raiseError("Could not connect to NNTP-server $nntpserver");
+        $err = $this->connect($nntpserver, $port, $user, $pass, $authmode);
+        if (PEAR::isError($err)) {
+            return $err;
         }
-
-        socket_set_blocking($fp, true);
-
-        if (!$fp) {
-            return $this->raiseError('Not connected');
-        }
-
-        $response = fgets($fp, 128);
-        if ($this->_debug) {
-            print "<< $response\n";
-        }
-        $this->fp = $fp;
 
         /* issue a GROUP command */
-        $response = $this->command("GROUP $newsgroup");
-        $code     = $this->responseCode($response);
-        /* Need authentication? */
-        if ($code == 450 || $code == 480) {
-            $error = $this->authenticate($user, $pass, $authmode);
-            if (PEAR::isError($error)) {
-                return $error;
-            }
-            /* re-issue the GROUP command */
-            $response = $this->command("GROUP $newsgroup");
-        }
+        $r = $this->command("GROUP $newsgroup");
 
-        if ($this->responseCode($response) >= 300) {
-            return $this->raiseError("Group command fail: $response");
+        if (PEAR::isError($r) || $this->responseCode($r) > 299) {
+            return $this->raiseError($r);
         }
-        $response_arr = split(' ', $response);
+        $response_arr = split(' ', $r);
         $this->max = $response_arr[3];
         $this->min = $response_arr[2];
 
@@ -127,10 +155,10 @@ class Net_Nntp extends PEAR
                     482 Authentication rejected
                     502 No permission
                 */
-                $response = $this->command("AUTHINFO user $user");
+                $response = $this->command("AUTHINFO user $user", false);
                 if ($this->responseCode($response) != 281) {
                     if ($this->responseCode($response) == 381 && $pass !== null) {
-                        $response = $this->command("AUTHINFO pass $pass");
+                        $response = $this->command("AUTHINFO pass $pass", false);
                     }
                 }
                 if ($this->responseCode($response) != 281) {
@@ -155,16 +183,12 @@ class Net_Nntp extends PEAR
      */
     function get_article($article)
     {
-        if (!@is_resource($this->fp)) {
-            return $this->raiseError('Not connected');
-        }
-
         /* tell the newsserver we want an article */
-        fputs($this->fp, "ARTICLE $article\n");
-
-        /* The servers' response */
-        $response = trim(fgets($this->fp, 128));
-
+        $r = $this->command("ARTICLE $article");
+        if (PEAR::isError($r) || $this->responseCode($r) > 299) {
+            return $this->raiseError($r);
+        }
+        $post = null;
         while(!feof($this->fp)) {
             $line = trim(fgets($this->fp, 256));
 
@@ -228,12 +252,11 @@ class Net_Nntp extends PEAR
      */
     function get_headers($article)
     {
-        if (!@is_resource($this->fp)) {
-            return $this->raiseError('Not connected');
-        }
-
         /* tell the newsserver we want an article */
-        $response = $this->command("HEAD $article");
+        $r = $this->command("HEAD $article");
+        if (PEAR::isError($r) || $this->responseCode($r) > 299) {
+            return $this->raiseError($r);
+        }
 
         $headers = '';
         while(!feof($this->fp)) {
@@ -296,16 +319,13 @@ class Net_Nntp extends PEAR
      */
     function get_body($article)
     {
-        if (!@is_resource($this->fp)) {
-            return $this->raiseError('Not connected');
+        /* tell the newsserver we want an article */
+        $r = $this->command("BODY $article");
+        if (PEAR::isError($r) || $this->responseCode($r) > 299) {
+            return $this->raiseError($r);
         }
 
-        /* tell the newsserver we want an article */
-        fputs($this->fp, "BODY $article\n");
-
-        /* The servers' response */
-        $response = trim(fgets($this->fp, 128));
-
+        $body = null;
         while(!feof($this->fp)) {
             $line = trim(fgets($this->fp, 256));
 
@@ -319,20 +339,35 @@ class Net_Nntp extends PEAR
     }
 
     /**
+    * Selects a news group (issue a GROUP command to the server)
+    * @param string $newsgroup The newsgroup name
+    * @return mixed True on success or Pear Error object on failure
+    */
+    function select_group($newsgroup)
+    {
+        $r = $this->command("GROUP $newsgroup");
+        if (PEAR::isError($r) || $this->responseCode($r) > 299) {
+            return $this->raiseError($r);
+        }
+        $response_arr = split(' ', $r);
+        $this->max = $response_arr[3];
+        $this->min = $response_arr[2];
+
+        return true;
+    }
+
+    /**
      * Get the date from the newsserver
      *
      * @access public
      */
     function date()
     {
-        if (!@is_resource($this->fp)) {
-            return $this->raiseError('Not connected');
+        $r = $this->command('DATE');
+        if (PEAR::isError($r) || $this->responseCode($r) > 299) {
+            return $this->raiseError($r);
         }
-
-        fputs($this->fp, "DATE\n");
-        $response = trim(fgets($this->fp, 128));
-
-        return $response;
+        return true;
     }
 
     /**
@@ -361,7 +396,6 @@ class Net_Nntp extends PEAR
         return $this->min;
     }
 
-
     /**
      * Test whether we are connected or not.
      *
@@ -383,9 +417,6 @@ class Net_Nntp extends PEAR
      */
     function quit()
     {
-        if (!@is_resource($this->fp)) {
-            return $this->raiseError('Not connected');
-        }
         $this->command("QUIT");
         fclose($this->fp);
     }
@@ -396,15 +427,42 @@ class Net_Nntp extends PEAR
         return (int) $parts[0];
     }
 
-    function command($cmd)
+    function set_debug($on = true)
     {
-        fputs($this->fp, "$cmd\n");
+        $this->_debug = $on;
+    }
+
+    /**
+    * Issue a command to the NNTP server
+    * @param string $cmd The command to launch, ie: "ARTICLE 1004853"
+    * @param bool $testauth Test or not the auth
+    * @return mixed True on success or Pear Error object on failure
+    */
+    function command($cmd, $testauth = true)
+    {
+        if (!@is_resource($this->fp)) {
+            return $this->raiseError('Not connected');
+        }
+        fputs($this->fp, "$cmd\r\n");
         if ($this->_debug) {
             print ">> $cmd\n";
         }
         $response = fgets($this->fp, 128);
         if ($this->_debug) {
             print "<< $response\n";
+        }
+        // From the spec: "In all cases, clients must provide
+        // this information when requested by the server. Servers are
+        // not required to accept authentication information that is
+        // volunteered by the client"
+        $code = $this->responseCode($response);
+        if ($testauth && ($code == 450 || $code == 480)) {
+            $error = $this->authenticate($this->user, $this->pass, $this->authmode);
+            if (PEAR::isError($error)) {
+                return $error;
+            }
+            /* re-issue the command */
+            $response = $this->command($cmd, false);
         }
         return $response;
     }
