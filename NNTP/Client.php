@@ -61,8 +61,6 @@
 // $Id$
 
 require_once 'Net/NNTP/Protocol/Client.php';
-require_once 'Net/NNTP/Header.php';
-require_once 'Net/NNTP/Message.php';
 
 
 // {{{ constants
