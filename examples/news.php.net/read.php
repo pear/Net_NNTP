@@ -14,7 +14,7 @@
 // | license@php.net so we can mail you a copy immediately.               |
 // +----------------------------------------------------------------------+
 // | Authors: Alexander Merz <alexmerz@php.net>                           |
-// |                                                                      |
+// |          Heino H. Gehlsen <heino@gehlsen.dk>                         |
 // +----------------------------------------------------------------------+
 //
 // $Id$
@@ -26,9 +26,9 @@
 <body>
 <h1>Message</h1>
 <?php
-require_once "Net/NNTP.php";
+require_once "Net/NNTP/Realtime.php";
 
-$nntp = new Net_NNTP;
+$nntp = new Net_NNTP_Realtime;
 
 $ret = $nntp->connect("news.php.net");
 if( PEAR::isError($ret)) {
@@ -40,15 +40,16 @@ if( PEAR::isError($ret)) {
         if(PEAR::isError($msgdata)) {
             echo '<font color="red">'.$msgdata->getMessage().'</font><br>' ;        
         } else {
-            $msgheader = $nntp->getHeader($_GET['msgid']);
+            $header = $nntp->getHeader($_GET['msgid']);
+            $fields = $header->getFieldsArray();
             echo '<h2>Headers:</h2>';
-            foreach( $msgheader->getFields() as $headername => $headercontent) {
-                echo '<b>'.$headername.'</b>:&nbsp;'.$headercontent."<br>";
+            foreach( $fields as $fieldname => $fieldcontent) {
+                echo '<b>'.$fieldname.'</b>:&nbsp;'.$fieldcontent."<br>";
             }              
             echo "<hr>";
             echo '<h2>Body</h2>';
             echo '<form><textarea wrap="off" cols="79", rows="25">'.
-                    $nntp->getBodyRaw($_GET['msgid']).
+                    $nntp->getBodyRaw($_GET['msgid'], true).
                 '</textarea></form>';           
         }        
     } else {
