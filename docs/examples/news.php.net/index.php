@@ -39,7 +39,7 @@ if( PEAR::isError($ret)) {
     $descriptions = $nntp->getDescriptions();
     foreach($groups as $group) {
         echo '<a href="group.php?group='.urlencode($group['group']).
-            '&writable='.urlencode($group['posting_allowed']).'">'.
+            '&writable='.urlencode($group['posting']).'">'.
             $group['group'].'</a>' ;
         $msgcount = $group['last']-$group['first']; 
         echo '&nbsp;('.$msgcount.' messages)<br>';
