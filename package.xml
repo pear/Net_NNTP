@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <!-- do not use the "Type" attribute here, that one is only for
      generated package.xml files -->
-<!-- $Id: package.xml,v 1.14 2003-09-13 00:03:01 heino Exp $ -->
+<!-- $Id: package.xml,v 1.15 2003-09-13 17:28:29 heino Exp $ -->
 <package version="1.0">
   <name>Net_NNTP</name>
   <summary>Communicate with an NNTP server</summary>
@@ -48,7 +48,14 @@
           <file role="php">Header.php</file>
           <file role="php">Message.php</file>
         </dir>
-        <file role="doc">README</file>
+        <dir name="examples">
+          <dir name="news.php.net" role="doc">
+            <file>index.php</file>
+            <file>group.php</file>
+            <file>read.php</file>
+            <file>README</file>
+          </dir>
+        </dir>
       </dir>
     </filelist>
   </release>
