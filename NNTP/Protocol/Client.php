@@ -328,6 +328,166 @@ class Net_NNTP_Protocol_Client
     }
 
     // }}}
+    // {{{ cmdNext()
+
+    /**
+     * 
+     *
+     * @return
+     * @access public
+     */
+    function cmdNext($x = 1)
+    {
+        // 
+        $response = $this->_sendCommand('NEXT');
+        if (PEAR::isError($response)) {
+            return $response;
+        }
+
+    	switch ($response) {
+    	    case 223: // RFC977: 'n a article retrieved - request text separately (n = article number, a = unique article id)'
+    	    	$response_arr = split(' ', trim($this->currentStatusResponse()));
+
+    	    	switch ($x) {
+/*
+    	    	    case 0:
+    	    	    	$data = array();
+    	    	        $data['number'] = $response_arr[0];
+    	    	        $data['id'] = $response_arr[1];
+    	    	    	return $data;
+    	    	    	break;
+*/
+    	    	    case 1:
+    	    	        return (int) $response_arr[0];
+    	    	    	break;
+    	    	    case 2:
+    	    	        return (string) $response_arr[1];
+    	    	    	break;
+    	    	}
+    	    	break;
+    	    case 412: // RFC977: 'no newsgroup selected'
+    	    	return PEAR::throwError('No newsgroup has been selected', $response, $this->currentStatusResponse());
+    	    	break;
+    	    case 420: // RFC977: 'no current article has been selected'
+    	    	return PEAR::throwError('No current article has been selected', $response, $this->currentStatusResponse());
+    	    	break;
+    	    case 421: // RFC977: 'no next article in this group'
+    	    	return PEAR::throwError('No next article in this group', $response, $this->currentStatusResponse());
+    	    	break;
+    	    default:
+    	    	return PEAR::throwError('Unidentified response code', $response, $this->currentStatusResponse());
+    	}
+    }
+
+    // }}}
+    // {{{ cmdLast()
+
+    /**
+     * 
+     *
+     * @return
+     * @access public
+     */
+    function cmdLast($x = 1)
+    {
+        // 
+        $response = $this->_sendCommand('LAST');
+        if (PEAR::isError($response)) {
+            return $response;
+        }
+
+    	switch ($response) {
+    	    case 223: // RFC977: 'n a article retrieved - request text separately (n = article number, a = unique article id)'
+    	    	$response_arr = split(' ', trim($this->currentStatusResponse()));
+
+    	    	switch ($x) {
+/*
+    	    	    case 0:
+    	    	    	$data = array();
+    	    	        $data['number'] = $response_arr[0];
+    	    	        $data['id'] = $response_arr[1];
+    	    	    	return $data;
+    	    	    	break;
+*/
+    	    	    case 1:
+    	    	        return (int) $response_arr[0];
+    	    	    	break;
+    	    	    case 2:
+    	    	        return (string) $response_arr[1];
+    	    	    	break;
+    	    	}
+    	    	break;
+    	    case 412: // RFC977: 'no newsgroup selected'
+    	    	return PEAR::throwError('No newsgroup has been selected', $response, $this->currentStatusResponse());
+    	    	break;
+    	    case 420: // RFC977: 'no current article has been selected'
+    	    	return PEAR::throwError('No current article has been selected', $response, $this->currentStatusResponse());
+    	    	break;
+    	    case 422: // RFC977: 'no previous article in this group'
+    	    	return PEAR::throwError('No previous article in this group', $response, $this->currentStatusResponse());
+    	    	break;
+    	    default:
+    	    	return PEAR::throwError('Unidentified response code', $response, $this->currentStatusResponse());
+    	}
+    }
+
+    // }}}
+    // {{{ cmdStat
+
+    /**
+     * 
+     *
+     * @param mixed $article 
+     *
+     * @return mixed (???) ??? on success or (object) pear_error on failure 
+     * @access public
+     */
+    function cmdStat($article)
+    {
+        // tell the newsserver we want an article
+        $response = $this->_sendCommand('STAT '.$article);
+        if (PEAR::isError($response)) {
+            return $response;
+        }
+
+    	switch ($response) {
+    	    case 223: // RFC977: 'n <a> article retrieved - request text separately' (actually not documented, but copied from the ARTICLE command)
+    	    	$response_arr = split(' ', trim($this->currentStatusResponse()));
+
+    	    	switch (2) {
+/*
+    	    	    case 0:
+    	    	    	$data = array();
+    	    	        $data['number'] = $response_arr[0];
+    	    	        $data['id'] = $response_arr[1];
+  	    		return $data;
+    	    	    	break;
+    	    	    case 1:
+    	    	        return (int) $response_arr[0];
+    	    	    	break;
+		    default:
+*/
+    	    	    case 2:
+    	    	        return (string) $response_arr[1];
+    	    	    	break;
+		}
+		
+    	    	break;
+    	    case 412: // RFC977: 'no newsgroup has been selected' (actually not documented, but copied from the ARTICLE command)
+    	    	return PEAR::throwError('No newsgroup has been selected', $response, $this->currentStatusResponse());
+    	    	break;
+    	    case 423: // RFC977: 'no such article number in this group' (actually not documented, but copied from the ARTICLE command)
+    	    	return PEAR::throwError('No such article number in this group', $response, $this->currentStatusResponse());
+    	    	break;
+    	    case 430: // RFC977: 'no such article found' (actually not documented, but copied from the ARTICLE command)
+    	    	return PEAR::throwError('No such article found', $response, $this->currentStatusResponse());
+    	    	break;
+    	    default:
+    	    	return PEAR::throwError('Unidentified response code', $response, $this->currentStatusResponse());
+    	}
+    }
+
+    // }}}
     // {{{ cmdArticle()
 
     /**
