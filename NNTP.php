@@ -22,14 +22,20 @@
 
 require_once 'PEAR.php';
 
+// Deprecated due to naming
 define('PEAR_NNTP_ALL',   0);
 define('PEAR_NNTP_NAMES', 1);
 define('PEAR_NNTP_LIST',  2);
 
 /* NNTP Authentication modes */
-define('PEAR_NNTP_AUTHORIGINAL', 'original');
-define('PEAR_NNTP_AUTHSIMPLE',   'simple');
-define('PEAR_NNTP_AUTHGENERIC',  'generic');
+define('NET_NNTP_AUTHORIGINAL', 'original');
+define('NET_NNTP_AUTHSIMPLE',   'simple');
+define('NET_NNTP_AUTHGENERIC',  'generic');
+ 
+// Deprecated due to naming
+define('PEAR_NNTP_AUTHORIGINAL', NET_NNTP_AUTHORIGINAL);
+define('PEAR_NNTP_AUTHSIMPLE',   NET_NNTP_AUTHSIMPLE);
+define('PEAR_NNTP_AUTHGENERIC',  NET_NNTP_AUTHGENERIC);
 
 /**
  * The NNTP:: class fetches UseNet news articles acording to the standard
@@ -74,7 +80,7 @@ class Net_NNTP extends PEAR
                      $port = 119,
                      $user = null,
                      $pass = null,
-                     $authmode = PEAR_NNTP_AUTHORIGINAL)
+                     $authmode = NET_NNTP_AUTHORIGINAL)
     {
         $fp = @fsockopen($nntpserver, $port, $errno, $errstr, 15);
         if (!is_resource($fp)) {
@@ -121,7 +127,7 @@ class Net_NNTP extends PEAR
                                 $newsgroup,
                                 $user = null,
                                 $pass = null,
-                                $authmode = PEAR_NNTP_AUTHORIGINAL)
+                                $authmode = NET_NNTP_AUTHORIGINAL)
     {
         /* connect to the server */
         $err = $this->connect($nntpserver, $port, $user, $pass, $authmode);
@@ -150,7 +156,7 @@ class Net_NNTP extends PEAR
                                 $newsgroup,
                                 $user = null,
                                 $pass = null,
-                                $authmode = PEAR_NNTP_AUTHORIGINAL)
+                                $authmode = NET_NNTP_AUTHORIGINAL)
     {
         return $this->prepareConnection($nntpserver, $port, $newsgroup, $user, $pass, $authmode);
     }
@@ -165,13 +171,13 @@ class Net_NNTP extends PEAR
     * @return mixed (bool) true on success or Pear Error obj on fail
     * @access public
     */
-    function authenticate($user = null, $pass = null, $mode = PEAR_NNTP_AUTHORIGINAL)
+    function authenticate($user = null, $pass = null, $mode = NET_NNTP_AUTHORIGINAL)
     {
         if ($user === null) {
             return $this->raiseError('Authentication required but no user supplied');
         }
         switch ($mode) {
-            case PEAR_NNTP_AUTHORIGINAL:
+            case NET_NNTP_AUTHORIGINAL:
                 /*
                     281 Authentication accepted
                     381 More authentication information required
@@ -190,8 +196,8 @@ class Net_NNTP extends PEAR
                 }
                 return true;
                 break;
-            case PEAR_NNTP_AUTHSIMPLE:
-            case PEAR_NNTP_AUTHGENERIC:
+            case NET_NNTP_AUTHSIMPLE:
+            case NET_NNTP_AUTHGENERIC:
             default:
                 $this->raiseError("The auth mode: $mode isn't implemented");
         }
