@@ -125,7 +125,6 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @access public
      * @see Net_NNTP_Client::quit()
      * @see Net_NNTP_Client::authenticate()
-     * @see Net_NNTP_Client::connectAuthenticated()
      */
     function connect($host = NET_NNTP_PROTOCOL_CLIENT_DEFAULT_HOST,
                      $port = NET_NNTP_PROTOCOL_CLIENT_DEFAULT_PORT)
@@ -163,7 +162,6 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @return mixed (bool) true on success or (object) pear_error on failure
      * @access public
      * @see Net_NNTP_Client::connect()
-     * @see Net_NNTP_Client::connectAuthenticated()
      */
     function authenticate($user, $pass, $mode = NET_NNTP_CLIENT_AUTH_ORIGINAL)
     {
