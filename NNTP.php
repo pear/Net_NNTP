@@ -63,6 +63,14 @@ class Net_NNTP extends Net_NNTP_Protocol_Client
     // {{{ properties
 
     /**
+     * File pointer of the nntp-connection
+     *
+     * @var 
+     * @access public
+     */
+    var $fp = null;
+
+    /**
      * @var int
      * @access public
      * @deprecated use last() instead
@@ -72,7 +80,7 @@ class Net_NNTP extends Net_NNTP_Protocol_Client
     /**
      * @var int
      * @access public
-     * @deprecated use first() instead
+     * @deprecated use last() instead
      */
     var $min;
 
@@ -127,7 +135,15 @@ class Net_NNTP extends Net_NNTP_Protocol_Client
                      $authmode = NET_NNTP_AUTHORIGINAL)
     {
     	// Currently this function just 'forwards' to connectAuthenticated().
-    	return $this->connectAuthenticated($user, $pass, $host, $port, $authmode);
+    	$R = $this->connectAuthenticated($user, $pass, $host, $port, $authmode);
+
+    	if (PEAR::isError($R)) {
+    	    return $R;
+    	}
+
+    	$this->fp = $this->_socket->fp;
+
+    	return $R;
     }
 
 
