@@ -208,7 +208,7 @@ class Net_NNTP_Protocol extends PEAR
      * @return mixed (bool) true on success or (object) pear_error on failure
      * @access public
      */
-    function cmdAuthinfo($user, $pass, $mode = PEAR_NNTP_AUTHORIGINAL)
+    function cmdAuthinfo($user, $pass, $mode = NET_NNTP_AUTHORIGINAL)
     {
 	// Username is a must...
         if ($user == null) {
@@ -217,11 +217,11 @@ class Net_NNTP_Protocol extends PEAR
 
 	// Use selected authentication method
         switch ($mode) {
-    	    case PEAR_NNTP_AUTHORIGINAL:
+    	    case NET_NNTP_AUTHORIGINAL:
 		return $this->_authOriginal($user, $pass);
         	break;
-    	    case PEAR_NNTP_AUTHSIMPLE:
-    	    case PEAR_NNTP_AUTHGENERIC:
+    	    case NET_NNTP_AUTHSIMPLE:
+    	    case NET_NNTP_AUTHGENERIC:
     	    default:
         	$this->throwError("The auth mode: $mode isn't implemented", null);
         }

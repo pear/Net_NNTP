@@ -26,9 +26,14 @@ require_once 'Net/NNTP/Message.php';
 
 
 /* NNTP Authentication modes */
-define('PEAR_NNTP_AUTHORIGINAL', 'original');
-define('PEAR_NNTP_AUTHSIMPLE',   'simple');
-define('PEAR_NNTP_AUTHGENERIC',  'generic');
+define('NET_NNTP_AUTHORIGINAL', 'original');
+define('NET_NNTP_AUTHSIMPLE',   'simple');
+define('NET_NNTP_AUTHGENERIC',  'generic');
+
+// Deprecated due to naming
+define('PEAR_NNTP_AUTHORIGINAL', NET_NNTP_AUTHORIGINAL);
+define('PEAR_NNTP_AUTHSIMPLE',   NET_NNTP_AUTHSIMPLE);
+define('PEAR_NNTP_AUTHGENERIC',  NET_NNTP_AUTHGENERIC);
 
 
 /**
@@ -93,7 +98,7 @@ class Net_NNTP extends Net_NNTP_Protocol
                      $port = 119,
                      $user = null,
                      $pass = null,
-                     $authmode = PEAR_NNTP_AUTHORIGINAL)
+                     $authmode = NET_NNTP_AUTHORIGINAL)
     {
 	// Currently this function just 'forwards' to connectAuthenticated().
 	return $this->connectAuthenticated($host, $port, $user, $pass, $authmode);
@@ -120,7 +125,7 @@ class Net_NNTP extends Net_NNTP_Protocol
                      $port = 119,
                      $user = null,
                      $pass = null,
-                     $authmode = PEAR_NNTP_AUTHORIGINAL)
+                     $authmode = NET_NNTP_AUTHORIGINAL)
     {
 	// Until connect() is changed, connect() is called directly from the parent...
 	$R = parent::connect($host, $port);
@@ -182,7 +187,7 @@ class Net_NNTP extends Net_NNTP_Protocol
                                 $newsgroup,
                                 $user = null,
                                 $pass = null,
-                                $authmode = PEAR_NNTP_AUTHORIGINAL)
+                                $authmode = NET_NNTP_AUTHORIGINAL)
     {
         /* connect to the server */
         $R = $this->connect($host, $port, $user, $pass, $authmode);
@@ -220,7 +225,7 @@ class Net_NNTP extends Net_NNTP_Protocol
                                 $newsgroup,
                                 $user = null,
                                 $pass = null,
-                                $authmode = PEAR_NNTP_AUTHORIGINAL)
+                                $authmode = NET_NNTP_AUTHORIGINAL)
     {
         return $this->prepareConnection($host, $port, $newsgroup, $user, $pass, $authmode);
     }
@@ -240,7 +245,7 @@ class Net_NNTP extends Net_NNTP_Protocol
      * @access public
      * @see Net_Nntp::connect()
      */
-    function authenticate($user, $pass, $mode = PEAR_NNTP_AUTHORIGINAL)
+    function authenticate($user, $pass, $mode = NET_NNTP_AUTHORIGINAL)
     {
 	return $this->cmdAuthinfo($user, $pass, $mode);
     }
