@@ -411,7 +411,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @return mixed (string) server response on success or (object) pear_error on failure
      * @access public
      */
-    function post($newsgroups, $subject, $body, $from, $aditional = '')
+    function post($newsgroups, $subject, $body, $from, $aditional = null)
     {
     	return $this->cmdPost($newsgroups, $subject, $body, $from, $aditional);
     }
