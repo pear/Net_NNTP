@@ -362,7 +362,7 @@ class Net_NNTP extends Net_NNTP_Protocol_Client
 
     	// Deprecated / historical
     	foreach (array_keys($groups) as $k) {
-    	    $groups[$k]['posting_allowed'] =& $groups[$k][3];
+    	    $groups[$k]['posting_allowed'] =& $groups[$k]['posting'];
     	}
 
     	// Get group descriptions
