@@ -20,18 +20,18 @@ require_once 'PEAR.php';
 
 /**
  * The NNTP:: class fetches UseNet news articles acording to the standard
- * based on RFC 1036.                                              
+ * based on RFC 1036.
  * To parse the articles into its appropriate entities, use the NNTP
- * Parser class.                                                    
- * 
+ * Parser class.
+ *
  * @version 0.1
- * @author Martin Kaltoft <martin@nitro.dk>                         
+ * @author Martin Kaltoft <martin@nitro.dk>
  */
 
 class Net_Nntp extends PEAR {
 
-    var $max = "";
-    var $min = "";
+    var $max = '';
+    var $min = '';
 
     /** File pointer of the nntp-connection */
     var $fp = null;
@@ -39,11 +39,11 @@ class Net_Nntp extends PEAR {
 
     /**
      * Connect to the newsserver, and issue a GROUP command
-     * Once connection is prepared, we can only fetch articles from one group 
+     * Once connection is prepared, we can only fetch articles from one group
      * at a time, to fetch from another group, a new connection has to be made.
      *
-     * This is to avoid the GROUP command for every article, as it is very 
-     * ressource intensive on the newsserver especially when used for 
+     * This is to avoid the GROUP command for every article, as it is very
+     * ressource intensive on the newsserver especially when used for
      * groups with many articles.
      *
      * @param string $nntpserver The adress of the NNTP-server to connect to.
@@ -53,33 +53,34 @@ class Net_Nntp extends PEAR {
      */
     function prepare_connection($nntpserver, $port = 119, $newsgroup)
     {
-	/* connect to the server */
-	$fp = @fsockopen($nntpserver, $port, $errno, $errstr, 15);
-	if (!$fp) {
-	    return new PEAR_Error("Could not connect to NNTP-server");
-	}
+        /* connect to the server */
+        $fp = @fsockopen($nntpserver, $port, $errno, $errstr, 15);
+        if (!is_resource($fp)) {
+            return $this->raiseError('Could not connect to NNTP-server');
+        }
 
-    	set_socket_blocking($fp, true);
+        socket_set_blocking($fp, true);
 
-	if (!$fp) {
-		return new PEAR_Error("Not connected");
-	}
+        if (!$fp) {
+            return $this->raiseError('Not connected');
+        }
 
-	$response = fgets($fp, 128);
+        $response = fgets($fp, 128);
 
-	/* issue a GROUP command */
-	fputs($fp, "GROUP $newsgroup\n");
-	$response = fgets($fp, 128);
+        /* issue a GROUP command */
+        fputs($fp, "GROUP $newsgroup\n");
+        $response = fgets($fp, 128);
 
-	$response_arr = split(" ", $response);
-	$this->max = $response_arr[3];
-	$this->min = $response_arr[2];
-	$this->fp = $fp;
+        $response_arr = split(' ', $response);
+        $this->max = $response_arr[3];
+        $this->min = $response_arr[2];
+        $this->fp = $fp;
+        return true;
     }
 
     /**
      * Get an article from the currently open connection.
-     * To get articles from another newsgroup a new prepare_connection() - 
+     * To get articles from another newsgroup a new prepare_connection() -
      * call has to be made with apropriate parameters
      *
      * @param mixed $article Either the message-id or the message-number on the server of the article to fetch
@@ -87,34 +88,34 @@ class Net_Nntp extends PEAR {
      */
     function get_article($article)
     {
-	if (!@is_resource($this->fp)) {
-	    return new PEAR_Error("Not connected");
-	}
+        if (!@is_resource($this->fp)) {
+            return $this->raiseError('Not connected');
+        }
 
-	/* tell the newsserver we want an article */
-	fputs($this->fp, "ARTICLE $article\n");
+        /* tell the newsserver we want an article */
+        fputs($this->fp, "ARTICLE $article\n");
 
-	/* The servers' response */
-	$response = trim(fgets($this->fp, 128));
+        /* The servers' response */
+        $response = trim(fgets($this->fp, 128));
 
-	while(!feof($this->fp)) {
-	    $line = trim(fgets($this->fp, 256));
+        while(!feof($this->fp)) {
+            $line = trim(fgets($this->fp, 256));
 
-	    if ($line == ".") {
-		break;
-	    } else {
-		$post .= $line ."\n";
-	    }
-	}
-	return $post;
+            if ($line == ".") {
+                break;
+            } else {
+                $post .= $line ."\n";
+            }
+        }
+        return $post;
     }
 
     /**
      * Post an article to a newsgroup.
-     * Among the aditional headers you might think of adding could be: 
-     * "NNTP-Posting-Host: <ip-of-author>", which should contain the IP-adress 
+     * Among the aditional headers you might think of adding could be:
+     * "NNTP-Posting-Host: <ip-of-author>", which should contain the IP-adress
      * of the author of the post, so the message can be traced back to him.
-     * Or "Organization: <org>" which contain the name of the organization 
+     * Or "Organization: <org>" which contain the name of the organization
      * the post originates from.
      *
      * @param string $subject The subject of the post.
@@ -126,33 +127,33 @@ class Net_Nntp extends PEAR {
      */
     function post($subject, $newsgroup, $from, $body, $aditional = "")
     {
-	if (!@is_resource($this->fp)) {
-	    return new PEAR_Error("Not connected");
-	}
+        if (!@is_resource($this->fp)) {
+            return $this->raiseError('Not connected');
+        }
 
-	/* tell the newsserver we want to post an article */
-	fputs($this->fp, "POST\n");
+        /* tell the newsserver we want to post an article */
+        fputs($this->fp, "POST\n");
 
-	/* The servers' response */
-	$response = trim(fgets($this->fp, 128));
+        /* The servers' response */
+        $response = trim(fgets($this->fp, 128));
 
-	fputs($this->fp, "From: $from\n");
-	fputs($this->fp, "Newsgroups: $newsgroup\n");
-	fputs($this->fp, "Subject: $subject\n");
-	fputs($this->fp, "X-poster: nntp_fetcher (0.1) by Martin Kaltoft\n");
-	fputs($this->fp, "$aditional\n");
-	fputs($this->fp, "\n$body\n.\n");
+        fputs($this->fp, "From: $from\n");
+        fputs($this->fp, "Newsgroups: $newsgroup\n");
+        fputs($this->fp, "Subject: $subject\n");
+        fputs($this->fp, "X-poster: nntp_fetcher (0.1) by Martin Kaltoft\n");
+        fputs($this->fp, "$aditional\n");
+        fputs($this->fp, "\n$body\n.\n");
 
-	/* The servers' response */
-	$response = trim(fgets($this->fp, 128));
+        /* The servers' response */
+        $response = trim(fgets($this->fp, 128));
 
-	return $response;
+        return $response;
     }
 
 
     /**
      * Get the headers of an article from the currently open connection
-     * To get the headers of an article from another newsgroup, a new 
+     * To get the headers of an article from another newsgroup, a new
      * prepare_connection()-call has to be made with apropriate parameters
      *
      * @param string $article Either a message-id or a message-number of the article to fetch the headers from.
@@ -160,31 +161,68 @@ class Net_Nntp extends PEAR {
      */
     function get_headers($article)
     {
-	if (!@is_resource($this->fp)) {
-	    return new PEAR_Error("Not connected");
-	}
+        if (!@is_resource($this->fp)) {
+            return $this->raiseError('Not connected');
+        }
 
-	/* tell the newsserver we want an article */
-	fputs($this->fp, "HEAD $article\n");
+        /* tell the newsserver we want an article */
+        fputs($this->fp, "HEAD $article\n");
 
-	/* The servers' response */
-	$response = trim(fgets($this->fp, 128));
+        /* The servers' response */
+        $response = trim(fgets($this->fp, 128));
 
-	while(!feof($this->fp)) {
-	    $line = trim(fgets($this->fp, 256));
+        while(!feof($this->fp)) {
+            $line = trim(fgets($this->fp, 256));
 
-	    if ($line == ".") {
-		break;
-	    } else {
-		$headers .= $line ."\n";
-	    }
-	}
-	return $headers;
+            if ($line == '.') {
+                break;
+            } else {
+                $headers .= $line . "\n";
+            }
+        }
+        return $headers;
+    }
+
+
+    /**
+    * Returns the headers of a given article in the form of
+    * an associative array. Ex:
+    * array(
+    *   'From'      => 'foo@bar.com (Foo Smith)',
+    *   'Subject'   => 'Re: Using NNTP class',
+    *   ....
+    *   );
+    *
+    * @param $article string Article number or id
+    * @return array Assoc array with headers names as key or Pear obj error
+    */
+    function split_headers($article)
+    {
+        $headers = $this->get_headers($article);
+        if (PEAR::isError($headers)) {
+            return $headers;
+        }
+        $lines = explode("\n", $headers);
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if (($pos = strpos($line, ':')) !== false) {
+                $head = substr($line, 0, $pos);
+                $ret[$head] = ltrim(substr($line, $pos+1));
+            // if the field was longer than 256 chars, look also in the next line
+            // XXX a better way to discover that than strpos?
+            } else {
+                $ret[$head] .= $line;
+            }
+        }
+        if (isset($ret['References'])) {
+            $ret['References'] = explode (' ', $ret['References']);
+        }
+        return $ret;
     }
 
     /**
      * Get the body of an article from the currently open connection.
-     * To get the body of an article from another newsgroup, a new 
+     * To get the body of an article from another newsgroup, a new
      * prepare_connection()-call has to be made with apropriate parameters
      *
      * @param string $article Either a message-id or a message-number of the article to fetch the headers from.
@@ -192,26 +230,26 @@ class Net_Nntp extends PEAR {
      */
     function get_body($article)
     {
-	if (!@is_resource($this->fp)) {
-	    return new PEAR_Error("Not connected");
-	}
+        if (!@is_resource($this->fp)) {
+            return $this->raiseError('Not connected');
+        }
 
-	/* tell the newsserver we want an article */
-	fputs($this->fp, "BODY $article\n");
+        /* tell the newsserver we want an article */
+        fputs($this->fp, "BODY $article\n");
 
-	/* The servers' response */
-	$response = trim(fgets($this->fp, 128));
+        /* The servers' response */
+        $response = trim(fgets($this->fp, 128));
 
-	while(!feof($this->fp)) {
-	    $line = trim(fgets($this->fp, 256));
+        while(!feof($this->fp)) {
+            $line = trim(fgets($this->fp, 256));
 
-	    if ($line == ".") {
-		break;
-	    } else {
-		$body .= $line ."\n";
-	    }
-	}
-	return $body;
+            if ($line == '.') {
+                break;
+            } else {
+                $body .= $line ."\n";
+            }
+        }
+        return $body;
     }
 
     /**
@@ -221,14 +259,14 @@ class Net_Nntp extends PEAR {
      */
     function date()
     {
-	if (!@is_resource($this->fp)) {
-	    return new PEAR_Error("Not connected");
-	}
+        if (!@is_resource($this->fp)) {
+            return $this->raiseError('Not connected');
+        }
 
-	fputs($this->fp, "DATE\n");
-	$response = trim(fgets($this->fp, 128));
+        fputs($this->fp, "DATE\n");
+        $response = trim(fgets($this->fp, 128));
 
-	return $response;
+        return $response;
     }
 
     /**
@@ -238,11 +276,10 @@ class Net_Nntp extends PEAR {
      */
     function max()
     {
-	if (!@is_resource($this->fp)) {
-	    return new PEAR_Error("Not connected");
-	}
-
-	return $this->max;
+        if (!@is_resource($this->fp)) {
+            return $this->raiseError('Not connected');
+        }
+        return $this->max;
     }
 
     /**
@@ -252,29 +289,25 @@ class Net_Nntp extends PEAR {
      */
     function min()
     {
-	if (!@is_resource($this->fp)) {
-	    return new PEAR_Error("Not connected");
-	}
-
-	return $this->min;
+        if (!@is_resource($this->fp)) {
+            return $this->raiseError('Not connected');
+        }
+        return $this->min;
     }
 
 
     /**
      * Test whether we are connected or not.
      *
+     * @return bool true or false
      * @access public
      */
     function is_connected()
     {
-	if (!@is_resource($this->fp)) {
-	    $conn = 0;
-	} elseif (@is_resource($this->fp)) {
-	    $conn = 1;
-	} else {
-	    $conn = 0;
-	}
-	return $conn;
+        if (@is_resource($this->fp)) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -284,10 +317,12 @@ class Net_Nntp extends PEAR {
      */
     function quit()
     {
-	if (!@is_resource($this->fp)) {
-	    return new PEAR_Error("Not connected");
-	}
+        if (!@is_resource($this->fp)) {
+            return $this->raiseError('Not connected');
+        }
 
-	fputs($this->fp, "QUIT\n");
+        fputs($this->fp, "QUIT\n");
+        fclose($this->fp);
     }
 }
+?>
