@@ -72,11 +72,6 @@ define('NET_NNTP_CLIENT_AUTH_ORIGINAL', 'original');
 define('NET_NNTP_CLIENT_AUTH_SIMPLE',   'simple');
 define('NET_NNTP_CLIENT_AUTH_GENERIC',  'generic');
 
-/* Deprecated authentication modes */
-define('NET_NNTP_AUTHORIGINAL', NET_NNTP_CLIENT_AUTH_ORIGINAL);
-define('NET_NNTP_AUTHSIMPLE',   NET_NNTP_CLIENT_AUTH_SIMPLE);
-define('NET_NNTP_AUTHGENERIC',  NET_NNTP_CLIENT_AUTH_GENERIC);
-
 // }}}
 // {{{ Net_NNTP_Client
 
@@ -138,48 +133,6 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
                      $port = NET_NNTP_PROTOCOL_CLIENT_DEFAULT_PORT)
     {
     	return parent::connect($host, $port);
-    }
-
-    // }}}
-    // {{{ connectAuthenticated()
-
-    /**
-     * Connect to the NNTP-server, and authenticate using given username and password.
-     *
-     * @param optional string $user The username.
-     * @param optional string $pass The password.
-     * @param optional string $host The IP-address of the NNTP-server to connect to.
-     * @param optional int $port The port to connect to.
-     * @param optional string $authmode The authentication mode.
-     *
-     * @return mixed (bool) true on success or (object) pear_error on failure
-     * @access public
-     * @since 0.3
-     * @deprecated use connect() and authenticate() instead
-     * @see Net_NNTP_Client::connect()
-     * @see Net_NNTP_Client::authenticate()
-     * @see Net_NNTP_Client::quit()
-     */
-    function connectAuthenticated($user = null,
-            	    	    	  $pass = null,
-    	    	    	    	  $host = NET_NNTP_PROTOCOL_CLIENT_DEFAULT_HOST,
-            	    	    	  $port = NET_NNTP_PROTOCOL_CLIENT_DEFAULT_PORT,
-            	    	    	  $authmode = NET_NNTP_CLIENT_AUTH_ORIGINAL)
-    {
-	$R = $this->connect($host, $port);
-	if (PEAR::isError($R)) {
-	    return $R;
-	}
-
-	// Authenticate if username is given
-	if ($user != null) {
-    	    $R = $this->authenticate($user, $pass, $authmode);
-    	    if (PEAR::isError($R)) {
-    	    	return $R;
-    	    }
-	}
-
-        return true;
     }
 
     // }}}
@@ -368,29 +321,6 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     }
 
     // }}}
-    // {{{ getReferencesOverview()
-
-    /**
-     * Fetch a list of each message's reference header.
-     *
-     * @param integer $first first article to fetch
-     * @param integer $last  last article to fetch
-     *
-     * @return mixed (array) nested array of references on success or (object) pear_error on failure
-     * @access public
-     * @see Net_NNTP_Client::getOverview()
-     */
-    function getReferencesOverview($first, $last)
-    {
-    	$overview = $this->cmdXROver($first.'-'.$last);
-    	if (PEAR::isError($overview)) {
-    	    return $overview;
-    	}
-	
-    	return $overview;
-    }
-
-    // }}}
     // {{{ post()
 
     /**
@@ -411,39 +341,9 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @return mixed (string) server response on success or (object) pear_error on failure
      * @access public
      */
-    function post($newsgroups, $subject, $body, $from, $aditional = '')
+    function post($newsgroups, $subject, $body, $from, $aditional = null)
     {
     	return $this->cmdPost($newsgroups, $subject, $body, $from, $aditional);
-    }
-
-    // }}}
-    // {{{ getArticle()
-
-    /**
-     * Get an article
-     *
-     * Experimental
-     *
-     * The v0.2 version of the this function (which returned the article as a string) has been renamed to getArticleRaw().
-     *
-     * @param mixed $article Either the message-id or the message-number on the server of the article to fetch.
-     *
-     * @return mixed (object) message object on success or (object) pear_error on failure
-     * @access public
-     * @see Net_NNTP_Client::getArticleRaw()
-     * @see Net_NNTP_Client::getHeader()
-     * @see Net_NNTP_Client::getBody()
-     */
-    function getArticle($article)
-    {
-        $message = $this->getArticleRaw($article, false);
-        if (PEAR::isError($message)) {
-    	    return $data;
-    	}
-	
-    	$M = Net_NNTP_Message::create($message);
-	
-    	return $M;
     }
 
     // }}}
@@ -476,34 +376,6 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     }
 
     // }}}
-    // {{{ getHeader()
-
-    /**
-     * Get the header of an article
-     *
-     * Experimental
-     *
-     * @param mixed $article Either the (string) message-id or the (int) message-number on the server of the article to fetch.
-     *
-     * @return mixed (object) header object on success or (object) pear_error on failure
-     * @access public
-     * @see Net_NNTP_Client::getHeaderRaw()
-     * @see Net_NNTP_Client::getArticle()
-     * @see Net_NNTP_Client::getBody()
-     */
-    function getHeader($article)
-    {
-        $header = $this->getHeaderRaw($article, false);
-        if (PEAR::isError($header)) {
-    	    return $header;
-    	}
-
-    	$H = Net_NNTP_Header::create($header);
-
-    	return $H;
-    }
-
-    // }}}
     // {{{ getHeaderRaw()
 
     /**
@@ -533,11 +405,6 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     }
 
     // }}}
-    // {{{ getBody()
-
-	// Not written yet...
-
-    // }}}
     // {{{ getBodyRaw()
 
     /**
@@ -564,68 +431,6 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	}
 	
     	return $data;
-    }
-
-    // }}}
-    // {{{ getGroupArticles()
-
-    /**
-     * Experimental
-     *
-     * @access public
-     * @since 0.3
-     */
-    function getGroupArticles($newsgroup)
-    {
-        return $this->cmdListgroup($newsgroup);
-    }
-
-    // }}}
-    // {{{ getNewGroups()
-
-    /**
-     * Experimental
-     *
-     * @access public
-     * @since 0.3
-     */
-    function getNewGroups($time, $distributions = null)
-    {
-    	switch (gettype($time)) {
-    	    case 'integer':
-    	    	break;
-    	    case 'string':
-    	    	$time = (int) strtotime($time);
-    	    	break;
-    	    default:
-    	        return PEAR::throwError('UPS...');
-    	}
-
-    	return $this->cmdNewgroups($time, $distributions);
-    }
-
-    // }}}
-    // {{{ getNewNews()
-
-    /**
-     * Experimental
-     *
-     * @access public
-     * @since 0.3
-     */
-    function getNewNews($time, $newsgroups = '*')
-    {
-    	switch (gettype($time)) {
-    	    case 'integer':
-    	    	break;
-    	    case 'string':
-    	    	$time = (int) strtotime($time);
-    	    	break;
-    	    default:
-    	        return PEAR::throwError('UPS...');
-    	}
-
-    	return $this->cmdNewnews($time, $newsgroups);
     }
 
     // }}}
@@ -739,22 +544,6 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     function group()
     {
     	return $this->_currentGroup['group'];
-    }
-
-    // }}}
-    // {{{ command()
-
-    /**
-     * Issue a command to the NNTP server
-     *
-     * @param string $cmd The command to launch, ie: "ARTICLE 1004853"
-     *
-     * @return mixed (int) response code on success or (object) pear_error on failure
-     * @access public
-     */
-    function command($cmd)
-    {
-        return $this->_sendCommand($cmd);
     }
 
     // }}}
