@@ -213,13 +213,13 @@ class Net_NNTP extends Net_NNTP_Protocol
     {
         /* connect to the server */
         $R = $this->connect($host, $port, $user, $pass, $authmode);
-        if ($this->isError($R)) {
+        if (PEAR::isError($R)) {
             return $R;
         }
 
         /* issue a GROUP command */
         $R = $this->selectGroup($newsgroup);
-        if ($this->isError($R)) {
+        if (PEAR::isError($R)) {
             return $R;
         }
 
@@ -246,7 +246,7 @@ class Net_NNTP extends Net_NNTP_Protocol
     {
         // Username is a must...
         if ($user == null) {
-            return $this->throwError('No username supplied', null);
+            return PEAR::throwError('No username supplied', null);
         }
 
         // Use selected authentication method
@@ -261,7 +261,7 @@ class Net_NNTP extends Net_NNTP_Protocol
                 return $this->cmdAuthinfoGeneric($user, $pass);
                 break;
             default:
-                return $this->throwError("The auth mode: '$mode' is unknown", null);
+                return PEAR::throwError("The auth mode: '$mode' is unknown", null);
         }
     }
 
@@ -624,7 +624,7 @@ class Net_NNTP extends Net_NNTP_Protocol
 		$time = (int) strtotime($time);
 		break;
 	    default:
-	        return $this->throwError('');
+	        return PEAR::throwError('');
 	}
 
 	return $this->cmdNewgroups($time);
@@ -648,7 +648,7 @@ class Net_NNTP extends Net_NNTP_Protocol
 		$time = (int) strtotime($time);
 		break;
 	    default:
-	        return $this->throwError('UPS...');
+	        return PEAR::throwError('UPS...');
 	}
 
 	return $this->cmdNewnews($time, $newsgroups);
@@ -826,7 +826,7 @@ class Net_NNTP extends Net_NNTP_Protocol
 	// Retrieve headers
         $headers = $this->getHeaderRaw($article, false);
         if (PEAR::isError($headers)) {
-            return $this->throwError($headers);
+            return PEAR::throwError($headers);
         }
 	
 	$return = array();
