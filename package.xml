@@ -42,13 +42,14 @@
     <date>2003-08-04</date>
     <license>PHP 2.0</license>
     <state>alpha</state>
-    <notes>Major rewrite, yet still generaly backward compatible - now uses Net_Socket, handles authentication diffrently, returns pear_error objects of failure, and handles the server's responses individually. (heino)</notes>
+    <notes>Major rewrite, yet still generaly backward compatible - now uses Net_Socket, lets the user choose if the article data are to be returned as strings or arrays or objects, authentication has been separated from the execution of commands, returns pear_error objects of failure, and handles the server's responses individually. (heino)</notes>
     <filelist>
       <dir name="/" baseinstalldir="Net">
         <file role="php">NNTP.php</file>
         <dir name="NNTP" role="php">
           <file role="php">Protocol.php</file>
           <file role="php">Header.php</file>
+          <file role="php">Message.php</file>
         </dir>
         <file role="doc">README</file>
       </dir>

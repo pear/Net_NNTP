@@ -22,6 +22,7 @@
 
 require_once 'Net/NNTP/Protocol.php';
 require_once 'Net/NNTP/Header.php';
+require_once 'Net/NNTP/Message.php';
 
 
 /* NNTP Authentication modes */
@@ -477,18 +478,24 @@ class Net_NNTP extends Net_NNTP_Protocol
     /**
      * Get an article from the currently open connection.
      *
+     * The v0.2 version of the this function (which returned the article as a string) has been renamed to getArticleRaw().
+     *
      * @param mixed $article Either the message-id or the message-number on the server of the article to fetch.
-     * @param optional bool  $implode When true the result array is imploded to a string, defaults to true.
      *
-     * @return mixed (array/string) The article on success or (object) pear_error on failure
+     * @return mixed (object) message object on success or (object) pear_error on failure
      * @access public
-     *
-     * @deprecated Use getArticleRaw() instead
- (in the future this function will return a message object instead)
      */
-    function getArticle($article, $implode = true)
+    function getArticle($article)
     {
-        return $this->getArticleRaw($article, $implode);
+        $message = $this->getArticleRaw($article, false);
+        if (PEAR::isError($message)) {
+	    return $data;
+	}
+	
+	$M = new Net_NNTP_Message();
+	$M->setMessage($message);
+	
+	return $M;
     }
 
     // }}}
@@ -961,7 +968,7 @@ class Net_NNTP extends Net_NNTP_Protocol
      * @access public
      * @see Net_Nntp::getHeadersParsed()
      *
-     * @depresated used bu depresated getHeadersParsed()
+     * @depresated used by depresated getHeadersParsed()
      */
     function parseHeaders($headers)
     {
