@@ -205,32 +205,6 @@ class Net_NNTP extends Net_NNTP_Protocol
     }
 
     // }}}
-    // {{{ prepare_connection()
-
-    /**
-     * @param string $host The adress of the NNTP-server to connect to.
-     * @param optional int $port the port-number to connect to, defaults to 119.
-     * @param string $newsgroup The name of the newsgroup to use.
-     * @param optional string $user The user name to authenticate with
-     * @param optional string $pass The password
-     * @param optional string $authmode The authentication mode
-     *
-     * @return mixed (bool) true on success or (object) pear_error on failure
-     * @access public
-     *
-     * @deprecated Use prepareConnection() instead
-     */
-    function prepare_connection($host,
-                                $port = 119,
-                                $newsgroup,
-                                $user = null,
-                                $pass = null,
-                                $authmode = NET_NNTP_AUTHORIGINAL)
-    {
-        return $this->prepareConnection($host, $port, $newsgroup, $user, $pass, $authmode);
-    }
-
-    // }}}
     // {{{ authenticate()
 
     /**
@@ -285,20 +259,6 @@ class Net_NNTP extends Net_NNTP_Protocol
     }
 
     // }}}
-    // {{{ is_connected()
-
-    /**
-     * @return bool true or false
-     * @access public
-     *
-     * @deprecated Use isConnected() instead
-     */
-    function is_connected()
-    {
-        return $this->isConnected();
-    }
-
-    // }}}
     // {{{ selectGroup()
 
     /**
@@ -323,22 +283,6 @@ class Net_NNTP extends Net_NNTP_Protocol
 	$response_arr['max'] =& $response_arr['last'];
 
 	return $response_arr;
-    }
-
-    // }}}
-    // {{{ select_group()
-
-    /**
-     * @param string $newsgroup The newsgroup name
-     *
-     * @return mixed (array) Groups info on success or (object) pear_error on failure
-     * @access public
-     *
-     * @deprecated Use selectGroup() instead
-     */
-    function select_group($newsgroup)
-    {
-        return $this->selectGroup($newsgroup);
     }
 
     // }}}
@@ -380,20 +324,6 @@ class Net_NNTP extends Net_NNTP_Protocol
     }
 
     // }}}
-    // {{{ get_groups()
-
-    /**
-     * @return mixed (array) nested array with informations about existing newsgroups on success or (object) pear_error on failure
-     * @access public
-     *
-     * @deprecated Use getGroups() instead
-     */
-    function get_groups()
-    {
-        return $this->getGroups();
-    }
-
-    // }}}
     // {{{ getOverview()
 
     /**
@@ -426,23 +356,6 @@ class Net_NNTP extends Net_NNTP_Protocol
     }
 
     // }}}
-    // {{{ get_overview()
-
-    /**
-     * @param integer $first first article to fetch
-     * @param integer $last  last article to fetch
-     *
-     * @return mixed (array) nested array of message and there headers on success or (object) pear_error on failure
-     * @access public
-     *
-     * @deprecated Use getOverview() instead
-     */
-    function get_overview($first, $last)
-    {
-        return $this->getOverview($first, $last);
-    }
-
-    // }}}
     // {{{ getOverviewFmt()
 
     /**
@@ -454,20 +367,6 @@ class Net_NNTP extends Net_NNTP_Protocol
     function getOverviewFmt()
     {
 	return $this->cmdListOverviewFMT();
-    }
-
-    // }}}
-    // {{{ get_overview_fmt()
-
-    /**
-     * @return mixed (array) header names on success or (object) pear_error on failure
-     * @access public
-     *
-     * @deprecated Use getOverviewFmt() instead
-     */
-    function get_overview_fmt()
-    {
-        return $this->getOverviewFmt();
     }
 
     // }}}
@@ -545,24 +444,6 @@ class Net_NNTP extends Net_NNTP_Protocol
     }
 
     // }}}
-    // {{{ get_article()
-
-    /**
-     * Get an article from the currently open connection.
-     *
-     * @param mixed $article Either the message-id or the message-number on the server of the article to fetch.
-     *
-     * @return mixed (string) The article on success or (object) pear_error on failure
-     * @access public
-     *
-     * @deprecated Use getArticleRaw() instead
-     */
-    function get_article($article)
-    {
-        return $this->getArticleRaw($article, true);
-    }
-
-    // }}}
     // {{{ getHeader()
 
     /**
@@ -630,24 +511,6 @@ class Net_NNTP extends Net_NNTP_Protocol
     }
 
     // }}}
-    // {{{ get_headers()
-
-    /**
-     * Get the header of an article from the currently open connection
-     *
-     * @param mixed $article Either the (string) message-id or the (int) message-number on the server of the article to fetch.
-     *
-     * @return mixed (string) header fields on success or (object) pear_error on failure
-     * @access public
-     *
-     * @deprecated Use getHeaderRaw() instead
-     */
-    function get_headers($article)
-    {
-        return $this->getHeaderRaw($article, true);
-    }
-
-    // }}}
     // {{{ getBody()
 
     /**
@@ -689,22 +552,6 @@ class Net_NNTP extends Net_NNTP_Protocol
 	    $data = implode("\r\n", $data);
 	}
 	return $data;
-    }
-
-    // }}}
-    // {{{ get_body()
-    
-    /**
-     * @param mixed $article Either the message-id or the message-number on the server of the article to fetch.
-     *
-     * @return mixed (string) body on success or (object) pear_error on failure
-     * @access public
-     *
-     * @deprecated Use getBodyRaw() instead
-     */
-    function get_body($article)
-    {
-        return $this->getBodyRaw($article, true);
     }
 
     // }}}
@@ -929,24 +776,6 @@ class Net_NNTP extends Net_NNTP_Protocol
     }
 
     // }}}
-    // {{{ split_headers()
-
-    /**
-     * Get the headers of an article from the currently open connection, and parse them into a keyed array.
-     *
-     * @param mixed $article Either the (string) message-id or the (int) message-number on the server of the article to fetch.
-     *
-     * @return mixed (array) Assoc array with headers names as key on success or (object) pear_error on failure
-     * @access public
-     *
-     * @deprecated Use splitHeaders() instead
-     */
-    function split_headers($article)
-    {
-        return $this->splitHeaders($article);
-    }
-
-    // }}}
     // {{{ responseCode()
 
     /**
@@ -958,7 +787,6 @@ class Net_NNTP extends Net_NNTP_Protocol
      * @access public
      *
      * @deprecated
- 
      */
     function responseCode($response)
     {
@@ -980,20 +808,6 @@ class Net_NNTP extends Net_NNTP_Protocol
     function _getData()
     {
 	return $this->_getTextResponse();
-    }
-
-    // }}}
-    // {{{ get_data()
-
-    /**
-     * @return mixed (string) data on success or (object) pear_error on failure
-     * @access private
-     *
-     * @deprecated Use _getData() instead
-     */
-    function get_data()
-    {
-        return $this->_getData();
     }
 
     // }}}
