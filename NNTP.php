@@ -23,10 +23,20 @@
 require_once 'Net/NNTP/Protocol.php';
 
 
+// Deprecated due to naming
+define('PEAR_NNTP_ALL',   0);
+define('PEAR_NNTP_NAMES', 1);
+define('PEAR_NNTP_LIST',  2);
+
 /* NNTP Authentication modes */
-define('PEAR_NNTP_AUTHORIGINAL', 'original');
-define('PEAR_NNTP_AUTHSIMPLE',   'simple');
-define('PEAR_NNTP_AUTHGENERIC',  'generic');
+define('NET_NNTP_AUTHORIGINAL', 'original');
+define('NET_NNTP_AUTHSIMPLE',   'simple');
+define('NET_NNTP_AUTHGENERIC',  'generic');
+ 
+// Deprecated due to naming
+define('PEAR_NNTP_AUTHORIGINAL', NET_NNTP_AUTHORIGINAL);
+define('PEAR_NNTP_AUTHSIMPLE',   NET_NNTP_AUTHSIMPLE);
+define('PEAR_NNTP_AUTHGENERIC',  NET_NNTP_AUTHGENERIC);
 
 
 /**
@@ -42,6 +52,20 @@ define('PEAR_NNTP_AUTHGENERIC',  'generic');
 class Net_NNTP extends Net_NNTP_Protocol
 {
     // {{{ properties
+
+    /**
+     * @var int
+     * @access public
+     * @deprecated use getLast() instead
+     */
+    var $max;
+
+    /**
+     * @var int
+     * @access public
+     * @deprecated use getFirst() instead
+     */
+    var $min;
 
     /**
      * Used for storing information about the currently selected group
@@ -91,13 +115,16 @@ class Net_NNTP extends Net_NNTP_Protocol
                      $port = 119,
                      $user = null,
                      $pass = null,
-                     $authmode = PEAR_NNTP_AUTHORIGINAL)
+                     $authmode = NET_NNTP_AUTHORIGINAL)
     {
 	// Currently this function just 'forwards' to connectAuthenticated().
 	return $this->connectAuthenticated($host, $port, $user, $pass, $authmode);
     }
 
+
     // }}}
+    // {{{ connectAuthenticated()
+
     /**
      * Connect to the newsserver, and authenticate. If no user/pass is specified, just connect.
      *
@@ -118,7 +145,7 @@ class Net_NNTP extends Net_NNTP_Protocol
                      $port = 119,
                      $user = null,
                      $pass = null,
-                     $authmode = PEAR_NNTP_AUTHORIGINAL)
+                     $authmode = NET_NNTP_AUTHORIGINAL)
     {
 	// Until connect() is changed, connect() is called directly from the parent...
 	$R = parent::connect($host, $port);
@@ -173,14 +200,14 @@ class Net_NNTP extends Net_NNTP_Protocol
      * @return mixed (bool) true on success or (object) pear_error on failure
      * @access public
      *
-     * @deprecated Use Connect() instead
+     * @deprecated Use connect() or connectAuthenticated() instead
      */
     function prepareConnection($host,
                                 $port = 119,
                                 $newsgroup,
                                 $user = null,
                                 $pass = null,
-                                $authmode = PEAR_NNTP_AUTHORIGINAL)
+                                $authmode = NET_NNTP_AUTHORIGINAL)
     {
         /* connect to the server */
         $R = $this->connect($host, $port, $user, $pass, $authmode);
@@ -218,7 +245,7 @@ class Net_NNTP extends Net_NNTP_Protocol
                                 $newsgroup,
                                 $user = null,
                                 $pass = null,
-                                $authmode = PEAR_NNTP_AUTHORIGINAL)
+                                $authmode = NET_NNTP_AUTHORIGINAL)
     {
         return $this->prepareConnection($host, $port, $newsgroup, $user, $pass, $authmode);
     }
@@ -238,7 +265,7 @@ class Net_NNTP extends Net_NNTP_Protocol
      * @access public
      * @see Net_Nntp::connect()
      */
-    function authenticate($user, $pass, $mode = PEAR_NNTP_AUTHORIGINAL)
+    function authenticate($user, $pass, $mode = NET_NNTP_AUTHORIGINAL)
     {
 	return $this->cmdAuthinfo($user, $pass, $mode);
     }
@@ -296,6 +323,8 @@ class Net_NNTP extends Net_NNTP_Protocol
 	// Deprisated / historical				  	
 	$response_arr['min'] =& $response_arr['first'];
 	$response_arr['max'] =& $response_arr['last'];
+	$this->min =& $response_arr['min'];
+	$this->max =& $response_arr['max'];
 
 	return $response_arr;
     }
@@ -471,7 +500,7 @@ class Net_NNTP extends Net_NNTP_Protocol
     }
 
     // }}}
-    // {{{ getArticle()
+    // {{{ getArticleRaw()
 
     /**
      * Get an article from the currently open connection.
@@ -482,7 +511,7 @@ class Net_NNTP extends Net_NNTP_Protocol
      * @return mixed (array/string) The headers on success or (object) pear_error on failure
      * @access public
      */
-    function getArticle($article, $implode = true)
+    function getArticleRaw($article, $implode = true)
     {
         $data = $this->cmdArticle($article);
         if (PEAR::isError($data)) {
@@ -492,6 +521,23 @@ class Net_NNTP extends Net_NNTP_Protocol
 	    $data = implode("\r\n", $data);
 	}
 	return $data;
+    }
+
+    // }}}
+    // {{{ getArticle()
+
+    /**
+     * Get an article from the currently open connection.
+     *
+     * @param mixed $article Either the message-id or the message-number on the server of the article to fetch.
+     *
+     * @return mixed (string) The headers on success or (object) pear_error on failure
+     * @access public
+     * @deprecated Use getArticleRaw() instead
+     */
+    function getArticle($article)
+    {
+	return $this->getArticleRaw($article);
     }
 
     // }}}
@@ -511,7 +557,7 @@ class Net_NNTP extends Net_NNTP_Protocol
     }
 
     // }}}
-    // {{{ getHeaders()
+    // {{{ getHeaderRaw()
 
     /**
      * Get the headers of an article from the currently open connection
@@ -522,7 +568,7 @@ class Net_NNTP extends Net_NNTP_Protocol
      * @return mixed (array/string) headers on success or (object) pear_error on failure
      * @access public
      */
-    function getHeaders($article, $implode = true)
+    function getHeaderRaw($article, $implode = true)
     {
         $data = $this->cmdHead($article);
         if (PEAR::isError($data)) {
@@ -532,6 +578,23 @@ class Net_NNTP extends Net_NNTP_Protocol
 	    $data = implode("\r\n", $data);
 	}
 	return $data;
+    }
+
+    // }}}
+    // {{{ getHeaders()
+
+    /**
+     * Get the headers of an article from the currently open connection
+     *
+     * @param mixed $article Either the (string) message-id or the (int) message-number on the server of the article to fetch.
+     *
+     * @return mixed (string) headers on success or (object) pear_error on failure
+     * @access public
+     * @deprecated Use getHeaderRaw() instead
+     */
+    function getHeaders($article)
+    {
+        return $this->getHeaderRaw($article);
     }
 
     // }}}
@@ -551,33 +614,7 @@ class Net_NNTP extends Net_NNTP_Protocol
     }
 
     // }}}
-    // {{{ getHeadersParsed()
-
-    /**
-     * Get the headers of an article from the currently open connection, and parse them into a keyed array.
-     *
-     * @param mixed $article Either the (string) message-id or the (int) message-number on the server of the article to fetch.
-     *
-     * @return mixed (array) Assoc array with headers names as key on success or (object) pear_error on failure
-     * @access public
-     * @since 0.3
-     */
-    function getHeadersParsed($article)
-    {
-	// Retrieve headers
-        $headers = $this->getHeaders($article, false);
-        if (PEAR::isError($headers)) {
-            return $this->throwError($headers);
-        }
-	
-	// Parse headers
-	$res = $this->parseHeaders($headers);
-
-	return $res;
-    }
-
-    // }}}
-    // {{{ getBody()
+    // {{{ getBodyRaw()
 
     /**
      * Get the body of an article from the currently open connection.
@@ -588,7 +625,7 @@ class Net_NNTP extends Net_NNTP_Protocol
      * @return mixed (array/string) headers on success or (object) pear_error on failure
      * @access public
      */
-    function getBody($article, $implode = true)
+    function getBodyRaw($article, $implode = true)
     {
         $data = $this->cmdBody($article);
         if (PEAR::isError($data)) {
@@ -601,6 +638,23 @@ class Net_NNTP extends Net_NNTP_Protocol
     }
 
     // }}}
+    // {{{ getBody()
+
+    /**
+     * Get the body of an article from the currently open connection.
+     *
+     * @param mixed $article Either the message-id or the message-number on the server of the article to fetch.
+     *
+     * @return mixed (string) headers on success or (object) pear_error on failure
+     * @access public
+     * @deprecated Use getBodyRaw() instead
+     */
+    function getBody($article)
+    {
+	return $this->getBodyRaw($article);
+    }
+
+    // }}}
     // {{{ get_body()
     
     /**
@@ -609,7 +663,7 @@ class Net_NNTP extends Net_NNTP_Protocol
      * @return mixed (string) headers on success or (object) pear_error on failure
      * @access public
      *
-     * @deprecated Use getBody() instead
+     * @deprecated Use getBodyRaw() instead
      */
     function get_body($article)
     {
@@ -825,12 +879,42 @@ class Net_NNTP extends Net_NNTP_Protocol
      *
      * @return mixed (array) Assoc array with headers names as key on success or (object) pear_error on failure
      * @access public
-     *
-     * @deprecated Use getHeadersParsed() instead
      */
     function splitHeaders($article)
     {
-        return $this->getHeadersParsed($article);
+	// Retrieve headers
+        $headers = $this->getHeaderRaw($article, false);
+        if (PEAR::isError($headers)) {
+            return $this->throwError($headers);
+        }
+	
+	$return = array();
+
+	// Loop through all header field lines
+        foreach ($headers as $field) {
+	    // Separate header name and value
+	    if (!preg_match('/([\S]+)\:\s*(.*)\s*/', $field, $matches)) {
+		// Fail...
+	    }
+	    $name = $matches[1];
+	    $value = $matches[2];
+	    unset($matches);
+
+	    // Add header to $return array
+    	    if (isset($return[$name]) AND is_array($return[$name])) {
+		// The header name has already been used at least two times.
+            	$return[$name][] = $value;
+            } elseif (isset($return[$name])) {
+		// The header name has already been used one time -> change to nedted values.
+            	$return[$name] = array($return[$name], $value);
+            } else {
+		// The header name has not used until now.
+        	$return[$name] = $value;
+            }
+        }
+
+	return $return
+;
     }
 
     // }}}
@@ -849,34 +933,6 @@ class Net_NNTP extends Net_NNTP_Protocol
     function split_headers($article)
     {
         return $this->splitHeaders($article);
-    }
-
-    // }}}
-    // {{{ parseHeaders()
-
-    /**
-     * Returns the headers of a given article in the form of
-     * an associative array. Ex:
-     * array(
-     *   'From'      => 'foo@bar.com (Foo Smith)',
-     *   'Subject'   => 'Re: Using NNTP class',
-     *   ....
-     *   );
-     *
-     * @param array/string $article Article number or id
-     *
-     * @return mixed (array) Assoc array with headers names as key on success or (object) pear_error on failure
-     * @access public
-     * @see Net_Nntp::getHeadersParsed()
-     */
-    function parseHeaders($headers)
-    {
-	require_once('Net/NNTP/Header.php');
-	$H = new Net_Mime_Header();
-	$headers = $H->cleanArray($headers);
-	$headers = $H->parseArray($headers);
-
-	return $headers;
     }
 
     // }}}
