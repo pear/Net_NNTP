@@ -2,12 +2,12 @@
 <!-- do not use the "Type" attribute here, that one is only for
      generated package.xml files -->
 <package>
-  <name>NNTP</name>
+  <name>Net_NNTP</name>
   <summary>Communicate with an NNTP server</summary>
   <maintainer>
-    <initials>MK</initials>
-    <name>Martin Kaltoft</name>
-    <email>kaltoft@php.net</email>
+    <user>kaltroft</user>
+    <name>Martin Kaltroft</name>
+    <email>martin@nitro.dk</email>
   </maintainer>
   <release>
     <version>0.1</version>
