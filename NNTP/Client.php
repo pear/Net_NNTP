@@ -742,23 +742,6 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     }
 
     // }}}
-    // {{{ command()
-
-    /**
-     * Issue a command to the NNTP server
-     *
-     * @param string $cmd The command to launch, ie: "ARTICLE 1004853"
-     *
-     * @return mixed (int) response code on success or (object) pear_error on failure
-     * @access public
-     */
-    function command($cmd)
-    {
-        return $this->_sendCommand($cmd);
-    }
-
-    // }}}
-
 }
 
 // }}}
