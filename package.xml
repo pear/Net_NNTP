@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!-- $Id: package.xml,v 1.18.2.2 2005-01-14 16:48:19 heino Exp $ -->
+<!-- $Id: package.xml,v 1.18.2.3 2005-01-14 17:21:22 heino Exp $ -->
 <package version="1.0">
   <name>Net_NNTP</name>
   <summary>Implementation of the NNTP protocol</summary>
@@ -16,7 +16,7 @@
     </maintainer>
   </maintainers>
   <deps>
-   <dep type="pkg" rel="ge" version="1.0.2">Net_Socket</dep>
+   <dep type="pkg" rel="ge" version="1.0.3">Net_Socket</dep>
   </deps>
   <release>
     <version>1.0.0RC1</version>
