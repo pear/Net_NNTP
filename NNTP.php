@@ -898,15 +898,8 @@ class Net_NNTP extends Net_NNTP_Protocol
      */
     function splitHeaders($article)
     {
-	// Retrieve headers
-        $headers = $this->getHeaderRaw($article, false);
-        if (PEAR::isError($headers)) {
-            return $this->throwError($headers);
-        }
-	
-	// Create header object
-
-	$H = new Net_NNTP_Header::create($headers);
+	// Retrieve header and create header object
+	$H = $this->getHeader($article);
 
 	// Return keyed array
 	return $H->getFieldsArray();
