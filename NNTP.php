@@ -522,7 +522,7 @@ class Net_NNTP extends PEAR
     *                there headers
     * @access public 
     */    
-    function get_overview($first,$last) {
+    function getOverview($first,$last) {
         $format = $this->getOverviewFmt();
 
         $this->command("XOVER $first-$last");
