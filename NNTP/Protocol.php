@@ -193,45 +193,16 @@ class Net_NNTP_Protocol extends PEAR
     }
 
     // }}}
+
+    /**
+     * The authentication process i not yet standarized but used any way
+     * (http://www.mibsoftware.com/userkt/nntpext/index.html).
+     */
+     
     // {{{ cmdAuthinfo()
 
     /**
-     * Authenticates the user.
-     *
-     * The authentication process i not yet standarized but used any way
-     * (http://www.mibsoftware.com/userkt/nntpext/index.html).
-     *
-     * @param string $user The username to authenticate as.
-     * @param string $pass The password to authenticate with.
-     * @param optional string $mode Authinfo form: original, simple, generic, defaults to original.
-     *
-     * @return mixed (bool) true on success or (object) pear_error on failure
-     * @access public
-     */
-    function cmdAuthinfo($user, $pass, $mode = NET_NNTP_AUTHORIGINAL)
-    {
-	// Username is a must...
-        if ($user == null) {
-            return $this->throwError('No username supplied', null);
-        }
-
-	// Use selected authentication method
-        switch ($mode) {
-    	    case NET_NNTP_AUTHORIGINAL:
-		return $this->_authOriginal($user, $pass);
-        	break;
-    	    case NET_NNTP_AUTHSIMPLE:
-    	    case NET_NNTP_AUTHGENERIC:
-    	    default:
-        	$this->throwError("The auth mode: $mode isn't implemented", null);
-        }
-    }
-
-    // }}}
-    // {{{ _authOriginal()
-
-    /**
-     * Authenticates the user using the Original
+     * Authenticates the user using the original method
      *
      * @param string $user The username to authenticate as.
      * @param string $pass The password to authenticate with.
@@ -239,7 +210,7 @@ class Net_NNTP_Protocol extends PEAR
      * @return mixed (bool) true on success or (object) pear_error on failure 
      * @access private
      */
-    function _authOriginal($user, $pass)
+    function cmdAuthinfo($user, $pass)
     {
 	// Send the username
         $response = $this->_sendCommand('AUTHINFO user '.$user);
@@ -276,6 +247,40 @@ class Net_NNTP_Protocol extends PEAR
 	    default:
 		return $this->throwError('Unexpected authentication error!', $response, $this->currentStatusResponse());
 	}
+    }
+	
+    // }}}
+    // {{{ cmdAuthinfoSimple()
+
+    /**
+     * Authenticates the user using the simple method
+     *
+     * @param string $user The username to authenticate as.
+     * @param string $pass The password to authenticate with.
+     *
+     * @return mixed (bool) true on success or (object) pear_error on failure 
+     * @access private
+     */
+    function cmdAuthinfoSimple($user, $pass)
+    {
+        return $this->throwError("The auth mode: 'simple' is has not been implemented yet", null);
+    }
+	
+    // }}}
+    // {{{ cmdAuthinfoGeneric()
+
+    /**
+     * Authenticates the user using the simple method
+     *
+     * @param string $user The username to authenticate as.
+     * @param string $pass The password to authenticate with.
+     *
+     * @return mixed (bool) true on success or (object) pear_error on failure 
+     * @access private
+     */
+    function cmdAuthinfoGeneric($user, $pass)
+    {
+        return $this->throwError("The auth mode: 'generic' is has not been implemented yet", null);
     }
 	
     // }}}
