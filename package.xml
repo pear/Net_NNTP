@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!-- $Id: package.xml,v 1.16.2.4.2.3 2004-07-30 10:48:19 heino Exp $ -->
+<!-- $Id: package.xml,v 1.16.2.4.2.4 2004-08-04 06:55:38 heino Exp $ -->
 <package version="1.0">
   <name>Net_NNTP</name>
   <summary>Implementation of the NNTP protocol</summary>
@@ -19,14 +19,13 @@
    <dep type="pkg" rel="ge" version="1.0.2">Net_Socket</dep>
   </deps>
   <release>
-    <version>0.11.1</version>
-    <date>2004-07-30</date>
+    <version>0.11.2</version>
+    <date>2004-08-04</date>
     <license>W3C</license>
     <state>devel</state>
     <notes>
-      - Fix bug in (deprecated) Net_NNTP::command().
-      - Rename a few constants due to renamed classes (BC preserved).
-      - Update class phpdoc blocks.
+      - Fix whitespace in Net_NNTP_Client & Net_NNTP_Protocol_Client.
+      - Update PhpDoc blocks.
     </notes>
     <filelist>
       <dir name="/" baseinstalldir="Net">
@@ -56,6 +55,16 @@
     </filelist>
   </release>
   <changelog>
+  <release>
+    <version>0.11.1</version>
+    <date>2004-07-30</date>
+    <state>devel</state>
+    <notes>
+      - Fix bug in (deprecated) Net_NNTP::command().
+      - Rename a few constants due to renamed classes (BC preserved).
+      - Update class phpdoc blocks.
+    </notes>
+  </release>
   <release>
     <version>0.11.0</version>
     <date>2004-07-19</date>
