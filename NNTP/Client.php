@@ -134,48 +134,6 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     }
 
     // }}}
-    // {{{ connectAuthenticated()
-
-    /**
-     * Connect to the NNTP-server, and authenticate using given username and password.
-     *
-     * @param optional string $user The username.
-     * @param optional string $pass The password.
-     * @param optional string $host The IP-address of the NNTP-server to connect to.
-     * @param optional int $port The port to connect to.
-     * @param optional string $authmode The authentication mode.
-     *
-     * @return mixed (bool) true on success or (object) pear_error on failure
-     * @access public
-     * @since 0.3
-     * @deprecated use connect() and authenticate() instead
-     * @see Net_NNTP_Client::connect()
-     * @see Net_NNTP_Client::authenticate()
-     * @see Net_NNTP_Client::quit()
-     */
-    function connectAuthenticated($user = null,
-            	    	    	  $pass = null,
-    	    	    	    	  $host = NET_NNTP_PROTOCOL_CLIENT_DEFAULT_HOST,
-            	    	    	  $port = NET_NNTP_PROTOCOL_CLIENT_DEFAULT_PORT,
-            	    	    	  $authmode = NET_NNTP_CLIENT_AUTH_ORIGINAL)
-    {
-	$R = $this->connect($host, $port);
-	if (PEAR::isError($R)) {
-	    return $R;
-	}
-
-	// Authenticate if username is given
-	if ($user != null) {
-    	    $R = $this->authenticate($user, $pass, $authmode);
-    	    if (PEAR::isError($R)) {
-    	    	return $R;
-    	    }
-	}
-
-        return true;
-    }
-
-    // }}}
     // {{{ quit()
 
     /**
