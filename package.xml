@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!-- $Id: package.xml,v 1.18.2.3 2005-01-14 17:21:22 heino Exp $ -->
+<!-- $Id: package.xml,v 1.18.2.4 2005-01-18 09:10:09 heino Exp $ -->
 <package version="1.0">
   <name>Net_NNTP</name>
   <summary>Implementation of the NNTP protocol</summary>
@@ -19,10 +19,10 @@
    <dep type="pkg" rel="ge" version="1.0.3">Net_Socket</dep>
   </deps>
   <release>
-    <version>1.0.0RC1</version>
-    <date>2005-01-14</date>
+    <version>1.0.0</version>
+    <date>2005-01-18</date>
     <license>W3C</license>
-    <state>beta</state>
+    <state>stable</state>
     <notes>
       - This release is NOT backward compatible with v0.11.3, since all non-stable features (classes, methods etc.) have been removed!!!
       - Users of releases between 0.3.x and 0.11.x should consider v1.1.x or v1.2.x in stead. (This release is meant only as a final replacement for v0.2.5 - and of cause as a way to finally get rid of the former protocol implementation).
@@ -50,6 +50,16 @@
     </filelist>
   </release>
   <changelog>
+  <release>
+    <version>1.0.0RC1</version>
+    <date>2005-01-14</date>
+    <state>beta</state>
+    <notes>
+      - This release is NOT backward compatible with v0.11.3, since all non-stable features (classes, methods etc.) have been removed!!!
+      - Users of releases between 0.3.x and 0.11.x should consider v1.1.x or v1.2.x in stead. (This release is meant only as a final replacement for v0.2.5 - and of cause as a way to finally get rid of the former protocol implementation).
+      - Backward compatible with v0.2.5 (this is ONLY guarantied in v1.0.x releases, and may be removed in the future).
+    </notes>
+  </release>
   <release>
     <version>0.11.3</version>
     <date>2004-09-06</date>
