@@ -915,7 +915,7 @@ class Net_NNTP_Header
                     break;
             }
 
-            $input = str_replace($encoded, $text, $header);
+            $input = str_replace($encoded, $text, $input);
         }
 
         return $input;
