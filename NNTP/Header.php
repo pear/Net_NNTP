@@ -73,12 +73,12 @@ class Net_NNTP_Header extends PEAR
     // {{{ properties
 
     /**
-     *
+     * Container for the header fields
      *
      * @var    array
      * @access public
      */
-    var $headers;
+    var $fields;
 
     // }}}
     // {{{ constructor
@@ -93,13 +93,172 @@ class Net_NNTP_Header extends PEAR
     {
 	parent::PEAR();
 	
-	$this->headers = array();
+	// Reset object
+	$this->reset();
 
+	// Set default values;
 	$this->_modifyHeaderNameCase = true;
 	$this->_unfoldOnParse = true;
 	$this->_decodeOnParse = true;
 	$this->_encodeOnRegenerate = false;
 	$this->_foldOnRegenerate = false;
+    }
+
+    // }}}
+    // {{{ reset()
+    
+    /**
+     * Reset the field container
+     * 
+     * @access public
+     * @since 0.1
+     */
+    function reset()
+    {
+	$this->fields = array();
+    }
+
+    // }}}
+    // {{{ add()
+    
+    /**
+     * Add a new line to the header
+     * 
+     * @param string $tag
+     * @param string $value
+     * @param optional int $index
+     * 
+     * @access public
+     * @since 0.1
+     */
+    function add($tag, $value, $index = null)
+    {
+	// Add header to $return array
+    	if (isset($this->fields[$tag]) && is_array($this->fields[$tag])) {
+	    // The header name has already been used at least two times.
+            $this->fields[$tag][] = $value;
+        } elseif (isset($this->fields[$tag])) {
+	    // The header name has already been used one time -> change to nedted values.
+            $this->fields[$tag] = array($this->fields[$tag], $value);
+        } else {
+	    // The header name has not used until now.
+	    $this->fields[$tag] = $value;
+        }
+    }
+
+    // }}}
+    // {{{ replace()
+    
+    /**
+     * Replace a line in the header
+     * 
+     * @param string $tag
+     * @param string $value
+     * @param optional int $index
+     * 
+     * @access public
+     * @since 0.1
+     */
+    function replace($tag, $value, $index = null)
+    {
+	if (isset($this->fields[$tag])) {
+	    if ($index === null) {
+		$this->fields[$tag] = $value;
+	    } else {
+		if (is_array($this->fields[$tag])) {
+		    $this->fields[$tag][$index] = $value;
+		} else {
+//TODO: Currently ignores $index, and just replaces the value
+		    $this->fields[$tag] = $value;
+		}
+	    }
+	} else {
+	    $this->fields[$tag] = $value;
+	}
+    }
+
+    // }}}
+    // {{{ delete()
+    
+    /**
+     * Delete a tag from the header
+     * 
+     * @param string $tag
+     * @param optional int $index
+     * 
+     * @access public
+     * @since 0.1
+     */
+    function delete($tag, $index = null)
+    {
+	if (isset($this->fields[$tag])) {
+	    if ($index == null) {
+		unset($this->fields[$tag]);
+	    } else {
+		if (is_array($this->fields[$tag])) {
+		    unset($this->fields[$tag][$index]);
+		} else {
+		    unset($this->fields[$tag]);
+		}
+	    }
+	} else {
+	    // Do nothing...
+	}
+    }
+
+    // }}}
+    // {{{ count()
+    
+    /**
+     * Returns the number of times the given tag appears in the header.
+     * 
+     * @param string $tag
+     * 
+     * @return int
+     * @access public
+     * @since 0.1
+     */
+    function count($tag)
+    {
+	if (isset($this->fields[$tag])) {
+	    if (is_array($this->fields[$tag])) {
+		return count($this->fields[$tag]);
+	    } else {
+		return 1;
+	    }
+	} else {
+	    return false;
+	}
+    }
+
+    // }}}
+    // {{{ tags()
+    
+    /**
+     * Retruns an array of all the tags that exist in the header.
+     * Each tag will only appear in the list once.
+     * 
+     * @return array
+     * @access public
+     * @since 0.1
+     */
+    function tags()
+    {
+	return array_keys($this->fields);
+    }
+
+    // }}}
+    // {{{ clean()
+    
+    /**
+     * Remove any header line that, other than the tag, only contains whitespace.
+     * 
+     * @access public
+     * @since 0.1
+     */
+    function clean()
+    {
+// TODO:
     }
 
     // }}}
@@ -115,7 +274,7 @@ class Net_NNTP_Header extends PEAR
      */
     function importString($string)
     {
-	$this->headers =& $this->parseString(&$string);
+	$this->fields =& $this->parseString(&$string);
     }
 
     // }}}
@@ -131,7 +290,7 @@ class Net_NNTP_Header extends PEAR
      */
     function importArray($array)
     {
-	$this->headers =& $this->parseArray(&$array);
+	$this->fields =& $this->parseArray(&$array);
     }
 
     // }}}
@@ -147,7 +306,7 @@ class Net_NNTP_Header extends PEAR
     function exportString()
     {
 	return $this->regenerateString(
-&$this->headers);
+&$this->fields);
     }
 
     // }}}
@@ -162,7 +321,7 @@ class Net_NNTP_Header extends PEAR
      */
     function exportArray()
     {
-	return $this->regenerateArray(&$this->headers
+	return $this->regenerateArray(&$this->fields
 );
     }
 
@@ -595,8 +754,6 @@ class Net_NNTP_Header extends PEAR
     }
 
     // }}}
-
-
     // {{{ cleanArray()
 
     /**
