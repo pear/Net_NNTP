@@ -25,7 +25,7 @@
 </head>
 <body>
 <?php
-require_once "Net_NNTP/NNTP.php";
+require_once "Net/NNTP.php";
 
 $nntp = new Net_NNTP;
 
