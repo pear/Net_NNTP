@@ -72,12 +72,12 @@ require_once 'Net/NNTP/Header.php';
  * @author  Heino H. Gehlsen <heino@gehlsen.dk>
  */
 
-class Net_NNTP_Message // extends PEAR
+class Net_NNTP_Message
 {
     // {{{ properties
 
     /*
-     * Contains the parsed headers of the message
+     * Contains the message's header object
      *
      * @var    object
      * @access public
@@ -98,22 +98,109 @@ class Net_NNTP_Message // extends PEAR
     /**
      * Constructor.
      *
-     * @param optional object $header
-     * @param optional array $body
+     * @access public
+     */
+    function Net_NNTP_Message()
+    {
+	$this->reset();
+    }
+
+    // }}}
+    // {{{ reset()
+
+    /**
+     * Resets the message object
      *
      * @access public
      */
-    function Net_NNTP_Message ($header = null, $body = '')
+    function reset()
     {
-//	parent::Pear();
+	$this->header = new Net_NNTP_Header();
+	$this->body = null;
+    }
 
-	if ($this->header != null) {
-    	    $this->header = $header;
-	} else {
-	    $this->header = new Net_NNTP_Header();
+    // }}}
+    // {{{ create()
+    
+    /**
+     * Create a new instance of Net_NNTP_Message
+     *
+     * @param optional mixed $input  Can be any of the following:
+     *                               (string) RFC2822 message lines (RCLF included)
+     *                               (array)  RFC2822 message lines (RCLF not included)
+     *                               (object) Net_NNTP_Header object
+     *                               (object) Net_NNTP_Message object
+     * @param optional mixed $input2 If given, $input will only be use for the message's
+     *                               header, while $input2 will be used for the body.
+     *                               (Disallowed when $input is a Net_NNTP_Message)
+     *
+     * @access public
+     * @since 0.1
+     */
+    function & create($input = null, $input2 = null)
+    {
+	$Object = new Net_NNTP_Message();
+	
+	switch (true) {
+
+	    // Null
+	    case (is_null($input) && is_null($input2)):
+	        return $Object;
+		break;
+
+
+	    // Object 
+	    case is_object($input):
+		switch (true) {
+		    
+		    // Header
+		    case is_a($input, 'net_nntp_header'):
+			$Object->setHeader($input);
+			$Object->setBody($input2);
+			return $Object;
+			break;
+			
+		    // Message
+		    case is_a($input, 'net_nntp_message'):
+			if ($input2 != null) {
+			    return PEAR::throwError('Second parameter not allowed!', null);
+			}			
+			return $input;
+			break;
+			
+		    // Unknown object/class
+		    default:
+			return PEAR::throwError('Unsupported object/class: '.get_class($input), null);
+		}
+		break;
+
+	    // Array & String (only 1st parameter)
+	    case ((is_string($input) || is_array($input)) && (is_null($input2))):
+		$Object->setMessage($input)
+;
+		return $Object;
+		break;
+
+	    // Array & String (also 2nd parameter)
+	    case ((is_string($input) || is_array($input)) && (is_string($input2) || is_array($input2))):
+
+		$Object->setHeader($input)
+;
+
+		if (is_array($input2)) {
+		    $Object->body = implode("\r\n", $input2)
+;
+		} else {
+		    $Object->body = $input2;
+		}
+
+		return $Object;
+		break;
+
+	    // Unknown type
+	    default:
+		return PEAR::throwError('Unsupported object/class: '.get_class($input), null);
 	}
-
-	$this->body   = $body;
     }
 
     // }}}
@@ -122,7 +209,10 @@ class Net_NNTP_Message // extends PEAR
     /**
      * Sets the header and body grom the given $message
      *
-     * @param string $message
+     * @param mixed $message Can be any of the following:
+     *                       (string) RFC2822 message lines (RCLF included)
+     *                       (array)  RFC2822 message lines (RCLF not included)
+     *                       (object) Net_NNTP_Message object
      *
      * @access public
      */
@@ -130,16 +220,22 @@ class Net_NNTP_Message // extends PEAR
     {
 	switch (true) {
 
+	    // Object
 	    case is_object($message);
 	        switch (true) {
+
+		    // Message
 		    case is_a($input, 'net_nntp_message'):
 		        $this =& $message;
 		        break;
+
+		    // Unknown object/class
 		    default:
 		        return PEAR::throwError('Unsupported object/class: '.get_class($message), null);
 		}
 		break;
 
+	    // Array & String
 	    case is_array($message):
 	    case is_string($message):
     		$array =& $this->splitMessage(&$message);
@@ -147,6 +243,7 @@ class Net_NNTP_Message // extends PEAR
 	        $this->setBody(&$array['body']);
 	        break;
 		
+	    // Unknown type
 	    default:
 	        return PEAR::throwError('Unsupported type: '.gettype($message), null);
 	}
@@ -163,7 +260,7 @@ class Net_NNTP_Message // extends PEAR
      */
     function getMessageString()
     {
-	return $this->header->getFieldsString()."\r\n\r\n".$this->body;
+	return $this->header->getFieldsString()."\r\n\r\n".$this->getBody();
     }
 
     // }}}
@@ -177,9 +274,14 @@ class Net_NNTP_Message // extends PEAR
      */
     function getMessageArray()
     {
+	// Get the header fields
 	$header = $this->header->getFieldsArray();
+	
+	// Append null line
 	$header[] = '';
-	return array_merge($header, explode("\r\n", $this->body));
+	
+	// Merge with body, and return
+	return array_merge($header, explode("\r\n", $this->getBody()));
     }
 
     // }}}
@@ -188,7 +290,10 @@ class Net_NNTP_Message // extends PEAR
     /**
      * Sets the header's fields from the given $input
      *
-     * @param mixed $input
+     * @param mixed $input Can be any of the following:
+     *                     (string) RFC2822 message lines (RCLF included)
+     *                     (array)  RFC2822 message lines (RCLF not included)
+     *                     (object) Net_NNTP_Header object
      *
      * @access public
      */
@@ -212,17 +317,10 @@ class Net_NNTP_Message // extends PEAR
 		    break;
 
 
-		// String
-		case is_string($input):
-		    $string = $this->header->cleanString($input);
-		    $this->header->setFields($string);
-		    break;
-
-
-		// Array
+		// Array & String
 		case is_array($input):
-		    $array = $this->header->cleanArray($input);
-		    $this->header->setFields($array);
+		case is_string($input):
+		    $this->header->setFields($input);
 		    break;
 
 
@@ -283,8 +381,8 @@ class Net_NNTP_Message // extends PEAR
     // {{{ splitMessage()
 
     /**
-     * Splits the header and body as given in $input apart (at the first
-     * blank line) and return them in the same type as $input.
+     * Splits the header and body given in $input apart (at the first
+     * blank line) and return them (in an array) with the same type as $input.
      *
      * @param mixed $input Message in form of eiter string or array
      *
