@@ -4,20 +4,42 @@
 <package>
   <name>Net_NNTP</name>
   <summary>Communicate with an NNTP server</summary>
-  <maintainer>
-    <user>kaltroft</user>
-    <name>Martin Kaltroft</name>
-    <email>martin@nitro.dk</email>
-  </maintainer>
+  <description>
+  Complete class for communicating with an NNTP server (this is: the USENET), including: post, view, list, authentication, overview, header manipulation, NNTP commands debugger, etc.
+  </description>
+  <maintainers>
+    <maintainer>
+      <user>kaltroft</user>
+      <name>Martin Kaltroft</name>
+      <email>martin@nitro.dk</email>
+      <role>lead</role>
+    </maintainer>
+    <maintainer>
+      <user>cox</user>
+      <name>Tomas V.V.Cox</name>
+      <email>cox@idecnet.com</email>
+      <role>developer</role>
+    </maintainer>
+    <maintainer>
+      <user>mog</user>
+      <name>Morgan Christiansson</name>
+      <email>mog@linux.nu</email>
+      <role>contributor</role>
+    </maintainer>
+  </maintainers>
   <release>
     <version>0.1</version>
-    <date>2001-04-19</date>
+    <date>2002-01-27</date>
+    <licence>PHP 2.0</licence>
+    <state>stable</state>
     <notes>
       This is the initial independent release of the NNTP package.
     </notes>
+    <filelist>
+      <dir name="/" baseinstall="Net">
+        <file role="php">NNTP.php</file>
+        <file role="doc">README</file>
+      </dir>
+    </filelist>
   </release>
-  <filelist>
-    <dir>/</dir>
-    <file>NNTP.php</file>
-  </filelist>
 </package>
