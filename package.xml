@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!-- $Id: package.xml,v 1.16.2.4.2.2 2004-07-19 15:13:07 heino Exp $ -->
+<!-- $Id: package.xml,v 1.16.2.4.2.3 2004-07-30 10:48:19 heino Exp $ -->
 <package version="1.0">
   <name>Net_NNTP</name>
   <summary>Implementation of the NNTP protocol</summary>
@@ -19,16 +19,19 @@
    <dep type="pkg" rel="ge" version="1.0.2">Net_Socket</dep>
   </deps>
   <release>
-    <version>0.11.0</version>
-    <date>2004-07-19</date>
+    <version>0.11.1</version>
+    <date>2004-07-30</date>
     <license>W3C</license>
     <state>devel</state>
     <notes>
-      - New directory structure (classes/files renamed/moved) to allow future server class (dummy files preserves backward compatibility)
+      - Fix bug in (deprecated) Net_NNTP::command().
+      - Rename a few constants due to renamed classes (BC preserved).
+      - Update class phpdoc blocks.
     </notes>
     <filelist>
       <dir name="/" baseinstalldir="Net">
         <file role="php">NNTP.php</file>
+        <file role="doc">README</file>
         <dir name="NNTP" role="php">
           <file>Client.php</file>
           <file>Header.php</file>
@@ -53,6 +56,14 @@
     </filelist>
   </release>
   <changelog>
+  <release>
+    <version>0.11.0</version>
+    <date>2004-07-19</date>
+    <state>devel</state>
+    <notes>
+      - New directory structure (classes/files renamed/moved) to allow future server class (dummy files preserves backward compatibility)
+    </notes>
+  </release>
   <release>
     <version>0.10.3</version>
     <date>2004-07-14</date>
