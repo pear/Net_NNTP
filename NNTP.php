@@ -561,7 +561,7 @@ class Net_NNTP extends Net_NNTP_Protocol
 
 	$H = new Net_NNTP_Header();
 	$header = $H->cleanArray($header);
-	$H->importArray($header);
+	$H->setFieldsArray($header);
 
 	return $H;
     }
@@ -974,7 +974,7 @@ class Net_NNTP extends Net_NNTP_Protocol
     {
 	$H = new Net_NNTP_Header();
 	$headers = $H->cleanArray($headers);
-	$headers = $H->parseArray($headers);
+	$H->setFields($headers);
 
 	return $headers;
     }
