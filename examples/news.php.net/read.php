@@ -40,15 +40,15 @@ if( PEAR::isError($ret)) {
         if(PEAR::isError($msgdata)) {
             echo '<font color="red">'.$msgdata->getMessage().'</font><br>' ;        
         } else {
-            $msgheader = $nntp->splitHeaders($_GET['msgid']);
+            $msgheader = $nntp->getHeader($_GET['msgid']);
             echo '<h2>Headers:</h2>';
-            foreach( $msgheader as $headername => $headercontent) {
+            foreach( $msgheader->getFields() as $headername => $headercontent) {
                 echo '<b>'.$headername.'</b>:&nbsp;'.$headercontent."<br>";
             }              
             echo "<hr>";
             echo '<h2>Body</h2>';
             echo '<form><textarea wrap="off" cols="79", rows="25">'.
-                    $nntp->getBody($_GET['msgid']).
+                    $nntp->getBodyRaw($_GET['msgid']).
                 '</textarea></form>';           
         }        
     } else {
