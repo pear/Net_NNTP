@@ -72,11 +72,6 @@ define('NET_NNTP_CLIENT_AUTH_ORIGINAL', 'original');
 define('NET_NNTP_CLIENT_AUTH_SIMPLE',   'simple');
 define('NET_NNTP_CLIENT_AUTH_GENERIC',  'generic');
 
-/* Deprecated authentication modes */
-define('NET_NNTP_AUTHORIGINAL', NET_NNTP_CLIENT_AUTH_ORIGINAL);
-define('NET_NNTP_AUTHSIMPLE',   NET_NNTP_CLIENT_AUTH_SIMPLE);
-define('NET_NNTP_AUTHGENERIC',  NET_NNTP_CLIENT_AUTH_GENERIC);
-
 // }}}
 // {{{ Net_NNTP_Client
 
