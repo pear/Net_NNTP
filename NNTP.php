@@ -346,8 +346,10 @@ class Net_NNTP extends PEAR
                 $ret[$head] .= $line;
             }
         }
-        if (isset($ret['References'])) {
-            $ret['References'] = explode (' ', $ret['References']);
+        if (isset($ret['References']) &&
+            preg_match_all('|<.+>|U', $ret['References'], $matches))
+        {
+            $ret['References'] = $matches[0];
         }
         return $ret;
     }
