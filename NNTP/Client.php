@@ -127,9 +127,9 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      *
      * @return mixed (bool) true on success or (object) pear_error on failure
      * @access public
-     * @see Net_NNTP::quit()
-     * @see Net_NNTP::authenticate()
-     * @see Net_NNTP::connectAuthenticated()
+     * @see Net_NNTP_Client::quit()
+     * @see Net_NNTP_Client::authenticate()
+     * @see Net_NNTP_Client::connectAuthenticated()
      */
     function connect($host = NET_NNTP_PROTOCOL_CLIENT_DEFAULT_HOST,
                      $port = NET_NNTP_PROTOCOL_CLIENT_DEFAULT_PORT)
@@ -152,9 +152,9 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @return mixed (bool) true on success or (object) pear_error on failure
      * @access public
      * @since 0.3
-     * @see Net_NNTP::connect()
-     * @see Net_NNTP::authenticate()
-     * @see Net_NNTP::quit()
+     * @see Net_NNTP_Client::connect()
+     * @see Net_NNTP_Client::authenticate()
+     * @see Net_NNTP_Client::quit()
      */
     function connectAuthenticated($user = null,
             			  $pass = null,
@@ -185,7 +185,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * Close connection to the newsserver
      *
      * @access public
-     * @see Net_NNTP::connect()
+     * @see Net_NNTP_Client::connect()
      */
     function quit()
     {
@@ -207,8 +207,8 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      *
      * @return mixed (bool) true on success or (object) pear_error on failure
      * @access public
-     * @see Net_NNTP::connect()
-     * @see Net_NNTP::connectAuthenticated()
+     * @see Net_NNTP_Client::connect()
+     * @see Net_NNTP_Client::connectAuthenticated()
      */
     function authenticate($user, $pass, $mode = NET_NNTP_CLIENT_AUTH_ORIGINAL)
     {
@@ -241,8 +241,8 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      *
      * @return bool true or false
      * @access public
-     * @see Net_NNTP::connect()
-     * @see Net_NNTP::quit()
+     * @see Net_NNTP_Client::connect()
+     * @see Net_NNTP_Client::quit()
      */
     function isConnected()
     {
@@ -259,11 +259,11 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      *
      * @return mixed (array) Info about the newsgroup on success or (object) pear_error on failure
      * @access public
-     * @see Net_NNTP::group()
-     * @see Net_NNTP::first()
-     * @see Net_NNTP::last()
-     * @see Net_NNTP::count()
-     * @see Net_NNTP::getGroups()
+     * @see Net_NNTP_Client::group()
+     * @see Net_NNTP_Client::first()
+     * @see Net_NNTP_Client::last()
+     * @see Net_NNTP_Client::count()
+     * @see Net_NNTP_Client::getGroups()
      */
     function selectGroup($newsgroup)
     {
@@ -286,8 +286,8 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      *
      * @return mixed (array) nested array with informations about existing newsgroups on success or (object) pear_error on failure
      * @access public
-     * @see Net_NNTP::selectGroup()
-     * @see Net_NNTP::getDescriptions()
+     * @see Net_NNTP_Client::selectGroup()
+     * @see Net_NNTP_Client::getDescriptions()
      */
     function getGroups()
     {
@@ -308,7 +308,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      *
      * @return mixed (array) nested array with description of existing newsgroups on success or (object) pear_error on failure
      * @access public
-     * @see Net_NNTP::getGroups()
+     * @see Net_NNTP_Client::getGroups()
      */
     function getDescriptions()
     {
@@ -336,8 +336,8 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      *
      * @return mixed (array) nested array of message and their headers on success or (object) pear_error on failure
      * @access public
-     * @see Net_NNTP::getOverviewFormat()
-     * @see Net_NNTP::getReferencesOverview()
+     * @see Net_NNTP_Client::getOverviewFormat()
+     * @see Net_NNTP_Client::getReferencesOverview()
      */
     function getOverview($first, $last)
     {
@@ -357,7 +357,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      *
      * @return mixed (array) header names on success or (object) pear_error on failure
      * @access public
-     * @see Net_NNTP::getOverview()
+     * @see Net_NNTP_Client::getOverview()
      */
     function getOverviewFormat()
     {
@@ -375,7 +375,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      *
      * @return mixed (array) nested array of references on success or (object) pear_error on failure
      * @access public
-     * @see Net_NNTP::getOverview()
+     * @see Net_NNTP_Client::getOverview()
      */
     function getReferencesOverview($first, $last)
     {
@@ -425,9 +425,9 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      *
      * @return mixed (object) message object on success or (object) pear_error on failure
      * @access public
-     * @see Net_NNTP::getArticleRaw()
-     * @see Net_NNTP::getHeader()
-     * @see Net_NNTP::getBody()
+     * @see Net_NNTP_Client::getArticleRaw()
+     * @see Net_NNTP_Client::getHeader()
+     * @see Net_NNTP_Client::getBody()
      */
     function getArticle($article)
     {
@@ -452,9 +452,9 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      *
      * @return mixed (array/string) The article on success or (object) pear_error on failure
      * @access public
-     * @see Net_NNTP::getArticle()
-     * @see Net_NNTP::getHeaderRaw()
-     * @see Net_NNTP::getBodyRaw()
+     * @see Net_NNTP_Client::getArticle()
+     * @see Net_NNTP_Client::getHeaderRaw()
+     * @see Net_NNTP_Client::getBodyRaw()
      */
     function getArticleRaw($article, $implode = false)
     {
@@ -480,16 +480,15 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      *
      * @return mixed (object) header object on success or (object) pear_error on failure
      * @access public
-     * @see Net_NNTP::getHeaderRaw()
-     * @see Net_NNTP::getArticle()
-     * @see Net_NNTP::getBody()
+     * @see Net_NNTP_Client::getHeaderRaw()
+     * @see Net_NNTP_Client::getArticle()
+     * @see Net_NNTP_Client::getBody()
      */
     function getHeader($article)
     {
         $header = $this->getHeaderRaw($article, false);
         if (PEAR::isError($header)) {
-	    return $header
-;
+	    return $header;
 	}
 
 	$H = Net_NNTP_Header::create($header);
@@ -508,9 +507,9 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      *
      * @return mixed (array/string) header fields on success or (object) pear_error on failure
      * @access public
-     * @see Net_NNTP::getHeader()
-     * @see Net_NNTP::getArticleRaw()
-     * @see Net_NNTP::getBodyRaw()
+     * @see Net_NNTP_Client::getHeader()
+     * @see Net_NNTP_Client::getArticleRaw()
+     * @see Net_NNTP_Client::getBodyRaw()
      */
     function getHeaderRaw($article, $implode = false)
     {
@@ -542,9 +541,9 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      *
      * @return mixed (array/string) body on success or (object) pear_error on failure
      * @access public
-     * @see Net_NNTP::getBody()
-     * @see Net_NNTP::getHeaderRaw()
-     * @see Net_NNTP::getArticleRaw()
+     * @see Net_NNTP_Client::getBody()
+     * @see Net_NNTP_Client::getHeaderRaw()
+     * @see Net_NNTP_Client::getArticleRaw()
      */
     function getBodyRaw($article, $implode = false)
     {
@@ -668,10 +667,10 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @return integer number of article in group
      * @access public
      * @since 0.3
-     * @see Net_NNTP::group()
-     * @see Net_NNTP::first()
-     * @see Net_NNTP::last()
-     * @see Net_NNTP::selectGroup()
+     * @see Net_NNTP_Client::group()
+     * @see Net_NNTP_Client::first()
+     * @see Net_NNTP_Client::last()
+     * @see Net_NNTP_Client::selectGroup()
      */
     function count()
     {
@@ -687,10 +686,10 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @return integer number of last article
      * @access public
      * @since 0.3
-     * @see Net_NNTP::first()
-     * @see Net_NNTP::group()
-     * @see Net_NNTP::count()
-     * @see Net_NNTP::selectGroup()
+     * @see Net_NNTP_Client::first()
+     * @see Net_NNTP_Client::group()
+     * @see Net_NNTP_Client::count()
+     * @see Net_NNTP_Client::selectGroup()
      */
     function last()
     {
@@ -706,10 +705,10 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @return integer number of first article
      * @access public
      * @since 0.3
-     * @see Net_NNTP::last()
-     * @see Net_NNTP::group()
-     * @see Net_NNTP::count()
-     * @see Net_NNTP::selectGroup()
+     * @see Net_NNTP_Client::last()
+     * @see Net_NNTP_Client::group()
+     * @see Net_NNTP_Client::count()
+     * @see Net_NNTP_Client::selectGroup()
      */
     function first()
     {
@@ -725,10 +724,10 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @return string group name
      * @access public
      * @since 0.3
-     * @see Net_NNTP::first()
-     * @see Net_NNTP::last()
-     * @see Net_NNTP::count()
-     * @see Net_NNTP::selectGroup()
+     * @see Net_NNTP_Client::first()
+     * @see Net_NNTP_Client::last()
+     * @see Net_NNTP_Client::count()
+     * @see Net_NNTP_Client::selectGroup()
      */
     function group()
     {
