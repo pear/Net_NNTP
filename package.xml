@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <!-- do not use the "Type" attribute here, that one is only for
      generated package.xml files -->
-<!-- $Id: package.xml,v 1.16.2.3 2004-07-06 07:18:35 heino Exp $ -->
+<!-- $Id: package.xml,v 1.16.2.4 2004-07-14 15:59:02 heino Exp $ -->
 <package version="1.0">
   <name>Net_NNTP</name>
   <summary>Implementation of the NNTP protocol</summary>
@@ -21,14 +21,12 @@
    <dep type="pkg" rel="ge" version="1.0">Net_Socket</dep>
   </deps>
   <release>
-    <version>0.10.2</version>
-    <date>2003-07-06</date>
+    <version>0.10.3</version>
+    <date>2004-07-14</date>
     <license>W3C / PHP 2.0</license>
     <state>alpha</state>
     <notes>
-      - Fixes bug #1803 (trailing space character sent in cmdListNewsgrups())
-      - Fixes bug #825 (no more lazy assignement of new values to $this)
-      - Examples moved into docs to comply with the standard PEAR directory structure.
+      - Fixes undefined property warning
     </notes>
     <filelist>
       <dir name="/" baseinstalldir="Net">
@@ -53,6 +51,16 @@
     </filelist>
   </release>
   <changelog>
+  <release>
+    <version>0.10.2</version>
+    <date>2004-07-06</date>
+    <state>alpha</state>
+    <notes>
+      - Fixes bug #1803 (trailing space character sent in cmdListNewsgrups())
+      - Fixes bug #825 (no more lazy assignement of new values to $this)
+      - Examples moved into docs to comply with the standard PEAR directory structure.
+    </notes>
+  </release>
   <release>
     <version>0.10.1</version>
     <date>2003-10-24</date>
