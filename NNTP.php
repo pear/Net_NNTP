@@ -22,6 +22,9 @@
 
 require_once 'PEAR.php';
 
+define("NNTP_ALL"0,);
+define("NNTP_NAMES",1);
+define("NNTP_LIST",2);
 /**
  * The NNTP:: class fetches UseNet news articles acording to the standard
  * based on RFC 1036.
@@ -345,16 +348,16 @@ class Net_Nntp extends PEAR
      * @author Morgan Christiansson <mog@linux.nu>
      */
     function get_data()    {
-      $body = array();
-      while(!feof($this->fp)) {
-	$line = trim(fgets($this->fp, 256));
-	if ($line == '.') {
-	  break;
-	} else {
-	  $body[] = $line;
-	}
-      }
-      return $body;
+        $body = array();
+        while(!feof($this->fp)) {
+            $line = trim(fgets($this->fp, 256));
+            if ($line == '.') {
+                break;
+            } else {
+                $body[] = $line;
+            }
+        }
+        return $body;
     }
 
     /**
@@ -412,26 +415,26 @@ class Net_Nntp extends PEAR
     }
 
     function get_overview($first,$last) {
-      $format = $this->get_overview_fmt();
+        $format = $this->get_overview_fmt();
 
-      $this->command("XOVER $first-$last");
-      foreach($this->get_data() as $line) {
-	$i=0;
-	foreach(explode("\t",$line) as $line) {
-	  $message[$format[$i++]] = $line;
-	}
-	$messages[$message["number"]] = $message;
-      }
+        $this->command("XOVER $first-$last");
+        foreach($this->get_data() as $line) {
+            $i=0;
+            foreach(explode("\t",$line) as $line) {
+                $message[$format[$i++]] = $line;
+            }
+            $messages[$message["Message-ID"]] = $message;
+        }
 
-      $this->command("XROVER $first-$last");
-      foreach($this->get_data() as $line) {
-	$i=0;
-	foreach(explode("\t",$line) as $line) {
-	  $message[$format[$i++]] = $line;
-	}
-	$messages[$message["number"]] = $message;
-      }
-      return $messages;
+        $this->command("XROVER $first-$last");
+        foreach($this->get_data() as $line) {
+            $i=0;
+            foreach(explode("\t",$line) as $line) {
+                $message[$format[$i++]] = $line;
+            }
+            $messages[$message["Message-ID"]] = $message;
+        }
+        return $messages;
     }
 
     /**
