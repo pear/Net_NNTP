@@ -1,4 +1,5 @@
 <?php
+/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4 foldmethod=marker: */
 // +-----------------------------------------------------------------------+
 // |                                                                       |
 // | Copyright © 2003 Heino H. Gehlsen. All Rights Reserved.               |
@@ -62,14 +63,19 @@
 require_once 'PEAR.php';
 require_once 'Net/NNTP/Header.php';
 
+
+// {{{ Net_NNTP_Message
+
 /**
+ * The Net_NNTP_Message class
  *
-  The Net_NNTP_Message class
- *
- * @version $Revision$
- * @package Net_NNTP
- *
- * @author  Heino H. Gehlsen <heino@gehlsen.dk>
+ * @category   Net
+ * @package    Net_NNTP
+ * @author     Heino H. Gehlsen <heino@gehlsen.dk>
+ * @version    $Id$
+ * @access     public
+ * @see        Net_NNTP_Header
+ * @since      Class available since Release 0.10.0
  */
 class Net_NNTP_Message
 {
@@ -175,20 +181,17 @@ class Net_NNTP_Message
 
 	    // Array & String (only 1st parameter)
 	    case ((is_string($input) || is_array($input)) && (is_null($input2))):
-		$Object->setMessage($input)
-;
+		$Object->setMessage($input);
 		return $Object;
 		break;
 
 	    // Array & String (also 2nd parameter)
 	    case ((is_string($input) || is_array($input)) && (is_string($input2) || is_array($input2))):
 
-		$Object->setHeader($input)
-;
+		$Object->setHeader($input);
 
 		if (is_array($input2)) {
-		    $Object->body = implode("\r\n", $input2)
-;
+		    $Object->body = implode("\r\n", $input2);
 		} else {
 		    $Object->body = $input2;
 		}
@@ -225,7 +228,8 @@ class Net_NNTP_Message
 
 		    // Message
 		    case is_a($input, 'net_nntp_message'):
-		        $this =& $message;
+				$this->setHeader($message->getHeader());
+				$this->setBody($message->getBody());
 		        break;
 
 		    // Unknown object/class
@@ -315,13 +319,11 @@ class Net_NNTP_Message
 		    }
 		    break;
 
-
 		// Array & String
 		case is_array($input):
 		case is_string($input):
 		    $this->header->setFields($input);
 		    break;
-
 
 		// Unknown type
 		default:
@@ -349,8 +351,7 @@ class Net_NNTP_Message
     /**
      * Sets the body
      *
-     * @param mixed $body
- Array or string
+     * @param mixed $body Array or string
      *
      * @access public
      */
@@ -386,8 +387,7 @@ class Net_NNTP_Message
      *
      * @param mixed $input Message in form of eiter string or array
      *
-     * @return array Contains separated header and body section
-s in same type as $input
+     * @return array Contains separated header and body sections in same type as $input
      * @access public
      */
     function splitMessage($input)
@@ -398,8 +398,7 @@ s in same type as $input
 	    case is_string($input);
     		if (preg_match("/^(.*?)\r?\n\r?\n(.*)/s", $input, $matches)) {
     		    return array('header' => $matches[1], 'body' => $matches[2]);
-    		}
- else {
+    		} else {
 	    	    return PEAR::throwError('Could not split header and body');
 		}
 		break;
@@ -422,5 +421,7 @@ s in same type as $input
     // }}}
 
 }
+
+// }}}
 
 ?>
