@@ -134,17 +134,40 @@ class Net_NNTP_Header // extends PEAR
      */
     function & create($input = null)
     {
-	$Object = new Net_NNTP_Header();
-
-	if ($Object != null) { 
-	    $R = $Object->setFields($input)
-;
-	    if (PEAR::isError($R)) {
-		return $R;
-	    }
+	if ($input == null) {
+	    $Object = new Net_NNTP_Header();
+	    return $Object;
 	}
-	
-	return $Object;
+
+	switch (gettype($input)) {
+
+	    case 'object':
+		switch (true) {
+		    case is_a($input, 'net_nntp_header'):
+			return $input;
+			break;
+		    case is_a($input, 'net_nntp_message'):
+			return $input->getHeader();
+			break;
+		    default:
+			return PEAR::throwError('Unsupported object/class: '.get_class($input), null);
+		}
+		break;
+
+	    case 'string':
+	    case 'array':
+	        $Object = new Net_NNTP_Header();
+		$R = $Object->setFields($input)
+;
+		if (PEAR::isError($R)) {
+		    return $R;
+		}
+		return $Object;
+		break;
+		
+	    default:
+		return PEAR::throwError('Unsupported object/class: '.get_class($input), null);
+	}
     }
 
     // }}}
@@ -458,6 +481,12 @@ class Net_NNTP_Header // extends PEAR
 	// Convert to array
 	$array =& explode("\r\n", &$string);
 
+	// Remove body if present
+	$i = array_search('', $array);
+	if ($i != null) {
+	    array_splice($array, $i, (count($array))-$i);
+	}
+
 	// Forward to _parse()
 	return $this->_parse(&$array);
     }
@@ -484,6 +513,12 @@ class Net_NNTP_Header // extends PEAR
     	// Unfold the header lines
 	if ($this->_unfoldOnParse == true) {
 	    $array =& $this->unfoldArray(&$array);
+	}
+
+	// Remove body if present
+	$i = array_search('', $array);
+	if ($i != null) {
+	    array_splice($array, $i, count($array)-$i);
 	}
 
 	// Forward to _parse()
