@@ -197,7 +197,7 @@ class Net_NNTP_Realtime extends Net_NNTP_Protocol
     {
         // Username is a must...
         if ($user == null) {
-            return $this->throwError('No username supplied', null);
+            return PEAR::throwError('No username supplied', null);
         }
 
         // Use selected authentication method
@@ -212,7 +212,7 @@ class Net_NNTP_Realtime extends Net_NNTP_Protocol
                 return $this->cmdAuthinfoGeneric($user, $pass);
                 break;
             default:
-                return $this->throwError("The auth mode: '$mode' is unknown", null);
+                return PEAR::throwError("The auth mode: '$mode' is unknown", null);
         }
     }
 
@@ -575,7 +575,7 @@ class Net_NNTP_Realtime extends Net_NNTP_Protocol
 		$time = (int) strtotime($time);
 		break;
 	    default:
-	        return $this->throwError('');
+	        return PEAR::throwError('');
 	}
 
 	return $this->cmdNewgroups($time);

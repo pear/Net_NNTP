@@ -68,13 +68,12 @@ define('NET_NNTP_PROTOCOL_DEFAULT_PORT', '119');
 
 /**
  * The Net_NNTP_Protocol class implements the NNTP standard acording to
- * RFX 977, RFC 2980, RFC 850/1036
-, and RFC 822/2822
+ * RFX 977, RFC 2980, RFC 850/1036, and RFC 822/2822
  *
  * @version 0.0.1
  * @author Heino H. Gehlsen <heino@gehlsen.dk>
  */
-class Net_NNTP_Protocol extends PEAR
+class Net_NNTP_Protocol
 {
     // {{{ properties
 
@@ -101,8 +100,6 @@ class Net_NNTP_Protocol extends PEAR
      *
      */
     function Net_NNTP_Protocol() {
-	parent::PEAR();
-	
 	$this->_socket = new Net_Socket();
     }
 
@@ -126,7 +123,7 @@ class Net_NNTP_Protocol extends PEAR
 
 	// Open Connection
 	$R = @$this->_socket->connect($host, $port, false, 15);
-	if ($this->isError($R)) {
+	if (PEAR::isError($R)) {
 	    return PEAR::throwError('Could not connect to the server', null, $R->getMessage());
 	}
 
@@ -967,7 +964,7 @@ class Net_NNTP_Protocol extends PEAR
      */
     function isConnected()
     {
-	return (is_resource($this->_socket->fp) && !feof($this->_socket->fp));
+	return (is_resource($this->_socket->fp) && (!$this->_socket->eof()));
     }
 
     // }}}
