@@ -63,11 +63,14 @@ require_once 'PEAR.php';
 require_once 'Net/NNTP/Header.php';
 
 /**
-*
-* @author  Heino H. Gehlsen <heino@gehlsen.dk>
-* @version $Revision$
-* @package 
-*/
+ *
+  The Net_NNTP_Message class
+ *
+ * @version $Revision$
+ * @package Net_NNTP
+ *
+ * @author  Heino H. Gehlsen <heino@gehlsen.dk>
+ */
 
 class Net_NNTP_Message // extends PEAR
 {
@@ -90,9 +93,6 @@ class Net_NNTP_Message // extends PEAR
     var $body;
 
     // }}}
-
-/*-------------------------------------------------------------------------------------------------*/
-
     // {{{ constructor
 
     /**
@@ -117,9 +117,6 @@ class Net_NNTP_Message // extends PEAR
     }
 
     // }}}
-
-/*-------------------------------------------------------------------------------------------------*/
-
     // {{{ setMessage()
 
     /**
@@ -159,7 +156,7 @@ class Net_NNTP_Message // extends PEAR
      */
     function getMessageString()
     {
-	return $this->header->getFieldsString()."\r\n".$this->body;
+	return $this->header->getFieldsString()."\r\n\r\n".$this->body;
     }
 
     // }}}
@@ -174,7 +171,7 @@ class Net_NNTP_Message // extends PEAR
     function getMessageArray()
     {
 	$header = $this->header->getFieldsArray();
-	$header[] = "";
+	$header[] = '';
 	return array_merge($header, explode("\r\n", $this->body));
     }
 
