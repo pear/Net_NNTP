@@ -29,27 +29,37 @@
     </maintainer>
   </maintainers>
   <release>
-    <version>0.2.4</version>
-    <date>2004-03-10</date>
+    <version>0.2.5</version>
+    <date>2004-07-01</date>
     <state>stable</state>
     <notes>
-      post() rewritten to allow posting using authentication (bug #817)
+      Examples moved into docs to comply with the standard PEAR directory structure.
     </notes>
     <filelist>
       <dir name="/" baseinstalldir="Net">
         <file role="php">NNTP.php</file>
-        <dir name="examples">
-          <dir name="news.php.net" role="doc">
-            <file>index.php</file>
-            <file>group.php</file>
-            <file>read.php</file>
-            <file>README</file>
+        <dir name="docs" role="doc">
+          <dir name="examples">
+            <dir name="news.php.net">
+              <file>index.php</file>
+              <file>group.php</file>
+              <file>read.php</file>
+              <file>README</file>
+            </dir>
           </dir>
         </dir>
       </dir>
     </filelist>
   </release>
   <changelog>
+  <release>
+    <version>0.2.4</version>
+    <date>2004-03-10</date>
+    <state>stable</state>
+    <notes>
+      post() rewritten to allow posting using authentication (bug #817)
+    </notes>
+  </release>
   <release>
     <version>0.2.3</version>
     <date>2003-09-13</date>
