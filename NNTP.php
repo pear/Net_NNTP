@@ -215,7 +215,7 @@ class Net_NNTP extends PEAR
         }
         $post = null;
         while (!feof($this->fp)) {
-            $line = trim(fgets($this->fp, 256));
+            $line = rtrim(fgets($this->fp, 256), "\r\n");
 
             if ($line == ".") {
                 break;
@@ -260,7 +260,7 @@ class Net_NNTP extends PEAR
         fputs($this->fp, "POST\n");
 
         /* The servers' response */
-        $response = trim(fgets($this->fp, 128));
+        $response = rtrim(fgets($this->fp, 128), "\r\n");
 
         fputs($this->fp, "From: $from\n");
         fputs($this->fp, "Newsgroups: $newsgroup\n");
@@ -270,7 +270,7 @@ class Net_NNTP extends PEAR
         fputs($this->fp, "\n$body\n.\n");
 
         /* The servers' response */
-        $response = trim(fgets($this->fp, 128));
+        $response = rtrim(fgets($this->fp, 128), "\r\n");
 
         return $response;
     }
@@ -295,7 +295,7 @@ class Net_NNTP extends PEAR
 
         $headers = '';
         while(!feof($this->fp)) {
-            $line = trim(fgets($this->fp, 256));
+            $line = rtrim(fgets($this->fp, 256), "\r\n");
 
             if ($line == '.') {
                 break;
@@ -379,7 +379,7 @@ class Net_NNTP extends PEAR
 
         $body = null;
         while (!feof($this->fp)) {
-            $line = trim(fgets($this->fp, 256));
+            $line = rtrim(fgets($this->fp, 256), "\r\n");
 
             if ($line == '.') {
                 break;
@@ -408,7 +408,7 @@ class Net_NNTP extends PEAR
     {
         $body = array();
         while(!feof($this->fp)) {
-            $line = trim(fgets($this->fp, 256));
+            $line = rtrim(fgets($this->fp, 256), "\r\n");
             if ($line == '.') {
                 break;
             } else {
