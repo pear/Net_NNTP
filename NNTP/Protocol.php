@@ -67,8 +67,9 @@ define('NET_NNTP_PROTOCOL_DEFAULT_HOST', 'localhost');
 define('NET_NNTP_PROTOCOL_DEFAULT_PORT', '119');
 
 /**
- * The Net_NNTP_Protocol:: class fetches UseNet news articles
- * acording to the standard based on RFC 1036.
+ * The Net_NNTP_Protocol class implements the NNTP standard acording to
+ * RFX 977, RFC 2980, RFC 850/1036
+, and RFC 822/2822
  *
  * @version 0.0.1
  * @author Heino H. Gehlsen <heino@gehlsen.dk>
@@ -120,13 +121,13 @@ class Net_NNTP_Protocol extends PEAR
     function connect($host = NET_NNTP_PROTOCOL_DEFAULT_HOST, $port = NET_NNTP_PROTOCOL_DEFAULT_PORT)
     {
         if ($this->isConnected() ) {
-	    return $this->throwError('Already connected, disconnect first!', null);
+	    return PEAR::throwError('Already connected, disconnect first!', null);
 	}
 
 	// Open Connection
 	$R = @$this->_socket->connect($host, $port, false, 15);
 	if ($this->isError($R)) {
-	    return $this->throwError('Could not connect to the server', null, $R->getMessage());
+	    return PEAR::throwError('Could not connect to the server', null, $R->getMessage());
 	}
 
 	// Retrive the server's initial response.
@@ -145,10 +146,10 @@ class Net_NNTP_Protocol extends PEAR
 	        return true;
 	        break;
 	    case 502: // 'access restriction or permission denied'
-		return $this->throwError('Server refused connection', $response, $this->currentStatusResponse());
+		return PEAR::throwError('Server refused connection', $response, $this->currentStatusResponse());
 		break;
 	    default:
-		return $this->throwError('Unidentified response code', $response, $this->currentStatusResponse());
+		return PEAR::throwError('Unidentified response code', $response, $this->currentStatusResponse());
 	}
     }
 
@@ -190,7 +191,7 @@ class Net_NNTP_Protocol extends PEAR
 		return true;
 		break;
 	    default:
-		return $this->throwError('Unidentified response code', $response, $this->currentStatusResponse());
+		return PEAR::throwError('Unidentified response code', $response, $this->currentStatusResponse());
 	}
 
     }
@@ -235,20 +236,20 @@ class Net_NNTP_Protocol extends PEAR
 	        return true;
 	        break;
 	    case 381: // RFC2980: 'More authentication information required'
-	        return $this->throwError('Authentication uncompleted', $response, $this->currentStatusResponse());
+	        return PEAR::throwError('Authentication uncompleted', $response, $this->currentStatusResponse());
 	        break;
 	    case 482: // RFC2980: 'Authentication rejected'
-		return $this->throwError('Authentication rejected', $response, $this->currentStatusResponse());
+		return PEAR::throwError('Authentication rejected', $response, $this->currentStatusResponse());
 		break;
 	    case 502: // RFC2980: 'No permission'
-		return $this->throwError('Authentication rejected', $response, $this->currentStatusResponse());
+		return PEAR::throwError('Authentication rejected', $response, $this->currentStatusResponse());
 		break;
 //	    case 500:
 //	    case 501:
-//	    	return $this->throwError('Authentication failed', $response, $this->currentStatusResponse());
+//	    	return PEAR::throwError('Authentication failed', $response, $this->currentStatusResponse());
 //	    	break;
 	    default:
-		return $this->throwError('Unexpected authentication error!', $response, $this->currentStatusResponse());
+		return PEAR::throwError('Unexpected authentication error!', $response, $this->currentStatusResponse());
 	}
     }
 	
@@ -266,7 +267,7 @@ class Net_NNTP_Protocol extends PEAR
      */
     function cmdAuthinfoSimple($user, $pass)
     {
-        return $this->throwError("The auth mode: 'simple' is has not been implemented yet", null);
+        return PEAR::throwError("The auth mode: 'simple' is has not been implemented yet", null);
     }
 	
     // }}}
@@ -283,7 +284,7 @@ class Net_NNTP_Protocol extends PEAR
      */
     function cmdAuthinfoGeneric($user, $pass)
     {
-        return $this->throwError("The auth mode: 'generic' is has not been implemented yet", null);
+        return PEAR::throwError("The auth mode: 'generic' is has not been implemented yet", null);
     }
 	
     // }}}
@@ -308,7 +309,7 @@ class Net_NNTP_Protocol extends PEAR
 	    case 201: // RFC2980: 'Hello, you can't post'
 		break;
 	    default:
-		return $this->throwError('Unidentified response code', $response, $this->currentStatusResponse());
+		return PEAR::throwError('Unidentified response code', $response, $this->currentStatusResponse());
 	}
 
     }
@@ -344,19 +345,19 @@ class Net_NNTP_Protocol extends PEAR
 		return $data;
 		break;
 	    case 412: // RFC977: 'no newsgroup has been selected'
-		return $this->throwError('No newsgroup has been selected', $response, $this->currentStatusResponse());
+		return PEAR::throwError('No newsgroup has been selected', $response, $this->currentStatusResponse());
 		break;
 	    case 420: // RFC977: 'no current article has been selected'
-		return $this->throwError('No current article has been selected', $response, $this->currentStatusResponse());
+		return PEAR::throwError('No current article has been selected', $response, $this->currentStatusResponse());
 		break;
 	    case 423: // RFC977: 'no such article number in this group'
-		return $this->throwError('No such article number in this group', $response, $this->currentStatusResponse());
+		return PEAR::throwError('No such article number in this group', $response, $this->currentStatusResponse());
 		break;
 	    case 430: // RFC977: 'no such article found'
-		return $this->throwError('No such article found', $response, $this->currentStatusResponse());
+		return PEAR::throwError('No such article found', $response, $this->currentStatusResponse());
 		break;
 	    default:
-		return $this->throwError('Unidentified response code', $response, $this->currentStatusResponse());
+		return PEAR::throwError('Unidentified response code', $response, $this->currentStatusResponse());
 	}
 
     }
@@ -392,19 +393,19 @@ class Net_NNTP_Protocol extends PEAR
 	        return $data;
 		break;
 	    case 412: // RFC977: 'no newsgroup has been selected'
-		return $this->throwError('No newsgroup has been selected', $response, $this->currentStatusResponse());
+		return PEAR::throwError('No newsgroup has been selected', $response, $this->currentStatusResponse());
 		break;
 	    case 420: // RFC977: 'no current article has been selected'
-		return $this->throwError('No current article has been selected', $response, $this->currentStatusResponse());
+		return PEAR::throwError('No current article has been selected', $response, $this->currentStatusResponse());
 		break;
 	    case 423: // RFC977: 'no such article number in this group'
-		return $this->throwError('No such article number in this group', $response, $this->currentStatusResponse());
+		return PEAR::throwError('No such article number in this group', $response, $this->currentStatusResponse());
 		break;
 	    case 430: // RFC977: 'no such article found'
-		return $this->throwError('No such article found', $response, $this->currentStatusResponse());
+		return PEAR::throwError('No such article found', $response, $this->currentStatusResponse());
 		break;
 	    default:
-		return $this->throwError('Unidentified response code', $response, $this->currentStatusResponse());
+		return PEAR::throwError('Unidentified response code', $response, $this->currentStatusResponse());
 	}
     }
 
@@ -439,19 +440,19 @@ class Net_NNTP_Protocol extends PEAR
 	        return $data;
 		break;
 	    case 412: // RFC977: 'no newsgroup has been selected'
-		return $this->throwError('No newsgroup has been selected', $response, $this->currentStatusResponse());
+		return PEAR::throwError('No newsgroup has been selected', $response, $this->currentStatusResponse());
 		break;
 	    case 420: // RFC977: 'no current article has been selected'
-		return $this->throwError('No current article has been selected', $response, $this->currentStatusResponse());
+		return PEAR::throwError('No current article has been selected', $response, $this->currentStatusResponse());
 		break;
 	    case 423: // RFC977: 'no such article number in this group'
-		return $this->throwError('No such article number in this group', $response, $this->currentStatusResponse());
+		return PEAR::throwError('No such article number in this group', $response, $this->currentStatusResponse());
 		break;
 	    case 430: // RFC977: 'no such article found'
-		return $this->throwError('No such article found', $response, $this->currentStatusResponse());
+		return PEAR::throwError('No such article found', $response, $this->currentStatusResponse());
 		break;
 	    default:
-		return $this->throwError('Unidentified response code', $response, $this->currentStatusResponse());
+		return PEAR::throwError('Unidentified response code', $response, $this->currentStatusResponse());
 	}
     }
 
@@ -510,16 +511,16 @@ class Net_NNTP_Protocol extends PEAR
 		break;
     	    case 340: // RFC977: 'send article to be posted. End with <CR-LF>.<CR-LF>'
 		// This should not happen here!
-		return $this->throwError('Unknown error during post', $response, $this->currentStatusResponse());
+		return PEAR::throwError('Unknown error during post', $response, $this->currentStatusResponse());
 		break;
     	    case 440: // RFC977: 'posting not allowed'
-		return $this->throwError('Posting not allowed', $response, $this->currentStatusResponse());
+		return PEAR::throwError('Posting not allowed', $response, $this->currentStatusResponse());
 		break;
     	    case 441: // RFC977: 'posting failed'
-		return $this->throwError('Posting failed', $response, $this->currentStatusResponse());
+		return PEAR::throwError('Posting failed', $response, $this->currentStatusResponse());
 		break;
 	    default:
-		return $this->throwError('Unidentified response code', $response, $this->currentStatusResponse());
+		return PEAR::throwError('Unidentified response code', $response, $this->currentStatusResponse());
 	}
     }
 
@@ -551,10 +552,10 @@ class Net_NNTP_Protocol extends PEAR
 		return $response_arr;
 		break;
 	    case 411: // RFC977: 'no such news group'
-		return $this->throwError('No such news group', $response, $this->currentStatusResponse());
+		return PEAR::throwError('No such news group', $response, $this->currentStatusResponse());
 		break;
 	    default:
-		return $this->throwError('Unidentified response code', $response, $this->currentStatusResponse());
+		return PEAR::throwError('Unidentified response code', $response, $this->currentStatusResponse());
 	}
 	
     }
@@ -592,7 +593,7 @@ class Net_NNTP_Protocol extends PEAR
 	        return $groups;
 		break;
 	    default:
-		return $this->throwError('Unidentified response code', $response, $this->currentStatusResponse());
+		return PEAR::throwError('Unidentified response code', $response, $this->currentStatusResponse());
 	}
     }
 
@@ -629,10 +630,10 @@ class Net_NNTP_Protocol extends PEAR
 	        return $groups;
 		break;
 	    case 503: // RFC2980: 'program error, function not performed'
-		return $this->throwError('Internal server error, function not performed', $response, $this->currentStatusResponse());
+		return PEAR::throwError('Internal server error, function not performed', $response, $this->currentStatusResponse());
 		break;
 	    default:
-		return $this->throwError('Unidentified response code', $response, $this->currentStatusResponse());
+		return PEAR::throwError('Unidentified response code', $response, $this->currentStatusResponse());
 	}
 
     }
@@ -670,10 +671,10 @@ class Net_NNTP_Protocol extends PEAR
 		break;
 		  
 	    case 481: // RFC2980: 'Groups and descriptions unavailable'
-		return $this->throwError('Groups and descriptions unavailable', $response, $this->currentStatusResponse());
+		return PEAR::throwError('Groups and descriptions unavailable', $response, $this->currentStatusResponse());
 		break;
 	    default:
-		return $this->throwError('Unidentified response code', $response, $this->currentStatusResponse());
+		return PEAR::throwError('Unidentified response code', $response, $this->currentStatusResponse());
 	}
 
     }
@@ -709,7 +710,7 @@ class Net_NNTP_Protocol extends PEAR
 		return $groups;
 		break;
 	    default:
-		return $this->throwError('Unidentified response code', $response, $this->currentStatusResponse());
+		return PEAR::throwError('Unidentified response code', $response, $this->currentStatusResponse());
 	}
     }
 
@@ -746,10 +747,10 @@ class Net_NNTP_Protocol extends PEAR
 	        return $format;
 		break;
 	    case 503: // RFC2980: 'program error, function not performed'
-		return $this->throwError('Internal server error, function not performed', $response, $this->currentStatusResponse());
+		return PEAR::throwError('Internal server error, function not performed', $response, $this->currentStatusResponse());
 		break;
 	    default:
-		return $this->throwError('Unidentified response code', $response, $this->currentStatusResponse());
+		return PEAR::throwError('Unidentified response code', $response, $this->currentStatusResponse());
 	}
     }
 
@@ -797,16 +798,16 @@ class Net_NNTP_Protocol extends PEAR
         	return $messages;
 		break;
 	    case 412: // RFC2980: 'No news group current selected'
-		return $this->throwError('No news group current selected', $response, $this->currentStatusResponse());
+		return PEAR::throwError('No news group current selected', $response, $this->currentStatusResponse());
 		break;
 	    case 420: // RFC2980: 'No article(s) selected'
-		return $this->throwError('No article(s) selected', $response, $this->currentStatusResponse());
+		return PEAR::throwError('No article(s) selected', $response, $this->currentStatusResponse());
 		break;
 	    case 502: // RFC2980: 'no permission'
-		return $this->throwError('No permission', $response, $this->currentStatusResponse());
+		return PEAR::throwError('No permission', $response, $this->currentStatusResponse());
 		break;
 	    default:
-		return $this->throwError('Unidentified response code', $response, $this->currentStatusResponse());
+		return PEAR::throwError('Unidentified response code', $response, $this->currentStatusResponse());
 	}
     }
     
@@ -847,16 +848,16 @@ class Net_NNTP_Protocol extends PEAR
         	return $messages;
 		break;
 	    case 412: // RFC2980: 'No news group current selected'
-		return $this->throwError('No news group current selected', $response, $this->currentStatusResponse());
+		return PEAR::throwError('No news group current selected', $response, $this->currentStatusResponse());
 		break;
 	    case 420: // RFC2980: 'No article(s) selected'
-		return $this->throwError('No article(s) selected', $response, $this->currentStatusResponse());
+		return PEAR::throwError('No article(s) selected', $response, $this->currentStatusResponse());
 		break;
 	    case 502: // RFC2980: 'no permission'
-		return $this->throwError('No permission', $response, $this->currentStatusResponse());
+		return PEAR::throwError('No permission', $response, $this->currentStatusResponse());
 		break;
 	    default:
-		return $this->throwError('Unidentified response code', $response, $this->currentStatusResponse());
+		return PEAR::throwError('Unidentified response code', $response, $this->currentStatusResponse());
 	}
     }
 
@@ -885,13 +886,13 @@ class Net_NNTP_Protocol extends PEAR
 	        return $data;
 		break;
 	    case 412: // RFC2980: 'Not currently in newsgroup'
-		return $this->throwError('Not currently in newsgroup', $response, $this->currentStatusResponse());
+		return PEAR::throwError('Not currently in newsgroup', $response, $this->currentStatusResponse());
 		break;
 	    case 502: // RFC2980: 'no permission'
-		return $this->throwError('No permission', $response, $this->currentStatusResponse());
+		return PEAR::throwError('No permission', $response, $this->currentStatusResponse());
 		break;
 	    default:
-		return $this->throwError('Unidentified response code', $response, $this->currentStatusResponse());
+		return PEAR::throwError('Unidentified response code', $response, $this->currentStatusResponse());
 	}
     }
 
@@ -919,7 +920,7 @@ class Net_NNTP_Protocol extends PEAR
 		return $messages;
 		break;
 	    default:
-		return $this->throwError('Unidentified response code', $response, $this->currentStatusResponse());
+		return PEAR::throwError('Unidentified response code', $response, $this->currentStatusResponse());
 	}
     }
 
@@ -951,7 +952,7 @@ class Net_NNTP_Protocol extends PEAR
 		}
 		break;
 	    default:
-		return $this->throwError('Unidentified response code', $response, $this->currentStatusResponse());
+		return PEAR::throwError('Unidentified response code', $response, $this->currentStatusResponse());
 	}
     }
     // }}}
@@ -1001,7 +1002,7 @@ class Net_NNTP_Protocol extends PEAR
 	// Retrieve a line (terminated by "\r\n") from the server.
 	$response = $this->_socket->gets(256);
         if (PEAR::isError($response) ) {
-    	    return $this->throwError('Failed to read from socket!', null, $response->getMessage());
+    	    return PEAR::throwError('Failed to read from socket!', null, $response->getMessage());
         }
 
         if ($this->_debug) {
@@ -1051,12 +1052,12 @@ class Net_NNTP_Protocol extends PEAR
 	    // Retrieve a line (terminated by "\r\n") from the server.
             $line = $this->_socket->gets(1024); // Lines may not be longer than 988+2 chars (RFC2822 2.3) 
     	    if (PEAR::isError($line) ) {
-        	return $this->throwError( 'Failed to read from socket!', null, $line->getMessage());
+        	return PEAR::throwError( 'Failed to read from socket!', null, $line->getMessage());
     	    }
 	    
 	    // Verify recieved line
 	    if (strlen($line) < 2 || substr($line, -2) != "\r\n") {
-        	return $this->throwError('Invalid line recieved!', null);
+        	return PEAR::throwError('Invalid line recieved!', null);
 	    }
 
 	    // Check if line terminates the textresponse
@@ -1078,7 +1079,7 @@ class Net_NNTP_Protocol extends PEAR
             $data[] = $line;
         }
 
-    	return $this->throwError('Data stream not terminated with period', null);
+    	return PEAR::throwError('Data stream not terminated with period', null);
      }
 
     // }}}
@@ -1096,18 +1097,18 @@ class Net_NNTP_Protocol extends PEAR
     function _sendCommand($cmd)
     {
         if (!strlen($cmd) > 510) { // NNTP/RFC977 only allows command up to 512 (-2) chars.
-            return $this->throwError('Failed to write to socket! (Command to long - max 510 chars)');
+            return PEAR::throwError('Failed to write to socket! (Command to long - max 510 chars)');
         }
 
         // Check if connected
 	if (!$this->isConnected()) {
-            return $this->throwError('Failed to write to socket! (connection lost!)');
+            return PEAR::throwError('Failed to write to socket! (connection lost!)');
         }
 
 	// Send the command
 	$R = $this->_socket->writeLine($cmd);
         if ( PEAR::isError($R) ) {
-            return $this->throwError('Failed to write to socket!', null, $R->getMessage());
+            return PEAR::throwError('Failed to write to socket!', null, $R->getMessage());
         }
 	
         if ($this->_debug) {
