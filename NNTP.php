@@ -235,6 +235,16 @@ class Net_NNTP extends Net_NNTP_Protocol_Client
         return true;
     }
 
+    function prepare_connection($nntpserver,
+    	    	    	    	$port = 119,
+    	    	    	        $newsgroup,
+            	                $user = null,
+    	    	    	        $pass = null,
+    	    	    	        $authmode = NET_NNTP_AUTHORIGINAL)
+    {
+    	return $this->prepareConnection($nntpserver, $port, $newsgroup, $user, $pass, $authmode);
+    }
+																				    
     // }}}
     // {{{ authenticate()
 
@@ -289,6 +299,11 @@ class Net_NNTP extends Net_NNTP_Protocol_Client
     {
         return parent::isConnected();
     }
+    
+    function is_connected()
+    {
+	return $this->isConnected();
+    }
 
     // }}}
     // {{{ selectGroup()
@@ -321,6 +336,11 @@ class Net_NNTP extends Net_NNTP_Protocol_Client
     	$this->max =& $response_arr['max'];
 
     	return $response_arr;
+    }
+
+    function select_group($newsgroup)
+    {
+    	return $this->selectGroup($newsgroup);
     }
 
     // }}}
@@ -361,6 +381,11 @@ class Net_NNTP extends Net_NNTP_Protocol_Client
     	return $groups;
     }
 
+    function get_groups()
+    {
+	return $this->getGroups();
+    }
+ 
     // }}}
     // {{{ getOverview()
 
@@ -386,6 +411,11 @@ class Net_NNTP extends Net_NNTP_Protocol_Client
     	}
 
     	return $overview;
+    }
+
+    function get_overview($first, $last)
+    {
+    	$this->getOverview($first, $last);
     }
 
     // }}}
@@ -418,6 +448,11 @@ class Net_NNTP extends Net_NNTP_Protocol_Client
     	return $this->getOverviewFormat();
     }
 
+    function get_overview_fmt()
+    {
+        $this->getOverviewFmt();
+    }
+    
     // }}}
     // {{{ getReferencesOverview()
 
@@ -513,6 +548,11 @@ class Net_NNTP extends Net_NNTP_Protocol_Client
     	return $this->getArticleRaw($article);
     }
 
+    function get_article($article)
+    {
+        return $this->getArticle($article);
+    }
+
     // }}}
     // {{{ getHeaderRaw()
 
@@ -557,6 +597,11 @@ class Net_NNTP extends Net_NNTP_Protocol_Client
         return $this->getHeaderRaw($article);
     }
 
+    function get_headers($article)
+    {
+    	return $this->getHeaders($article);
+    }
+ 
     // }}}
     // {{{ getBodyRaw()
 
@@ -601,66 +646,9 @@ class Net_NNTP extends Net_NNTP_Protocol_Client
     	return $this->getBodyRaw($article);
     }
 
-    // }}}
-    // {{{ getGroupArticles()
-
-    /**
-     * Experimental
-     *
-     * @access public
-     * @since 0.3
-     */
-    function getGroupArticles($newsgroup)
+    function get_body($article)
     {
-        return $this->cmdListgroup($newsgroup);
-    }
-
-    // }}}
-    // {{{ getNewGroups()
-
-    /**
-     * Experimental
-     *
-     * @access public
-     * @since 0.3
-     */
-    function getNewGroups($time)
-    {
-    	switch (gettype($time)) {
-    	    case 'integer':
-    	    	break;
-    	    case 'string':
-    	    	$time = (int) strtotime($time);
-    	    	break;
-    	    default:
-    	        return PEAR::throwError('');
-    	}
-
-    	return $this->cmdNewgroups($time);
-    }
-
-    // }}}
-    // {{{ getNewNews()
-
-    /**
-     * Experimental
-     *
-     * @access public
-     * @since 0.3
-     */
-    function getNewNews($time, $newsgroups = '*')
-    {
-    	switch (gettype($time)) {
-    	    case 'integer':
-    	    	break;
-    	    case 'string':
-    	    	$time = (int) strtotime($time);
-    	    	break;
-    	    default:
-    	        return PEAR::throwError('UPS...');
-    	}
-
-    	return $this->cmdNewnews($time, $newsgroups);
+    	return $this->getBody($article);
     }
 
     // }}}
@@ -865,6 +853,11 @@ class Net_NNTP extends Net_NNTP_Protocol_Client
     	return $return;
     }
 
+    function split_headers($article)
+    {
+    	return $this->splitHeaders($article);
+    }
+    
     // }}}
     // {{{ responseCode()
 
@@ -898,6 +891,11 @@ class Net_NNTP extends Net_NNTP_Protocol_Client
     function _getData()
     {
     	return $this->_getTextResponse();
+    }
+
+    function get_data()
+    {
+	return $this->_getData();
     }
 
     // }}}
