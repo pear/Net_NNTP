@@ -148,19 +148,22 @@ class Net_NNTP_Header
 	        return $Object;
 		break;
 
-
-	    // Object
+		// Object
 	    case is_object($input);
 		switch (true) {
 		    
 		    // Header
 		    case is_a($input, 'net_nntp_header'):
-			return $input;
+				$return = new Net_NNTP_Header();
+				$return->setFields($input);
+				return $return;
 			break;
 			
 		    // Message
 		    case is_a($input, 'net_nntp_message'):
-			return $input->getHeader();
+				$return = new Net_NNTP_Header();
+				$return->setFields($input);
+				return $return;
 			break;
 			
 		    // Unknown object/class
@@ -173,8 +176,7 @@ class Net_NNTP_Header
 	    case is_string($input);
 	    case is_array($input);
 	        $Object = new Net_NNTP_Header();
-		$R = $Object->setFields($input)
-;
+		$R = $Object->setFields($input);
 		if (PEAR::isError($R)) {
 		    return $R;
 		}
@@ -423,11 +425,13 @@ class Net_NNTP_Header
 	    case is_object($input):
 		switch (true) {
 		    case is_a($input, 'net_nntp_header'):
-			$this =& $input;
+			$this->reset();
+			$this->fields = $input->getFields();
 			break;
 		    
 		    case is_a($input, 'net_nntp_message'):
-			$this =& $input->getHeader();
+			$h = $input->getHeader();
+			$this->setFields($h);
 			break;
 		    
 		    // Unknown type
@@ -612,8 +616,7 @@ class Net_NNTP_Header
 	    
 	    // Decode header value acording to RFC 2047
 	    if (($flags & NET_NNTP_HEADER_SET_DECODE) == NET_NNTP_HEADER_SET_UNFOLD) {
-		$value
- = $this->decodeString($value);
+		$value = $this->decodeString($value);
 	    }
 	    
 	    // Add header to $return array
@@ -822,8 +825,7 @@ class Net_NNTP_Header
      * @access private
      * @since 0.1
      */
-    function _foldExplode($string, $maxlen = 78
-)
+    function _foldExplode($string, $maxlen = 78)
 //TODO:
     {
 	if ($maxlen < 20) {
@@ -869,10 +871,8 @@ class Net_NNTP_Header
     // {{{ decodeString()
 
     /**
-     * Given a header/string, this function will decode it
- according to RFC2047.
-     * Probably not *exactly*
- conformant, but it does pass all the given
+     * Given a header/string, this function will decode it according to RFC2047.
+     * Probably not *exactly* conformant, but it does pass all the given
      * examples (in RFC2047).
      * 
      * @param string $input Input header value to decode
@@ -896,8 +896,7 @@ class Net_NNTP_Header
 
             switch (strtolower($encoding)) {
 
-                case 'b':
- // RFC2047 4.1
+                case 'b': // RFC2047 4.1
                     $text = base64_decode($text);
                     break;
 
@@ -963,8 +962,7 @@ class Net_NNTP_Header
 	// TODO: This should be done better...
 	$string = trim($string, "\r\n");
 
-        return $string
-;
+        return $string;
     }
 
     // }}}
