@@ -72,7 +72,7 @@ define('NET_NNTP_PROTOCOL_DEFAULT_PORT', NET_NNTP_PROTOCOL_CLIENT_DEFAULT_PORT);
 // {{{ Net_NNTP_Protocol
 
 /**
- * 
+ * Low-level implementation of the client side of NNTP (Network News Transfer Protocol)
  * 
  * @category   Net
  * @package    Net_NNTP
@@ -81,7 +81,7 @@ define('NET_NNTP_PROTOCOL_DEFAULT_PORT', NET_NNTP_PROTOCOL_CLIENT_DEFAULT_PORT);
  * @access     public
  * @see        Net_NNTP_Protocol_Client
  * @since      Class available since Release 0.10.0
- * @deprecated Class deprecated in Release 0.11.0
+ * @deprecated Class deprecated in Release 0.11.0 due to renaming
  */
 class Net_NNTP_Protocol extends Net_NNTP_Protocol_Client
 {

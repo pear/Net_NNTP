@@ -81,8 +81,9 @@ define('NET_NNTP_AUTHGENERIC',  NET_NNTP_CLIENT_AUTH_GENERIC);
 // {{{ Net_NNTP_Client
 
 /**
- * The Net_NNTP_Client class is a frontend class to the 
- * Net_NNTP_Protocol_Client class. It does everything in realtime...
+ * Implementation of the client side of NNTP (Network News Transfer Protocol)
+ *
+ * The Net_NNTP_Client class is a frontend class to the Net_NNTP_Protocol_Client class.
  *
  * @category   Net
  * @package    Net_NNTP
@@ -110,6 +111,8 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 
     /**
      * Constructor
+     *
+     * @access public
      */
     function Net_NNTP_Client()
     {

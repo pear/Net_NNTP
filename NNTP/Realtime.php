@@ -73,7 +73,7 @@ define('NET_NNTP_AUTHGENERIC',  NET_NNTP_CLIENT_AUTH_GENERIC);
 // {{{ Net_NNTP_Realtime
 
 /**
- *
+ * Implementation of the client side of NNTP (Network News Transfer Protocol)
  *
  * @category   Net
  * @package    Net_NNTP
@@ -82,7 +82,7 @@ define('NET_NNTP_AUTHGENERIC',  NET_NNTP_CLIENT_AUTH_GENERIC);
  * @access     public
  * @see        Net_NNTP_Client
  * @since      Class available since Release 0.10.0
- * @deprecated Class deprecated in Release 0.11.0
+ * @deprecated Class deprecated in Release 0.11.0 due to renaming
  */
 class Net_NNTP_Realtime extends Net_NNTP_Client
 {
