@@ -1,73 +1,96 @@
-v0.3.x and v0.9.x have been merged!
+STABILITY NOTES
 
-'Net_NNTP' v0.9 has been renamed into Net_NNTP_Realtime
-(Net_NNTP_cached is still to come).
+A lot of changes has been made since version 0.2.*, and some
+of the code is still to be considered experimental!
 
-No changes has been made to 'Net_NNTP' v0.3, which means that 
-complete backward compatibility is almost a reality.
+Only methods documented in the official PEAR online manual
+are to be considered non-experimental and stable (or at least
+mature beta). Please read the phpdoc blocks above
+undocumented features before using them, and remember that
+critical changes might happen suddenly.
 
 
--------------------------------------------------------------
+CLASS STATE
 
-ATTENTION!!!
+- Net_NNTP_Protocol_Client: Aside from the experimental
+methods etc. the class should be considered mature beta
+quality code.
 
-Both the Net_NNTP ant the Net_NNTP_Protocol classes should be 
-considered beta quality code, but aside from the experimental 
-methods etc. they should be stable enough to be considered close 
-to stable.
+- Net_NNTP_Client: Aside from the experimental methods etc.
+the class should be considered beta quality code. Features
+which rely on Net_NNTP_Message and Net_NNTP_Header are to be
+considered alpha quality code, since these two classes might
+change a little.
 
-The Net_NNTP_Realtime is still to be considered alpha state code, 
-since it relies on the new header and message class. It uses the 
-same Protocol class as the Net_NNTP class, so the basics is just
-at stable. The real reason for the alpha state is the alpha state
-of the header and message classes - their API might still change 
-a little...
+- Net_NNTP_Message & Net_NNTP_Header: Both classes are to be
+considered experimental and subject to change. The intention
+is that both classes should be moved into a separate class,
+and possibly renamed.
 
-Those of you, who choose to use Net_NNTP_Realtime, please read 
-the info above phpdoc function! And those of you who choose to 
-use Net_NNTP in new projects, be aware that this class is 
-officially dead - it's only provided for backward compatibility
-with older v0.2 based projects... 
+- Net_NNTP: This class is officially dead, and is only
+provided for backward compatibility with older v0.2 based
+projects!
 
--------------------------------------------------------------
-
-The actual intaraction with the server has been moved into 
-a separate class named Net_NNTP_Protocol, where the commands 
-each is accessed by a function; the list command is 
-implemented in cmdList() etc. The Net_NNTP class extends 
-Net_NNTP_Protocol, and the old methods no longer interacts 
-directly with the server, but calls the inherited functions 
-from Net_NNTP_Protocol.
-
-One major diffrence form the previous versions of Net_NNTP is, 
-that the code handles the returned data diffrently, so should 
-now be binary safe, since each revieved line is no longer trimed.
-
-The functions getArticle(), getHeaders() and getBody() have been 
-'renamed' into getArticleRaw(), getHeaderRaw() and getBodyRaw().
-These new methods have a second boolean parameter, which comes 
-in handy, if one prefer the returned data in the original array, 
-and thus prevent the array from being imploded into a string.
-
-The authentication is now only performed once, when the 
-connection is etablished, or when authenticate() is called - it 
-is no longer handled in command().
-
-Functions like min() and max() have been renamed to a make the
-package more NNTP'ish (for those who know the RFCs).
-
-The handling of errors in Net_NNTP_Protocol is much more 
-extensive than in previous versions of Net_NNTP. Each cmdXXX() 
-function handles the expected response codes, and only the 
-response code og true is returned on success (previous versions 
-returned the full status response string). On failure when 
-interacting with the server the cmdXXX() functions returns 
-pear_error objects.
 
 -------------------------------------------------------------
 
-Net_NNTP_Realtime only:
+Changes with release 0.11.x
 
-The method getArticle() has been replaced, and now returns a 
-message object, and both getHeaders() and getBody() is gone...
+- The most significant change in v0.11.x is the renaming of
+Net_NNTP_Realtime and Net_NNTP_Protocol into Net_NNTP_Client
+and Net_NNTP_Protocol_Client. This was done to allow a
+possible future server class. Dummy files preserves drop-in
+backward compatibility with v0.10.x
+
+-------------------------------------------------------------
+
+Changes with release 0.10.x
+
+- The actual interaction with the server has been moved into
+a separate class named Net_NNTP_Protocol, in which the each
+commands is implemented in separate functions (the LIST
+command is implemented in cmdList() and so on).
+
+- The Net_NNTP class from v0.2.x is now considered
+deprecated, since it has been replaced with the
+Net_NNTP_Realtime class.
+
+- The ancient Net_NNTP class from v0.2.x has been completely
+rewritten to use the new protocol implementation in
+Net_NNTP_Protocol. This is only provided to allow existing
+projects to use the new protocol implementation while
+preserving backward compatibility and it should not be used
+in new projects, since no development is done on the class at
+all (only severe bugs will be fixed).
+
+- The Net_NNTP_Realtime class extends Net_NNTP_Protocol, and
+handles interaction with the server via calls to the
+inherited methods from Net_NNTP_Protocol.
+
+- The functions getArticle(), getHeaders() and getBody() have
+been renamed into getArticleRaw(), getHeaderRaw() and
+getBodyRaw(). These new methods have a second optional
+boolean parameter, which comes in handy, if one prefers
+having the internal/original array returned (previously the
+results were always imploded and one often had to explode the
+returned string).
+
+- The authentication is no longer handled in command(), and
+is only performed once - either when the connection is
+established via connectAuthenticated(), or when
+authenticate() is called.
+
+- Functions like min() and max() have been renamed to a make
+the package more NNTP'ish (for those who know the RFCs).
+
+- The handling of errors in Net_NNTP_Protocol is much more
+extensive than in previous versions of Net_NNTP. Each
+cmdXXX() function handles the expected response codes, and
+only the response code or true is returned on success
+(previous versions returned the full status response string).
+On failure when interacting with the server the cmdXXX()
+functions returns pear_error objects.
+
+- Received data is now handled binary safely (each received
+line is no longer trimmed).
 

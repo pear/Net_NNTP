@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!-- do not use the "Type" attribute here, that one is only for
-     generated package.xml files -->
-<!-- $Id: package.xml,v 1.16 2003-10-12 13:47:01 heino Exp $ -->
+<!-- $Id: package.xml,v 1.17 2005-01-08 20:02:23 heino Exp $ -->
 <package version="1.0">
   <name>Net_NNTP</name>
-  <summary>Communicate with an NNTP server</summary>
+  <summary>Implementation of the NNTP protocol</summary>
   <description>
-  Complete class for communicating with an NNTP server (this is: the USENET), including: post, view, list, authentication, overview, header manipulation, NNTP commands debugger, etc.
+    Package for communicating with NNTP/Usenet servers
   </description>
-  <license>W3C / PHP 2.0</license>
+  <license>W3C</license>
   <maintainers>
     <maintainer>
       <user>heino</user>
@@ -18,37 +16,107 @@
     </maintainer>
   </maintainers>
   <deps>
-   <dep type="pkg" rel="ge" version="1.0">Net_Socket</dep>
+   <dep type="pkg" rel="ge" version="1.0.2">Net_Socket</dep>
   </deps>
   <release>
-    <version>0.10.0</version>
-    <date>2003-10-12</date>
-    <license>W3C / PHP 2.0</license>
-    <state>alpha</state>
+    <version>0.11.3</version>
+    <date>2004-09-06</date>
+    <license>W3C</license>
+    <state>beta</state>
     <notes>
-      Merges v0.3.3 and v0.9.4 into one package - The 'Net_NNTP' class from v0.9.x is now called 'Net_NNTP_Realtime'. (heino)
+      - Going beta (features not documented in the manual should still be considered experiemental)
+      - Added the 'distributions' parameter to getNewGroups() and cmdNewGroups()
     </notes>
     <filelist>
       <dir name="/" baseinstalldir="Net">
         <file role="php">NNTP.php</file>
+        <file role="doc">README</file>
         <dir name="NNTP" role="php">
-          <file role="php">Protocol.php</file>
-          <file role="php">Realtime.php</file>
-          <file role="php">Header.php</file>
-          <file role="php">Message.php</file>
+          <file>Client.php</file>
+          <file>Header.php</file>
+          <file>Message.php</file>
+          <file>Protocol.php</file>
+          <file>Realtime.php</file>
+          <dir name="Protocol">
+            <file>Client.php</file>
+          </dir>
         </dir>
-        <dir name="examples">
-          <dir name="news.php.net" role="doc">
-            <file>index.php</file>
-            <file>group.php</file>
-            <file>read.php</file>
-            <file>README</file>
+        <dir name="docs" role="doc">
+          <dir name="examples">
+            <dir name="news.php.net">
+              <file>index.php</file>
+              <file>group.php</file>
+              <file>read.php</file>
+              <file>README</file>
+            </dir>
           </dir>
         </dir>
       </dir>
     </filelist>
   </release>
   <changelog>
+  <release>
+    <version>0.11.2</version>
+    <date>2004-08-22</date>
+    <state>alpha</state>
+    <notes>
+      - Update PhpDoc blocks.
+      - Changed xmdXOver(),cmdXROver(),getOverview() and getReferencesOverview() into using only parameter: $range.
+      - Fix whitespace in Net_NNTP_Client, Net_NNTP_Protocol_Client and Net_NNTP.
+    </notes>
+  </release>
+  <release>
+    <version>0.11.1</version>
+    <date>2004-07-30</date>
+    <state>devel</state>
+    <notes>
+      - Fix bug in (deprecated) Net_NNTP::command().
+      - Rename a few constants due to renamed classes (BC preserved).
+      - Update class phpdoc blocks.
+    </notes>
+  </release>
+  <release>
+    <version>0.11.0</version>
+    <date>2004-07-19</date>
+    <state>devel</state>
+    <notes>
+      - New directory structure (classes/files renamed/moved) to allow future server class (dummy files preserves backward compatibility)
+    </notes>
+  </release>
+  <release>
+    <version>0.10.3</version>
+    <date>2004-07-14</date>
+    <state>alpha</state>
+    <notes>
+      - Fixes undefined property warning
+    </notes>
+  </release>
+  <release>
+    <version>0.10.2</version>
+    <date>2004-07-06</date>
+    <state>alpha</state>
+    <notes>
+      - Fixes bug #1803 (trailing space character sent in cmdListNewsgrups())
+      - Fixes bug #825 (no more lazy assignement of new values to $this)
+      - Examples moved into docs to comply with the standard PEAR directory structure.
+    </notes>
+  </release>
+  <release>
+    <version>0.10.1</version>
+    <date>2003-10-24</date>
+    <state>alpha</state>
+    <notes>
+      Fixes bug #7 (lines longer than 1000 chars no longer stop download)
+    </notes>
+  </release>
+  <release>
+    <version>0.10.0</version>
+    <date>2003-10-12</date>
+    <state>alpha</state>
+    <notes>
+      Merges v0.3.3 and v0.9.4 into one package - The 'Net_NNTP' class from v0.9.x is now called 'Net_NNTP_Realtime'. (heino)
+    </notes>
+  </release>
   <release>
     <version>0.9.3</version>
     <date>2003-09-13</date>
@@ -103,6 +171,23 @@
     <state>beta</state>
     <notes>
       Uses the new protocol implementation from 0.9.*, but preserves backward compatibility with 0.2, since the experimental header and message classes are not used. Deprecated/historical methods that didn't follow PEAR's coding standard have been removed. (heino)
+    </notes>
+  </release>
+  <release>
+    <version>0.2.5</version>
+    <date>2004-07-19</date>
+    <state>stable</state>
+    <notes>
+      - post() rewritten to allow posting using authentication (bug #817)
+      - Examples moved into docs to comply with the standard PEAR directory structure.
+    </notes>
+  </release>
+  <release>
+    <version>0.2.4</version>
+    <date>2004-03-10</date>
+    <state>stable</state>
+    <notes>
+      [Not released]
     </notes>
   </release>
   <release>
