@@ -1,5 +1,5 @@
 <?php
-//
+/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4 foldmethod=marker: */
 // +----------------------------------------------------------------------+
 // | PHP Version 4                                                        |
 // +----------------------------------------------------------------------+
@@ -17,11 +17,11 @@
 // |          Tomas V.V.Cox    <cox@idecnet.com>                          |
 // |          Heino H. Gehlsen <heino@gehlsen.dk>                         |
 // +----------------------------------------------------------------------+
-//
 // $Id$
 
 require_once 'Net/NNTP/Protocol/Client.php';
 
+// {{{ constants
 
 /* NNTP Authentication modes */
 define('NET_NNTP_AUTHORIGINAL', 'original');
@@ -33,6 +33,8 @@ define('PEAR_NNTP_AUTHORIGINAL', NET_NNTP_AUTHORIGINAL);
 define('PEAR_NNTP_AUTHSIMPLE',   NET_NNTP_AUTHSIMPLE);
 define('PEAR_NNTP_AUTHGENERIC',  NET_NNTP_AUTHGENERIC);
 
+// }}}
+// {{{ Net_NNTP
 
 /**
  * The Net_NNTP class is an almost 100 % backward compatible 
@@ -46,11 +48,17 @@ define('PEAR_NNTP_AUTHGENERIC',  NET_NNTP_AUTHGENERIC);
  * methods etc. While this class is still maintained, it is
  * officially dead...
  *
- * @author Martin Kaltoft   <martin@nitro.dk>
- * @author Tomas V.V.Cox    <cox@idecnet.com>
- * @author Heino H. Gehlsen <heino@gehlsen.dk>
+ * @category   Net
+ * @package    Net_NNTP
+ * @author     Martin Kaltoft   <martin@nitro.dk>
+ * @author     Tomas V.V.Cox    <cox@idecnet.com>
+ * @author     Heino H. Gehlsen <heino@gehlsen.dk>
+ * @version    $Id$
+ * @access     public
+ * @see        Net_NNTP_Client
+ * @since      Class available since Release 0.1.0
+ * @deprecated Class deprecated in Release 0.10.0
  */
-
 class Net_NNTP extends Net_NNTP_Protocol_Client
 {
     // {{{ properties
@@ -905,10 +913,18 @@ class Net_NNTP extends Net_NNTP_Protocol_Client
      */
     function command($cmd)
     {
-        return $this->_sendCommand($cmd);
+        $code = $this->_sendCommand($cmd);
+        if (PEAR::isError($code)) {
+            return PEAR::throwError($code);
+        }
+	
+        return $code.' '.$this->currentStatusResponse()."\r\n";
     }
 
     // }}}
 
 }
+
+// }}}
+
 ?>

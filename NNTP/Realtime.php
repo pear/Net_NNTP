@@ -1,4 +1,5 @@
 <?php
+/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4 foldmethod=marker: */
 // +-----------------------------------------------------------------------+
 // |                                                                       |
 // | Copyright © 2003 Heino H. Gehlsen. All Rights Reserved.               |
@@ -62,13 +63,31 @@
 require_once 'Net/NNTP/Client.php';
 
 
+// {{{ constants
+
+define('NET_NNTP_AUTHORIGINAL', NET_NNTP_CLIENT_AUTH_ORIGINAL);
+define('NET_NNTP_AUTHSIMPLE',   NET_NNTP_CLIENT_AUTH_SIMPLE
+define('NET_NNTP_AUTHGENERIC',  NET_NNTP_CLIENT_AUTH_GENERIC);
+
+// }}}
+// {{{ Net_NNTP_Realtime
+
 /**
  *
  *
- * @author Heino H. Gehlsen <heino@gehlsen.dk>
+ * @category   Net
+ * @package    Net_NNTP
+ * @author     Heino H. Gehlsen <heino@gehlsen.dk>
+ * @version    $Id$
+ * @access     public
+ * @see        Net_NNTP_Client
+ * @since      Class available since Release 0.10.0
+ * @deprecated Class deprecated in Release 0.11.0
  */
 class Net_NNTP_Realtime extends Net_NNTP_Client
 {
 }
+
+// }}}
 
 ?>

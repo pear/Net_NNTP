@@ -1,4 +1,5 @@
 <?php
+/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4 foldmethod=marker: */
 // +-----------------------------------------------------------------------+
 // |                                                                       |
 // | Copyright © 2003 Heino H. Gehlsen. All Rights Reserved.               |
@@ -61,6 +62,7 @@
 
 require_once 'PEAR.php';
 
+// {{{ constants
 
 define('NET_NNTP_HEADER_SET_UNFOLD', 1);
 define('NET_NNTP_HEADER_SET_DECODE', 2);
@@ -72,14 +74,19 @@ define('NET_NNTP_HEADER_GET_FOLD', 1);
 define('NET_NNTP_HEADER_GET_ENCODE', 2);
 define('NET_NNTP_HEADER_GET_DEFAULT', NET_NNTP_HEADER_GET_ENCODE | NET_NNTP_HEADER_GET_FOLD);
 
+// }}}
+// {{{ Net_NNTP_Header
 
 /**
  * The Net_NNTP_Header class
  *
- * @version $Revision$
- * @package Net_NNTP
- *
- * @author Heino H. Gehlsen <heino@gehlsen.dk>
+ * @category   Net
+ * @package    Net_NNTP
+ * @author     Heino H. Gehlsen <heino@gehlsen.dk>
+ * @version    $Id$
+ * @access     public
+ * @see        Net_NNTP_Message
+ * @since      Class available since Release 0.10.0
  */
 class Net_NNTP_Header
 {
@@ -1001,5 +1008,7 @@ class Net_NNTP_Header
     // }}}
 
 }
+
+// }}}
 
 ?>

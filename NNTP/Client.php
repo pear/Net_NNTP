@@ -1,4 +1,5 @@
 <?php
+/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4 foldmethod=marker: */
 // +-----------------------------------------------------------------------+
 // |                                                                       |
 // | Copyright © 2003 Heino H. Gehlsen. All Rights Reserved.               |
@@ -64,16 +65,32 @@ require_once 'Net/NNTP/Header.php';
 require_once 'Net/NNTP/Message.php';
 
 
+// {{{ constants
+
 /* NNTP Authentication modes */
-define('NET_NNTP_AUTHORIGINAL', 'original');
-define('NET_NNTP_AUTHSIMPLE',   'simple');
-define('NET_NNTP_AUTHGENERIC',  'generic');
+define('NET_NNTP_CLIENT_AUTH_ORIGINAL', 'original');
+define('NET_NNTP_CLIENT_AUTH_SIMPLE',   'simple');
+define('NET_NNTP_CLIENT_AUTH_GENERIC',  'generic');
+
+/* Deprecated authentication modes */
+define('NET_NNTP_AUTHORIGINAL', NET_NNTP_CLIENT_AUTH_ORIGINAL);
+define('NET_NNTP_AUTHSIMPLE',   NET_NNTP_CLIENT_AUTH_SIMPLE
+define('NET_NNTP_AUTHGENERIC',  NET_NNTP_CLIENT_AUTH_GENERIC);
+
+// }}}
+// {{{ Net_NNTP_Client
 
 /**
  * The Net_NNTP_Client class is a frontend class to the 
  * Net_NNTP_Protocol_Client class. It does everything in realtime...
  *
- * @author Heino H. Gehlsen <heino@gehlsen.dk>
+ * @category   Net
+ * @package    Net_NNTP
+ * @author     Heino H. Gehlsen <heino@gehlsen.dk>
+ * @version    $Id$
+ * @access     public
+ * @see        Net_NNTP_Protocol_Client
+ * @since      Class available since Release 0.11.0
  */
 class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 {
@@ -143,7 +160,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
             			  $pass = null,
 				  $host = NET_NNTP_PROTOCOL_CLIENT_DEFAULT_HOST,
                 		  $port = NET_NNTP_PROTOCOL_CLIENT_DEFAULT_PORT,
-                		  $authmode = NET_NNTP_AUTHORIGINAL)
+                		  $authmode = NET_NNTP_CLIENT_AUTH_ORIGINAL)
     {
 	$R = $this->connect($host, $port);
 	if (PEAR::isError($R)) {
@@ -193,7 +210,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @see Net_NNTP::connect()
      * @see Net_NNTP::connectAuthenticated()
      */
-    function authenticate($user, $pass, $mode = NET_NNTP_AUTHORIGINAL)
+    function authenticate($user, $pass, $mode = NET_NNTP_CLIENT_AUTH_ORIGINAL)
     {
         // Username is a must...
         if ($user == null) {
@@ -202,13 +219,13 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 
         // Use selected authentication method
         switch ($mode) {
-            case NET_NNTP_AUTHORIGINAL:
+            case NET_NNTP_CLIENT_AUTH_ORIGINAL:
                 return $this->cmdAuthinfo($user, $pass);
                 break;
-            case NET_NNTP_AUTHSIMPLE:
+            case NET_NNTP_CLIENT_AUTH_SIMPLE:
                 return $this->cmdAuthinfoSimple($user, $pass);
                 break;
-            case NET_NNTP_AUTHGENERIC:
+            case NET_NNTP_CLIENT_AUTH_GENERIC:
                 return $this->cmdAuthinfoGeneric($user, $pass);
                 break;
             default:
@@ -737,4 +754,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     // }}}
 
 }
+
+// }}}
+
 ?>

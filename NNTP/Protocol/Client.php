@@ -1,4 +1,5 @@
 <?php
+/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4 foldmethod=marker: */
 // +-----------------------------------------------------------------------+
 // |                                                                       |
 // | Copyright © 2003 Heino H. Gehlsen. All Rights Reserved.               |
@@ -62,16 +63,25 @@
 require_once 'PEAR.php';
 require_once 'Net/Socket.php';
 
+// {{{ constants
 
 define('NET_NNTP_PROTOCOL_CLIENT_DEFAULT_HOST', 'localhost');
 define('NET_NNTP_PROTOCOL_CLIENT_DEFAULT_PORT', '119');
+
+// }}}
+// {{{ Net_NNTP_Protocol_Client
 
 /**
  * The Net_NNTP_Protocol_Client class implements the NNTP standard acording to
  * RFX 977, RFC 2980, RFC 850/1036, and RFC 822/2822
  *
- * @version 0.0.1
- * @author Heino H. Gehlsen <heino@gehlsen.dk>
+ * @category   Net
+ * @package    Net_NNTP
+ * @author     Heino H. Gehlsen <heino@gehlsen.dk>
+ * @version    $Id$
+ * @access     public
+ * @see        Net_NNTP_Client
+ * @since      Class available since Release 0.11.0
  */
 class Net_NNTP_Protocol_Client
 {
@@ -1145,5 +1155,7 @@ class Net_NNTP_Protocol_Client
     // }}}
 
 }
+
+// }}}
 
 ?>
