@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <!-- do not use the "Type" attribute here, that one is only for
      generated package.xml files -->
-<!-- $Id: package.xml,v 1.16.2.1 2003-11-24 21:44:48 heino Exp $ -->
+<!-- $Id: package.xml,v 1.16.2.2 2004-07-01 21:11:28 heino Exp $ -->
 <package version="1.0">
   <name>Net_NNTP</name>
-  <summary>Communicate with an NNTP server</summary>
+  <summary>Implementation of the NNTP protocol</summary>
   <description>
-  Complete class for communicating with an NNTP server (this is: the USENET), including: post, view, list, authentication, overview, header manipulation, NNTP commands debugger, etc.
+    Package for communicating with NNTP/Usenet servers
   </description>
   <license>W3C / PHP 2.0</license>
   <maintainers>
@@ -21,12 +21,12 @@
    <dep type="pkg" rel="ge" version="1.0">Net_Socket</dep>
   </deps>
   <release>
-    <version>0.10.1</version>
-    <date>2003-10-24</date>
+    <version>0.10.2</version>
+    <date>2003-07-01</date>
     <license>W3C / PHP 2.0</license>
     <state>alpha</state>
     <notes>
-      Fixes bug #7 (lines longer than 1000 chars no longer stop download)
+      Fixes bug #825 (no more lazy assignement of new values to $this) + Examples moved into docs to comply with the standard PEAR directory structure.
     </notes>
     <filelist>
       <dir name="/" baseinstalldir="Net">
@@ -37,18 +37,28 @@
           <file role="php">Header.php</file>
           <file role="php">Message.php</file>
         </dir>
-        <dir name="examples">
-          <dir name="news.php.net" role="doc">
-            <file>index.php</file>
-            <file>group.php</file>
-            <file>read.php</file>
-            <file>README</file>
+        <dir name="docs" role="doc">
+          <dir name="examples">
+            <dir name="news.php.net">
+              <file>index.php</file>
+              <file>group.php</file>
+              <file>read.php</file>
+              <file>README</file>
+            </dir>
           </dir>
         </dir>
       </dir>
     </filelist>
   </release>
   <changelog>
+  <release>
+    <version>0.10.1</version>
+    <date>2003-10-24</date>
+    <state>alpha</state>
+    <notes>
+      Fixes bug #7 (lines longer than 1000 chars no longer stop download)
+    </notes>
+  </release>
   <release>
     <version>0.10.0</version>
     <date>2003-10-12</date>
@@ -111,6 +121,22 @@
     <state>beta</state>
     <notes>
       Uses the new protocol implementation from 0.9.*, but preserves backward compatibility with 0.2, since the experimental header and message classes are not used. Deprecated/historical methods that didn't follow PEAR's coding standard have been removed. (heino)
+    </notes>
+  </release>
+  <release>
+    <version>0.2.5</version>
+    <date>2004-07-01</date>
+    <state>stable</state>
+    <notes>
+      Examples moved into docs to comply with the standard PEAR directory structure.
+    </notes>
+  </release>
+  <release>
+    <version>0.2.4</version>
+    <date>2004-03-10</date>
+    <state>stable</state>
+    <notes>
+      post() rewritten to allow posting using authentication (bug #817)
     </notes>
   </release>
   <release>
