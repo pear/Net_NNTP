@@ -14,21 +14,25 @@
 // | license@php.net so we can mail you a copy immediately.               |
 // +----------------------------------------------------------------------+
 // | Authors: Martin Kaltoft <martin@nitro.dk>                            |
+// |          Tomas V.V.Cox  <cox@idecnet.com>                            |
+// |                                                                      |
 // +----------------------------------------------------------------------+
+//
+// $Id$
 
 require_once 'PEAR.php';
 
 /**
  * The NNTP:: class fetches UseNet news articles acording to the standard
  * based on RFC 1036.
- * To parse the articles into its appropriate entities, use the NNTP
- * Parser class.
  *
  * @version 0.1
  * @author Martin Kaltoft <martin@nitro.dk>
+ * @author Tomas V.V.Cox  <cox@idecnet.com>
  */
 
-class Net_Nntp extends PEAR {
+class Net_Nntp extends PEAR
+{
 
     var $max = '';
     var $min = '';
@@ -36,6 +40,7 @@ class Net_Nntp extends PEAR {
     /** File pointer of the nntp-connection */
     var $fp = null;
 
+    var $_debug = false;
 
     /**
      * Connect to the newsserver, and issue a GROUP command
@@ -51,12 +56,17 @@ class Net_Nntp extends PEAR {
      * @param string $newsgroup The name of the newsgroup to use.
      * @access public
      */
-    function prepare_connection($nntpserver, $port = 119, $newsgroup)
+    function prepare_connection($nntpserver,
+                                $port = 119,
+                                $newsgroup,
+                                $user = null,
+                                $pass = null,
+                                $authmode = 'original')
     {
         /* connect to the server */
         $fp = @fsockopen($nntpserver, $port, $errno, $errstr, 15);
         if (!is_resource($fp)) {
-            return $this->raiseError('Could not connect to NNTP-server');
+            return $this->raiseError("Could not connect to NNTP-server $nntpserver");
         }
 
         socket_set_blocking($fp, true);
@@ -66,16 +76,73 @@ class Net_Nntp extends PEAR {
         }
 
         $response = fgets($fp, 128);
+        if ($this->_debug) {
+            print "<< $response\n";
+        }
+        $this->fp = $fp;
 
         /* issue a GROUP command */
-        fputs($fp, "GROUP $newsgroup\n");
-        $response = fgets($fp, 128);
+        $response = $this->command("GROUP $newsgroup");
+        $code     = $this->responseCode($response);
+        /* Need authentication? */
+        if ($code == 450 || $code == 480) {
+            $error = $this->authenticate($user, $pass, $authmode);
+            if (PEAR::isError($error)) {
+                return $error;
+            }
+            /* re-issue the GROUP command */
+            $response = $this->command("GROUP $newsgroup");
+        }
 
+        if ($this->responseCode($response) >= 300) {
+            return $this->raiseError("Group command fail: $response");
+        }
         $response_arr = split(' ', $response);
         $this->max = $response_arr[3];
         $this->min = $response_arr[2];
-        $this->fp = $fp;
+
         return true;
+    }
+
+    /**
+    * Auth process (not yet standarized but used any way)
+    * http://www.mibsoftware.com/userkt/nntpext/index.html
+    *
+    * @param string $user The user name
+    * @param string $pass (optional) The password if needed
+    * @param string $mode Authinfo form: original, simple, generic
+    * @return mixed (bool) true on success or Pear Error obj on fail
+    */
+    function authenticate($user = null, $pass = null, $mode = 'original')
+    {
+        if ($user === null) {
+            return $this->raiseError('Authentication required but no user supplied');
+        }
+        switch ($mode) {
+            case 'original':
+                /*
+                    281 Authentication accepted
+                    381 More authentication information required
+                    480 Authentication required
+                    482 Authentication rejected
+                    502 No permission
+                */
+                $response = $this->command("AUTHINFO user $user");
+                if ($this->responseCode($response) != 281) {
+                    if ($this->responseCode($response) == 381 && $pass !== null) {
+                        $response = $this->command("AUTHINFO pass $pass");
+                    }
+                }
+                if ($this->responseCode($response) != 281) {
+                    return $this->raiseError("Authentication failed: $response");
+                }
+                return true;
+                break;
+            case 'simple':
+            case 'generic':
+            default:
+                $this->raiseError("The auth mode: $mode isn't implemented");
+        }
     }
 
     /**
@@ -166,11 +233,9 @@ class Net_Nntp extends PEAR {
         }
 
         /* tell the newsserver we want an article */
-        fputs($this->fp, "HEAD $article\n");
+        $response = $this->command("HEAD $article");
 
-        /* The servers' response */
-        $response = trim(fgets($this->fp, 128));
-
+        $headers = '';
         while(!feof($this->fp)) {
             $line = trim(fgets($this->fp, 256));
 
@@ -202,6 +267,7 @@ class Net_Nntp extends PEAR {
         if (PEAR::isError($headers)) {
             return $headers;
         }
+
         $lines = explode("\n", $headers);
         foreach ($lines as $line) {
             $line = trim($line);
@@ -320,9 +386,27 @@ class Net_Nntp extends PEAR {
         if (!@is_resource($this->fp)) {
             return $this->raiseError('Not connected');
         }
-
-        fputs($this->fp, "QUIT\n");
+        $this->command("QUIT");
         fclose($this->fp);
+    }
+
+    function responseCode($response)
+    {
+        $parts = explode(' ', ltrim($response));
+        return (int) $parts[0];
+    }
+
+    function command($cmd)
+    {
+        fputs($this->fp, "$cmd\n");
+        if ($this->_debug) {
+            print ">> $cmd\n";
+        }
+        $response = fgets($this->fp, 128);
+        if ($this->_debug) {
+            print "<< $response\n";
+        }
+        return $response;
     }
 }
 ?>
