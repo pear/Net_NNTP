@@ -628,34 +628,6 @@ class Net_NNTP extends Net_NNTP_Protocol
     }
 
     // }}}
-    // {{{ getHeadersParsed()
-
-    /**
-     * Get the headers of an article from the currently open connection, and parse them into a keyed array.
-     *
-     * @param mixed $article Either the (string) message-id or the (int) message-number on the server of the article to fetch.
-     *
-     * @return mixed (object) header object on success or (object) pear_error on failure
-     * @access public
-     * @since 0.3
-     *
-     * @depresated Use getHeader() instead
-     */
-    function getHeadersParsed($article)
-    {
-	// Retrieve headers
-        $headers = $this->getHeaderRaw($article, false);
-        if (PEAR::isError($headers)) {
-            return $this->throwError($headers);
-        }
-	
-	// Parse headers
-	$res = $this->parseHeaders($headers);
-
-	return $res;
-    }
-
-    // }}}
     // {{{ getBody()
 
     /**
@@ -929,7 +901,18 @@ class Net_NNTP extends Net_NNTP_Protocol
      */
     function splitHeaders($article)
     {
-        return $this->getHeadersParsed($article);
+	// Retrieve headers
+        $headers = $this->getHeaderRaw($article, false);
+        if (PEAR::isError($headers)) {
+            return $this->throwError($headers);
+        }
+	
+	// Create header object
+
+	$H = new Net_NNTP_Header::create($headers);
+
+	// Return keyed array
+	return $H->getFieldsArray();
     }
 
     // }}}
@@ -948,35 +931,6 @@ class Net_NNTP extends Net_NNTP_Protocol
     function split_headers($article)
     {
         return $this->splitHeaders($article);
-    }
-
-    // }}}
-    // {{{ parseHeaders()
-
-    /**
-     * Returns the headers of a given article in the form of
-     * an associative array. Ex:
-     * array(
-     *   'From'      => 'foo@bar.com (Foo Smith)',
-     *   'Subject'   => 'Re: Using NNTP class',
-     *   ....
-     *   );
-     *
-     * @param array/string $article Article number or id
-     *
-     * @return mixed (object) header object on success or (object) pear_error on failure
-     * @access public
-     * @see Net_Nntp::getHeadersParsed()
-     *
-     * @depresated used by depresated getHeadersParsed()
-     */
-    function parseHeaders($headers)
-    {
-	$H = new Net_NNTP_Header();
-	$headers = $H->cleanArray($headers);
-	$H->setFields($headers);
-
-	return $headers;
     }
 
     // }}}
