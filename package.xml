@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!-- $Id: package.xml,v 1.18.2.7 2005-01-30 15:59:23 heino Exp $ -->
+<!-- $Id: package.xml,v 1.18.2.8 2005-03-28 16:34:38 heino Exp $ -->
 <package version="1.0">
   <name>Net_NNTP</name>
   <summary>Implementation of the NNTP protocol</summary>
@@ -20,7 +20,7 @@
   </deps>
   <release>
     <version>1.0.1</version>
-    <date>2005-01-30</date>
+    <date>2005-03-28</date>
     <license>W3C</license>
     <state>stable</state>
     <notes>
