@@ -700,13 +700,14 @@ class Net_NNTP_Protocol_Client
      * Fetches a list of all newsgroups created since a specified date.
      *
      * @param int $time Last time you checked for groups (timestamp).
+     * @param optional string $distributions 
      *
      * @return mixed (array) nested array with informations about existing newsgroups on success or (object) pear_error on failure
      * @access public
      */
-    function cmdNewgroups($time)
+    function cmdNewgroups($time, $distributions = null)
     {
-        $response = $this->_sendCommand('NEWGROUPS '.date('ymd His', $time));
+        $response = $this->_sendCommand('NEWGROUPS '.date('ymd His', $time).' GMT'.($distributions !== null ? ' <'.$distributions.'>' : ''));
         if (PEAR::isError($response)){
             return $response;
         }

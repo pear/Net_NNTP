@@ -584,7 +584,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @access public
      * @since 0.3
      */
-    function getNewGroups($time)
+    function getNewGroups($time, $distributions = null)
     {
     	switch (gettype($time)) {
     	    case 'integer':
@@ -593,10 +593,10 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	    	$time = (int) strtotime($time);
     	    	break;
     	    default:
-    	        return PEAR::throwError('');
+    	        return PEAR::throwError('UPS...');
     	}
 
-    	return $this->cmdNewgroups($time);
+    	return $this->cmdNewgroups($time, $distributions);
     }
 
     // }}}
