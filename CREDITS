@@ -1,0 +1,23 @@
+People who've put work into Net_NNTP (in order of appearance):
+
+
+Martin Kaltoft <martin@nitro.dk>
+- Initial code.
+
+
+Developer, Thomas V.V.Cox <cox@idecnet.com>
+- A lot of new methods (including authentication)
+
+
+Contributor, Morgan Christiansson <mog@linux.nu>
+- A few new methods
+
+
+Contributor, Alexander Merz <alexmerz@php.net>
+- PEAR’ifing of original code
+- Documentation (v0.1)
+
+
+Developer & Lead, Heino H. Gehlsen <heino@gehlsen.dk>
+- Total rewrite based on new protocol class
+

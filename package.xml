@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!-- do not use the "Type" attribute here, that one is only for
+     generated package.xml files -->
+<!-- $Id: package.xml,v 1.16 2003-10-12 13:47:01 heino Exp $ -->
+<package version="1.0">
+  <name>Net_NNTP</name>
+  <summary>Communicate with an NNTP server</summary>
+  <description>
+  Complete class for communicating with an NNTP server (this is: the USENET), including: post, view, list, authentication, overview, header manipulation, NNTP commands debugger, etc.
+  </description>
+  <license>W3C / PHP 2.0</license>
+  <maintainers>
+    <maintainer>
+      <user>heino</user>
+      <name>Heino H. Gehlsen</name>
+      <email>heino@gehlsen.dk</email>
+      <role>lead</role>
+    </maintainer>
+  </maintainers>
+  <deps>
+   <dep type="pkg" rel="ge" version="1.0">Net_Socket</dep>
+  </deps>
+  <release>
+    <version>0.10.0</version>
+    <date>2003-10-12</date>
+    <license>W3C / PHP 2.0</license>
+    <state>alpha</state>
+    <notes>
+      Merges v0.3.3 and v0.9.4 into one package - The 'Net_NNTP' class from v0.9.x is now called 'Net_NNTP_Realtime'. (heino)
+    </notes>
+    <filelist>
+      <dir name="/" baseinstalldir="Net">
+        <file role="php">NNTP.php</file>
+        <dir name="NNTP" role="php">
+          <file role="php">Protocol.php</file>
+          <file role="php">Realtime.php</file>
+          <file role="php">Header.php</file>
+          <file role="php">Message.php</file>
+        </dir>
+        <dir name="examples">
+          <dir name="news.php.net" role="doc">
+            <file>index.php</file>
+            <file>group.php</file>
+            <file>read.php</file>
+            <file>README</file>
+          </dir>
+        </dir>
+      </dir>
+    </filelist>
+  </release>
+  <changelog>
+  <release>
+    <version>0.9.3</version>
+    <date>2003-09-13</date>
+    <state>alpha</state>
+    <notes>
+      Constant names pearified. Deprecated/historical methods that didn't follow PEAR's coding standard have been removed. Incorrect handling of the XROVER extension corrected in cmdXROver() and removed in getOverview(). (heino)
+    </notes>
+  </release>
+  <release>
+    <version>0.9.2</version>
+    <date>2003-08-16</date>
+    <state>alpha</state>
+    <notes>
+      Fixed syntax typo... (heino)
+    </notes>
+  </release>
+  <release>
+    <version>0.9.1</version>
+    <date>2002-08-15</date>
+    <state>alpha</state>
+    <notes>
+     Bug fixing and improvements in Net_NNTP_Header and Net_NNTP_Message (heino)
+    </notes>
+  </release>
+  <release>
+    <version>0.9.0</version>
+    <date>2002-08-09</date>
+    <state>alpha</state>
+    <notes>
+      Major rewrite, yet still generaly backward compatible - now uses Net_Socket, lets the user choose if the article data are to be returned as strings or arrays or objects, authentication has been separated from the execution of commands, returns pear_error objects of failure, and handles the server's responses individually. (heino)
+    </notes>
+  </release>
+  <release>
+    <version>0.3.3</version>
+    <date>2003-10-12</date>
+    <state>beta</state>
+    <notes>
+      Fixes bug #85 + a lot of phpdoc updated. (heino)
+    </notes>
+  </release>
+  <release>
+    <version>0.3.2</version>
+    <date>2003-09-20</date>
+    <state>beta</state>
+    <notes>
+      Incorrect handling of the XROVER extension corrected in cmdXROver() and removed in getOverview(). (heino)
+    </notes>
+  </release>
+  <release>
+    <version>0.3.1</version>
+    <date>2003-08-31</date>
+    <state>beta</state>
+    <notes>
+      Uses the new protocol implementation from 0.9.*, but preserves backward compatibility with 0.2, since the experimental header and message classes are not used. Deprecated/historical methods that didn't follow PEAR's coding standard have been removed. (heino)
+    </notes>
+  </release>
+  <release>
+    <version>0.2.3</version>
+    <date>2003-09-20</date>
+    <state>stable</state>
+    <notes>
+      Incorrect handling of the XROVER extension in getOverview() removed (heino)
+    </notes>
+  </release>
+  <release>
+    <version>0.2.2</version>
+    <date>2003-08-31</date>
+    <state>stable</state>
+    <notes>
+      Constant names pearified (heino)
+    </notes>
+  </release>
+  <release>
+    <version>0.2.1</version>
+    <date>2003-08-09</date>
+    <state>stable</state>
+    <notes>
+      Fix binary safety (heino)
+    </notes>
+  </release>
+  <release>
+    <version>0.2</version>
+    <date>2003-07-20</date>
+    <state>stable</state>
+    <notes>
+      pearified API (mj)
+    </notes>
+  </release>
+  <release>
+    <version>0.1</version>
+    <date>2002-05-22</date>
+    <state>stable</state>
+    <notes>
+      This is the initial independent release of the NNTP package.
+    </notes>
+  </release>
+  </changelog>
+</package>
