@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!-- do not use the "Type" attribute here, that one is only for
+     generated package.xml files -->
+<Package>
+  <Name>NNTP</Name>
+  <Summary>Communicate with an NNTP server</Summary>
+  <Maintainer>
+    <Initials>MK</Initials>
+    <Name>Martin Kaltoft</Name>
+    <Email>kaltoft@php.net</Email>
+  </Maintainer>
+  <Release>
+    <Version>0.1</Version>
+    <Date>2001-04-19</Date>
+    <Notes>
+      This is the initial independent release of the NNTP package.
+    </Notes>
+  </Release>
+  <FileList>
+    <Dir>/</Dir>
+    <File>NNTP.php</File>
+  </FileList>
+</Package>
