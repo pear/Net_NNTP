@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <!-- do not use the "Type" attribute here, that one is only for
      generated package.xml files -->
+<!-- $Id: package.xml,v 1.12 2003-08-14 22:57:55 heino Exp $ -->
 <package version="1.0">
   <name>Net_NNTP</name>
   <summary>Communicate with an NNTP server</summary>
@@ -38,11 +39,11 @@
    <dep type="pkg" rel="ge" version="1.0">Net_Socket</dep>
   </deps>
   <release>
-    <version>0.9.0</version>
-    <date>2003-08-04</date>
+    <version>0.9.1</version>
+    <date>2003-08-15</date>
     <license>PHP 2.0</license>
     <state>alpha</state>
-    <notes>Major rewrite, yet still generaly backward compatible - now uses Net_Socket, lets the user choose if the article data are to be returned as strings or arrays or objects, authentication has been separated from the execution of commands, returns pear_error objects of failure, and handles the server's responses individually. (heino)</notes>
+    <notes>Bug fixing and improvements in Net_NNTP_Header and Net_NNTP_Message (heino)</notes>
     <filelist>
       <dir name="/" baseinstalldir="Net">
         <file role="php">NNTP.php</file>
@@ -57,8 +58,16 @@
   </release>
   <changelog>
   <release>
+    <version>0.9.0</version>
+    <date>2002-08-09</date>
+    <state>alpha</state>
+    <notes>
+      Major rewrite, yet still generaly backward compatible - now uses Net_Socket, lets the user choose if the article data are to be returned as strings or arrays or objects, authentication has been separated from the execution of commands, returns pear_error objects of failure, and handles the server's responses individually. (heino)
+    </notes>
+  </release>
+  <release>
     <version>0.2.1</version>
-    <date>2002-08-04</date>
+    <date>2002-08-09</date>
     <state>stable</state>
     <notes>
       Fix binary safety (heino)
