@@ -10,12 +10,6 @@
   <license>PHP 2.0</license>
   <maintainers>
     <maintainer>
-      <user>kaltroft</user>
-      <name>Martin Kaltroft</name>
-      <email>martin@nitro.dk</email>
-      <role>lead</role>
-    </maintainer>
-    <maintainer>
       <user>heino</user>
       <name>Heino H. Gehlsen</name>
       <email>heino@gehlsen.dk</email>
@@ -35,11 +29,11 @@
     </maintainer>
   </maintainers>
   <release>
-    <version>0.2.2</version>
-    <date>2002-08-31</date>
+    <version>0.2.3</version>
+    <date>2002-09-13</date>
     <state>stable</state>
     <notes>
-      Constant names pearified (heino)
+      Incorrect handling of the XROVER extension in getOverview() removed (heino)
     </notes>
     <filelist>
       <dir name="/" baseinstalldir="Net">
@@ -56,6 +50,14 @@
     </filelist>
   </release>
   <changelog>
+  <release>
+    <version>0.2.2</version>
+    <date>2002-08-31</date>
+    <state>stable</state>
+    <notes>
+      Constant names pearified (heino)
+    </notes>
+  </release>
   <release>
     <version>0.2.1</version>
     <date>2002-08-04</date>
