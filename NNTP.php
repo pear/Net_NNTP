@@ -38,7 +38,7 @@ define('PEAR_NNTP_AUTHGENERIC',  NET_NNTP_AUTHGENERIC);
  * The NNTP:: class fetches UseNet news articles acording to the standard
  * based on RFC 977, RFC 1036 and RFC 1980.
  *
- * @version 0.3.1
+ * @version 0.3.3
  * @author Martin Kaltoft   <martin@nitro.dk>
  * @author Tomas V.V.Cox    <cox@idecnet.com>
  * @author Heino H. Gehlsen <heino@gehlsen.dk>
@@ -95,10 +95,10 @@ class Net_NNTP extends Net_NNTP_Protocol
      * and thus the last three parameters will no longer be used to authenticate.
      *
      * @param optional string $host The adress of the NNTP-server to connect to.
-     * @param optional int $port The port to connect to, defaults to 119.
-     * @param optional string $user Depresated!
-     * @param optional string $pass Depresated!
-     * @param optional string $authmode Depresated!
+     * @param optional int $port The port to connect to.
+     * @param optional string $user Deprecated!
+     * @param optional string $pass Deprecated!
+     * @param optional string $authmode Deprecated!
      *
      * @return mixed (bool) true on success or (object) pear_error on failure
      * @access public
@@ -106,14 +106,14 @@ class Net_NNTP extends Net_NNTP_Protocol
      * @see Net_Nntp::connectAuthenticated()
      * @see Net_Nntp::authenticate()
      */
-    function connect($host = 'localhost',
-                     $port = 119,
+    function connect($host = NET_NNTP_PROTOCOL_DEFAULT_HOST,
+                     $port = NET_NNTP_PROTOCOL_DEFAULT_PORT,
                      $user = null,
                      $pass = null,
                      $authmode = NET_NNTP_AUTHORIGINAL)
     {
 	// Currently this function just 'forwards' to connectAuthenticated().
-	return $this->connectAuthenticated($host, $port, $user, $pass, $authmode);
+	return $this->connectAuthenticated($user, $pass, $host, $port, $authmode);
     }
 
 
@@ -123,10 +123,10 @@ class Net_NNTP extends Net_NNTP_Protocol
     /**
      * Connect to the newsserver, and authenticate. If no user/pass is specified, just connect.
      *
-     * @param optional string $host The adress of the NNTP-server to connect to.
-     * @param optional int $port The port to connect to, defaults to 119.
      * @param optional string $user The user name to authenticate with
      * @param optional string $pass The password
+     * @param optional string $host The adress of the NNTP-server to connect to.
+     * @param optional int $port The port to connect to, defaults to 119.
      * @param optional string $authmode The authentication mode
      *
      * @return mixed (bool) true on success or (object) pear_error on failure
@@ -136,11 +136,11 @@ class Net_NNTP extends Net_NNTP_Protocol
      * @see Net_Nntp::authenticate()
      * @see Net_Nntp::quit()
      */
-    function connectAuthenticated($host = 'localhost',
-                     $port = 119,
-                     $user = null,
-                     $pass = null,
-                     $authmode = NET_NNTP_AUTHORIGINAL)
+    function connectAuthenticated($user = null,
+            			  $pass = null,
+            			  $host = NET_NNTP_PROTOCOL_DEFAULT_HOST,
+                		  $port = NET_NNTP_PROTOCOL_DEFAULT_PORT,
+                		  $authmode = NET_NNTP_AUTHORIGINAL)
     {
 	// Until connect() is changed, connect() is called directly from the parent...
 	$R = parent::connect($host, $port);
@@ -294,7 +294,7 @@ class Net_NNTP extends Net_NNTP_Protocol
 
 	$this->_currentGroup = $response_arr;
 
-	// Deprisated / historical				  	
+	// Deprecated / historical				  	
 	$response_arr['min'] =& $response_arr['first'];
 	$response_arr['max'] =& $response_arr['last'];
 	$this->min =& $response_arr['min'];
@@ -320,7 +320,7 @@ class Net_NNTP extends Net_NNTP_Protocol
 	    return $groups;
 	}
 
-	// Deprisated / historical
+	// Deprecated / historical
 	foreach (array_keys($groups) as $k) {
     	    $groups[$k]['posting_allowed'] =& $groups[$k][3];
 	}
@@ -378,6 +378,31 @@ class Net_NNTP extends Net_NNTP_Protocol
     function getOverviewFmt()
     {
 	return $this->cmdListOverviewFMT();
+    }
+
+    // }}}
+    // {{{ getReferencesOverview()
+
+    /**
+     * Fetch message header from message number $first to $last
+     *
+     * The format of the returned array is:
+     * $messages[message_id][header_name]
+     *
+     * @param integer $first first article to fetch
+     * @param integer $last  last article to fetch
+     *
+     * @return mixed (array) nested array of message and there headers on success or (object) pear_error on failure
+     * @access public
+     */
+    function getReferencesOverview($first, $last)
+    {
+	$overview = $this->cmdXROver($first, $last);
+	if (PEAR::isError($overview)) {
+	    return $overview;
+	}
+	
+	return $overview;
     }
 
     // }}}
@@ -639,10 +664,7 @@ class Net_NNTP extends Net_NNTP_Protocol
      */
     function count()
     {
-        if (!$this->isConnected()) {
-            return $this->throwError('Not connected');
-        }
-        return $this->currentGroup['count'];
+        return $this->_currentGroup['count'];
 
     }
 
@@ -659,10 +681,7 @@ class Net_NNTP extends Net_NNTP_Protocol
      */
     function last()
     {
-        if (!$this->isConnected()) {
-            return $this->throwError('Not connected');
-        }
-	return $this->currentGroup['last'];
+	return $this->_currentGroup['last'];
     }
 
     // }}}
@@ -692,10 +711,7 @@ class Net_NNTP extends Net_NNTP_Protocol
      */
     function first()
     {
-        if (!$this->isConnected()) {
-            return $this->throwError('Not connected');
-        }
-	return $this->currentGroup['first'];
+	return $this->_currentGroup['first'];
     }
 
     // }}}
@@ -724,10 +740,7 @@ class Net_NNTP extends Net_NNTP_Protocol
      */
     function group()
     {
-        if (!$this->isConnected()) {
-            return $this->throwError('Not connected');
-        }
-	return $this->currentGroup['group'];
+	return $this->_currentGroup['group'];
     }
 
     // }}}
@@ -740,6 +753,7 @@ class Net_NNTP extends Net_NNTP_Protocol
      *
      * @return mixed (array) Assoc array with headers names as key on success or (object) pear_error on failure
      * @access public
+     * @deprecated
      */
     function splitHeaders($article)
     {
@@ -774,8 +788,7 @@ class Net_NNTP extends Net_NNTP_Protocol
             }
         }
 
-	return $return
-;
+	return $return;
     }
 
     // }}}
