@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!-- $Id: package.xml,v 1.16.2.4.2.4 2004-08-04 06:55:38 heino Exp $ -->
+<!-- $Id: package.xml,v 1.16.2.4.2.5 2004-08-21 12:21:28 heino Exp $ -->
 <package version="1.0">
   <name>Net_NNTP</name>
   <summary>Implementation of the NNTP protocol</summary>
@@ -20,12 +20,13 @@
   </deps>
   <release>
     <version>0.11.2</version>
-    <date>2004-08-04</date>
+    <date>2004-08-21</date>
     <license>W3C</license>
-    <state>devel</state>
+    <state>alpha</state>
     <notes>
-      - Fix whitespace in Net_NNTP_Client & Net_NNTP_Protocol_Client.
       - Update PhpDoc blocks.
+      - Changed xmdXOver(),cmdXROver(),getOverview() and getReferencesOverview() into using only parameter: $range.
+      - Fix whitespace in Net_NNTP_Client & Net_NNTP_Protocol_Client & Net_NNTP.
     </notes>
     <filelist>
       <dir name="/" baseinstalldir="Net">
