@@ -29,6 +29,21 @@
     </maintainer>
   </maintainers>
   <release>
+    <version>0.2</version>
+    <date>2002-02-20</date>
+    <license>PHP 2.0</license>
+    <state>stable</state>
+    <notes>
+      pearified API 
+    </notes>
+    <filelist>
+      <dir name="/" baseinstall="Net">
+        <file role="php">NNTP.php</file>
+        <file role="doc">README</file>
+      </dir>
+    </filelist>
+  </release>  
+  <release>
     <version>0.1</version>
     <date>2002-01-27</date>
     <license>PHP 2.0</license>
