@@ -61,14 +61,6 @@
 
 require_once 'PEAR.php';
 
-/**
- * The Net_NNTP_Header class
- *
- * @version $Revision$
- * @package Net_NNTP
- *
- * @author Heino H. Gehlsen <heino@gehlsen.dk>
- */
 
 define('NET_NNTP_HEADER_SET_UNFOLD', 1);
 define('NET_NNTP_HEADER_SET_DECODE', 2);
@@ -81,7 +73,14 @@ define('NET_NNTP_HEADER_GET_ENCODE', 2);
 define('NET_NNTP_HEADER_GET_DEFAULT', NET_NNTP_HEADER_GET_ENCODE | NET_NNTP_HEADER_GET_FOLD);
 
 
-
+/**
+ * The Net_NNTP_Header class
+ *
+ * @version $Revision$
+ * @package Net_NNTP
+ *
+ * @author Heino H. Gehlsen <heino@gehlsen.dk>
+ */
 class Net_NNTP_Header
 {
     // {{{ properties
@@ -135,6 +134,7 @@ class Net_NNTP_Header
      *                              (object) Net_NNTP_Header object
      *                              (object) Net_NNTP_Message object
      * 
+     * @return object Net_NNTP_Header object
      * @access public
      * @since 0.1
      */
@@ -598,20 +598,18 @@ class Net_NNTP_Header
 	// Loop through all headers
         foreach ($array as $field) {
 	    // Separate header name and value
-            $name = substr($field, 0, $pos = strpos($field, ':'));
-            $value = substr($field, $pos + 1);
+	    if (!preg_match('/([\S]+)\:\s*(.*)\s*/', $field, $matches)) {
+		// Fail...
+	    }
+	    $name = $matches[1];
+	    $value = $matches[2];
+	    unset($matches);
 
 	    // Change header name to lower case
 	    if (($flags & NET_NNTP_HEADER_SET_KEEPCASE) != NET_NNTP_HEADER_SET_KEEPCASE) {
  		$name = strtolower($name);
 	    }
 	    
-    	    // Remove commonly used space between colon and value
-	    if ($value[0] == ' ')
- {
-                $value = substr($value, 1);
-	    }
-
 	    // Decode header value acording to RFC 2047
 	    if (($flags & NET_NNTP_HEADER_SET_DECODE) == NET_NNTP_HEADER_SET_UNFOLD) {
 		$value
@@ -797,8 +795,7 @@ class Net_NNTP_Header
      * @access public
      * @since 0.1
      */
-    function foldString($string, $maxlen = 78
-)
+    function foldString($string, $maxlen = 78)
     {
 	$array = & $this->_foldExplode(&$string, &$maxlen);
 	$return = &implode("\r\n\t", &$array);
