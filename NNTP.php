@@ -105,6 +105,7 @@ class Net_Nntp extends PEAR
      * @return mixed True on success or Pear Error object on failure
      * @see Net_Nntp::authenticate()
      * @access public
+     * @deprecated Use connect() instead
      */
     function prepare_connection($nntpserver,
                                 $port = 119,
@@ -339,6 +340,24 @@ class Net_Nntp extends PEAR
     }
 
     /**
+     * Get data until a line with only a '.' in it is read and return data.
+     *
+     * @author Morgan Christiansson <mog@linux.nu>
+     */
+    function get_data()    {
+      $body = array();
+      while(!feof($this->fp)) {
+	$line = trim(fgets($this->fp, 256));
+	if ($line == '.') {
+	  break;
+	} else {
+	  $body[] = $line;
+	}
+      }
+      return $body;
+    }
+
+    /**
     * Selects a news group (issue a GROUP command to the server)
     * @param string $newsgroup The newsgroup name
     * @return mixed True on success or Pear Error object on failure
@@ -353,7 +372,66 @@ class Net_Nntp extends PEAR
         $this->max = $response_arr[3];
         $this->min = $response_arr[2];
 
-        return true;
+	return array(
+		     "first" => $response_arr[2],
+		     "last" => $response_arr[3]
+		     );
+    }
+
+    /**
+     * 
+     * @param int $fetch NNTP_ALL NNTP_NAMES NNTP_LIST
+     * @author Morgan Christiansson <mog@linux.nu>
+     */
+    function get_groups($fetch=TRUE) {
+      $this->command("LIST");
+      foreach($this->get_data() as $line) {
+	$arr = explode(" ",$line);
+	$groups[$arr[0]]["group"] = $arr[0];
+	$groups[$arr[0]]["last"] = $arr[1];
+	$groups[$arr[0]]["first"] = $arr[2];
+	$groups[$arr[0]]["posting_allowed"] = $arr[3];
+      }
+
+      $this->command("LIST NEWSGROUPS");
+      foreach($this->get_data() as $line) {
+	preg_match("/^(.*?)\s(.*?$)/",$line,$matches);
+	$groups[$matches[1]]["desc"] = $matches[2];
+      }
+      return $groups;
+    }
+
+    function get_overview_fmt() {
+        $this->command("LIST OVERVIEW.FMT");
+        $format = array("number");
+        foreach($body = $this->get_data() as $line) {
+            $line = current(explode(":",$line));
+            $format[] = $line;
+        }
+	return $format;
+    }
+
+    function get_overview($first,$last) {
+      $format = $this->get_overview_fmt();
+
+      $this->command("XOVER $first-$last");
+      foreach($this->get_data() as $line) {
+	$i=0;
+	foreach(explode("\t",$line) as $line) {
+	  $message[$format[$i++]] = $line;
+	}
+	$messages[$message["number"]] = $message;
+      }
+
+      $this->command("XROVER $first-$last");
+      foreach($this->get_data() as $line) {
+	$i=0;
+	foreach(explode("\t",$line) as $line) {
+	  $message[$format[$i++]] = $line;
+	}
+	$messages[$message["number"]] = $message;
+      }
+      return $messages;
     }
 
     /**
