@@ -258,22 +258,24 @@ class Net_NNTP extends PEAR
         }
 
         /* tell the newsserver we want to post an article */
-        fputs($this->fp, "POST\n");
+        $r = $this->command('POST');
+        if (PEAR::isError($r) || $this->responseCode($r) != 340) {
+            return $this->raiseError($r);
+        }
 
-        /* The servers' response */
-        $response = rtrim(fgets($this->fp, 128), "\r\n");
+        $data = '';
+        $data .= "From: $from\r\n";
+        $data .= "Newsgroups: $newsgroup\r\n";
+        $data .= "Subject: $subject\r\n";
+        $data .= "X-poster: PEAR::Net_NNTP (0.2)\r\n";
+        if (!empty($aditional)) {
+            $data .= rtrim($aditional, "\r\n")."\r\n";
+        }
+        $data .= "\r\n";
+        $data .= "$body\r\n";
+        $data .= ".";
 
-        fputs($this->fp, "From: $from\n");
-        fputs($this->fp, "Newsgroups: $newsgroup\n");
-        fputs($this->fp, "Subject: $subject\n");
-        fputs($this->fp, "X-poster: nntp_fetcher (0.1) by Martin Kaltoft\n");
-        fputs($this->fp, "$aditional\n");
-        fputs($this->fp, "\n$body\n.\n");
-
-        /* The servers' response */
-        $response = rtrim(fgets($this->fp, 128), "\r\n");
-
-        return $response;
+        return $this->command($data, false);
     }
 
 
