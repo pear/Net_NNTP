@@ -811,24 +811,16 @@ class Net_NNTP_Protocol extends PEAR
     // {{{ cmdXROver()
 
     /**
-     * Fetch message header from message number $first until $last
-     *
-     * The format of the returned array is:
-     * $messages[message_id][header_name]
+     * Fetch message references from message number $first to $last
      *
      * @param integer $first first article to fetch
      * @param integer $last  last article to fetch
      *
-     * @return mixed (array) nested array of message and there headers on success or (object) pear_error on failure
+     * @return mixed (array) assoc. array of message references on success or (object) pear_error on failure
      * @access public
      */
     function cmdXROver($first, $last)
     {
-        $format = $this->cmdListOverviewFmt();
-        if (PEAR::isError($format)){
-            return $formt;
-        }
-
         $response = $this->_sendCommand('XROVER '.$first.'-'.$last);
         if (PEAR::isError($response)){
             return $response;
@@ -840,13 +832,14 @@ class Net_NNTP_Protocol extends PEAR
 	        if (PEAR::isError($data)) {
 	            return $data;
 	        }
-		$messages = array();
+
 	        foreach($data as $line) {
-	            $i=0;
-	            foreach(explode("\t", trim($line)) as $line) {
-	                $message[$format[$i++]] = $line;
-	            }
-	            $messages[$message['Message-ID']] = $message;
+
+	            $references = preg_split("/ +/", trim($line), -1, PREG_SPLIT_NO_EMPTY);
+
+	            $id = array_shift($references);
+
+	            $messages[$id] = $references;
 	        }
         	return $messages;
 		break;
