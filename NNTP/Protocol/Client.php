@@ -65,8 +65,20 @@ require_once 'Net/Socket.php';
 
 // {{{ constants
 
+/**
+ * Default host
+ *
+ * @access     public
+ */
 define('NET_NNTP_PROTOCOL_CLIENT_DEFAULT_HOST', 'localhost');
+
+/**
+ * Default port
+ *
+ * @access     public
+ */
 define('NET_NNTP_PROTOCOL_CLIENT_DEFAULT_PORT', '119');
+
 
 // Response codes...
 
@@ -149,14 +161,27 @@ define('NET_NNTP_PROTOCOL_CLIENT_RESPONSECODE_AUTHENTICATION_REJECTED', 482);
 // {{{ Net_NNTP_Protocol_Client
 
 /**
- * The Net_NNTP_Protocol_Client class implements the NNTP standard acording to
- * RFX 977, RFC 2980, RFC 850/1036, and RFC 822/2822
+ * Low level NNTP Client
+ *
+ * Implements the client part of the NNTP standard acording to:
+ *  - RFC 977,
+ *  - RFC 2980,
+ *  - RFC 850/1036, and
+ *  - RFC 822/2822
+ *
+ * Each NNTP command is represented by a method: cmd*()
+ *
+ * WARNING: The Net_NNTP_Protocol_Client class is considered an internal class
+ *          (and should therefore currently not be extended directly outside of
+ *          the Net_NNTP package). Therefore its API is NOT required to be fully
+ *          stable, for as long as such changes doesn't affect the public API of
+ *          the Net_NNTP_Client class, which is considered stable.
  *
  * @category   Net
  * @package    Net_NNTP
  * @author     Heino H. Gehlsen <heino@gehlsen.dk>
  * @version    $Id$
- * @access     public
+ * @access     private
  * @see        Net_NNTP_Client
  * @since      Class available since Release 0.11.0
  */
@@ -165,7 +190,7 @@ class Net_NNTP_Protocol_Client
     // {{{ properties
 
     /**
-     * The socket resource being used to connect to the IMAP server.
+     * The socket resource being used to connect to the NNTP server.
      *
      * @var resource
      * @access private
@@ -173,9 +198,9 @@ class Net_NNTP_Protocol_Client
     var $_socket = null;
 
     /**
+     * Contains the last recieved status response code and text
      *
-     *
-     * @var resource
+     * @var array
      * @access private
      */
     var $_currentStatusResponse = null;
@@ -192,7 +217,9 @@ class Net_NNTP_Protocol_Client
     // {{{ constructor
 	    
     /**
+     * Constructor
      *
+     * @access public
      */
     function Net_NNTP_Protocol_Client() {
     	$this->_socket = new Net_Socket();
@@ -202,13 +229,13 @@ class Net_NNTP_Protocol_Client
     // {{{ Connect()
 
     /**
-     * Connect to the server
+     * Connect to a NNTP server
      *
-     * @param optional string $host The adress of the NNTP-server to connect to, defaults to 'localhost'.
+     * @param optional string $host The address of the NNTP-server to connect to, defaults to 'localhost'.
      * @param optional int $port The port number to connect to, defaults to 119.
      *
      * @return mixed (bool) true on success or (object) pear_error on failure
-     * @access public
+     * @access protected
      */
     function connect($host = NET_NNTP_PROTOCOL_CLIENT_DEFAULT_HOST, $port = NET_NNTP_PROTOCOL_CLIENT_DEFAULT_PORT)
     {
@@ -251,7 +278,7 @@ class Net_NNTP_Protocol_Client
     /**
      * alias for cmdQuit()
      *
-     * @access public
+     * @access protected
      */
     function disconnect()
     {
@@ -262,9 +289,10 @@ class Net_NNTP_Protocol_Client
     // {{{ cmdQuit()
 
     /**
-     * Close connection to the server
+     * Disconnect from the NNTP server
      *
-     * @access public
+     * @return mixed (bool) true on success or (object) pear_error on failure 
+     * @access protected
      */
     function cmdQuit()
     {
@@ -297,13 +325,13 @@ class Net_NNTP_Protocol_Client
     // {{{ cmdAuthinfo()
 
     /**
-     * Authenticates the user using the original method
+     * Authenticate using 'original' method
      *
      * @param string $user The username to authenticate as.
      * @param string $pass The password to authenticate with.
      *
      * @return mixed (bool) true on success or (object) pear_error on failure 
-     * @access private
+     * @access protected
      */
     function cmdAuthinfo($user, $pass)
     {
@@ -348,13 +376,13 @@ class Net_NNTP_Protocol_Client
     // {{{ cmdAuthinfoSimple()
 
     /**
-     * Authenticates the user using the simple method
+     * Authenticate using 'simple' method
      *
      * @param string $user The username to authenticate as.
      * @param string $pass The password to authenticate with.
      *
      * @return mixed (bool) true on success or (object) pear_error on failure 
-     * @access private
+     * @access protected
      */
     function cmdAuthinfoSimple($user, $pass)
     {
@@ -365,13 +393,13 @@ class Net_NNTP_Protocol_Client
     // {{{ cmdAuthinfoGeneric()
 
     /**
-     * Authenticates the user using the simple method
+     * Authenticate using 'generic' method
      *
      * @param string $user The username to authenticate as.
      * @param string $pass The password to authenticate with.
      *
      * @return mixed (bool) true on success or (object) pear_error on failure 
-     * @access private
+     * @access protected
      */
     function cmdAuthinfoGeneric($user, $pass)
     {
@@ -383,8 +411,9 @@ class Net_NNTP_Protocol_Client
 
     /**
      *
-     * @return mixed (bool) true when one can post on success or (object) pear_error on failure 
-     * @access public
+     *
+     * @return mixed (bool) true when posting allowed, false when postind disallowed or (object) pear_error on failure 
+     * @access protected
      */
     function cmdModeReader()
     {
@@ -396,8 +425,10 @@ class Net_NNTP_Protocol_Client
 	
     	switch ($response) {
             case 200: // RFC2980: 'Hello, you can post'
+    	    	return true;
     	        break;
     	    case 201: // RFC2980: 'Hello, you can't post'
+    	    	return false;
     	    	break;
     	    default:
     	    	return $this->_handleUnexpectedResponse($response);
@@ -411,7 +442,7 @@ class Net_NNTP_Protocol_Client
      * 
      *
      * @return
-     * @access public
+     * @access protected
      */
     function cmdNext($x = 1)
     {
@@ -463,7 +494,7 @@ class Net_NNTP_Protocol_Client
      * 
      *
      * @return
-     * @access public
+     * @access protected
      */
     function cmdLast($x = 1)
     {
@@ -517,7 +548,7 @@ class Net_NNTP_Protocol_Client
      * @param mixed $article 
      *
      * @return mixed (???) ??? on success or (object) pear_error on failure 
-     * @access public
+     * @access protected
      */
     function cmdStat($article)
     {
@@ -573,7 +604,7 @@ class Net_NNTP_Protocol_Client
      * @param mixed $article Either a message-id or a message-number of the article to fetch. If null or '', then use current article.
      *
      * @return mixed (array) article on success or (object) pear_error on failure 
-     * @access public
+     * @access protected
      */
     function cmdArticle($article)
     {
@@ -620,7 +651,7 @@ class Net_NNTP_Protocol_Client
      * @param mixed $article Either a message-id or a message-number of the article to fetch the headers from. If null or '', then use current article.
      *
      * @return mixed (array) headers on success or (object) pear_error on failure 
-     * @access public
+     * @access protected
      */
     function cmdHead($article)
     {
@@ -667,7 +698,7 @@ class Net_NNTP_Protocol_Client
      * @param mixed $article Either a message-id or a message-number of the article to fetch the body from. If null or '', then use current article.
      *
      * @return mixed (array) body on success or (object) pear_error on failure 
-     * @access public
+     * @access protected
      */
     function cmdBody($article)
     {
@@ -724,7 +755,7 @@ class Net_NNTP_Protocol_Client
      * @param optional string $aditional Aditional headers to send.
      *
      * @return mixed (bool) true on success or (object) pear_error on failure
-     * @access public
+     * @access protected
      */
     function cmdPost($newsgroup, $subject, $body, $from, $aditional = '')
     {
@@ -782,7 +813,7 @@ class Net_NNTP_Protocol_Client
      * @param string $newsgroup The newsgroup name
      *
      * @return mixed (array) groupinfo on success or (object) pear_error on failure
-     * @access public
+     * @access protected
      */
     function cmdGroup($newsgroup)
     {
@@ -818,7 +849,7 @@ class Net_NNTP_Protocol_Client
      * Fetches a list of all avaible newsgroups
      *
      * @return mixed (array) nested array with informations about existing newsgroups on success or (object) pear_error on failure
-     * @access public
+     * @access protected
      */
     function cmdList()
     {
@@ -860,7 +891,7 @@ class Net_NNTP_Protocol_Client
      * @param string $wildmat Wildmat of the groups, that is to be listed, defaults to '';
      *
      * @return mixed (array) nested array with description of existing newsgroups on success or (object) pear_error on failure
-     * @access public
+     * @access protected
      */
     function cmdListNewsgroups($wildmat = '')
     {
@@ -904,7 +935,7 @@ class Net_NNTP_Protocol_Client
      * @param string $wildmat Wildmat of the groups, that is to be listed, defaults to '*';
      *
      * @return mixed (array) nested array with description of existing newsgroups on success or (object) pear_error on failure
-     * @access public
+     * @access protected
      */
     function cmdXGTitle($wildmat = '*')
     {
@@ -946,7 +977,7 @@ class Net_NNTP_Protocol_Client
      * @param optional string $distributions 
      *
      * @return mixed (array) nested array with informations about existing newsgroups on success or (object) pear_error on failure
-     * @access public
+     * @access protected
      */
     function cmdNewgroups($time, $distributions = null)
     {
@@ -979,7 +1010,7 @@ class Net_NNTP_Protocol_Client
      * Returns a list of avaible headers which are send from newsserver to client for every news message
      *
      * @return mixed (array) of header names on success or (object) pear_error on failure
-     * @access public
+     * @access protected
      */
     function cmdListOverviewFmt()
     {
@@ -1024,7 +1055,7 @@ class Net_NNTP_Protocol_Client
      * @param string $range articles to fetch
      *
      * @return mixed (array) nested array of message and there headers on success or (object) pear_error on failure
-     * @access public
+     * @access protected
      */
     function cmdXOver($range)
     {
@@ -1082,7 +1113,7 @@ class Net_NNTP_Protocol_Client
      * @param string $range articles to fetch
      *
      * @return mixed (array) assoc. array of message references on success or (object) pear_error on failure
-     * @access public
+     * @access protected
      */
     function cmdXROver($range)
     {
@@ -1132,9 +1163,11 @@ class Net_NNTP_Protocol_Client
 
     /**
      *
+     *
      * @param string $newsgroup 
      *
      * @return mixed (array) on success or (object) pear_error on failure
+     * @access protected
      */
     function cmdListgroup($newsgroup)
     {
@@ -1167,6 +1200,12 @@ class Net_NNTP_Protocol_Client
 
     /**
      *
+     *
+     * @param timestamp $time
+     * @param string $newsgroups
+     *
+     * @return mixed 
+     * @access protected
      */
     function cmdNewnews($time, $newsgroups = '*')
     {
@@ -1199,7 +1238,7 @@ class Net_NNTP_Protocol_Client
      * @param bool $timestap when false function returns string, and when true function returns int/timestamp.
      *
      * @return mixed (string) 'YYYYMMDDhhmmss' / (int) timestamp on success or (object) pear_error on failure
-     * @access public
+     * @access protected
      */
     function cmdDate($timestamp = false)
     {
@@ -1228,8 +1267,7 @@ class Net_NNTP_Protocol_Client
      * Test whether we are connected or not.
      *
      * @return bool true or false
-     *
-     * @access public
+     * @access protected
      */
     function isConnected()
     {
@@ -1242,10 +1280,10 @@ class Net_NNTP_Protocol_Client
     /**
      * Sets the debuging information on or off
      *
-     * @param boolean True or false 
+     * @param boolean $debug True or false 
      *
      * @return bool previos state
-     * @access public
+     * @access protected
      */
     function setDebug($debug = true)
     {
@@ -1258,7 +1296,10 @@ class Net_NNTP_Protocol_Client
     // {{{ _handleUnexpectedResponse()
 
     /**
-     * Get servers statusresponse after a command.
+     *
+     *
+     * @param int $code Status code number
+     * @param string $text Status text
      *
      * @return mixed
      * @access private
@@ -1280,7 +1321,7 @@ class Net_NNTP_Protocol_Client
     // {{{ _getStatusResponse()
 
     /**
-     * Get servers statusresponse after a command.
+     * Get servers status response after a command.
      *
      * @return mixed (int) statuscode on success or (object) pear_error on failure
      * @access private
@@ -1326,6 +1367,8 @@ class Net_NNTP_Protocol_Client
     // {{{ _getTextResponse()
 
     /**
+     * Retrieve textural data
+     *
      * Get data until a line with only a '.' in it is read and return data.
      *
      * @return mixed (array) text response on success or (object) pear_error on failure
@@ -1387,6 +1430,8 @@ class Net_NNTP_Protocol_Client
     // {{{ _sendCommand()
 
     /**
+     * Send command
+     *
      * Send a command to the server. A carriage return / linefeed (CRLF) sequence
      * will be appended to each command string before it is sent to the IMAP server.
      *
