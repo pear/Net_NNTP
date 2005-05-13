@@ -366,6 +366,44 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     }
 
     // }}}
+    // {{{ getArticle()
+
+    /**
+     * Get an article
+     *
+     * Experimental
+     *
+     * The v0.2 version of the this function (which returned the article as a string) has been renamed to getArticleRaw().
+     *
+     * @param mixed $article Either the message-id or the message-number on the server of the article to fetch.
+     *
+     * @return mixed (object) message object on success or (object) pear_error on failure
+     * @access public
+     * @see Net_NNTP_Client::getArticleRaw()
+     * @see Net_NNTP_Client::getHeader()
+     * @see Net_NNTP_Client::getBody()
+     */
+    function getArticle($article, $class)
+    {
+        $message = $this->getArticleRaw($article, true);
+        if (PEAR::isError($message)) {
+    	    return $data;
+    	}
+
+    	if (!is_string($class)) {
+    	    return PEAR::throwError('UPS...');
+    	}
+
+    	if (!class_exists($class)) {
+    	    return PEAR::throwError("Class '$class' does not exist!");
+	}
+
+	$M = new $class($message);
+
+    	return $M;
+    }
+
+    // }}}
     // {{{ getArticleRaw()
 
     /**
@@ -392,6 +430,42 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	}
 
     	return $data;
+    }
+
+    // }}}
+    // {{{ getHeader()
+
+    /**
+     * Get the header of an article
+     *
+     * Experimental
+     *
+     * @param mixed $article Either the (string) message-id or the (int) message-number on the server of the article to fetch.
+     *
+     * @return mixed (object) header object on success or (object) pear_error on failure
+     * @access public
+     * @see Net_NNTP_Client::getHeaderRaw()
+     * @see Net_NNTP_Client::getArticle()
+     * @see Net_NNTP_Client::getBody()
+     */
+    function getHeader($article, $class)
+    {
+        $header = $this->getHeaderRaw($article, true);
+        if (PEAR::isError($header)) {
+    	    return $header;
+    	}
+
+    	if (!is_string($class)) {
+    	    return PEAR::throwError('UPS...');
+    	}
+
+    	if (!class_exists($class)) {
+    	    return PEAR::throwError("Class '$class' does not exist!");
+	}
+
+	$H = new $class($header);
+
+    	return $H;
     }
 
     // }}}
@@ -426,7 +500,38 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     // }}}
     // {{{ getBody()
 
-	// Not written yet...
+    /**
+     * Get the body of an article
+     *
+     * Experimental
+     *
+     * @param mixed $article Either the (string) message-id or the (int) message-number on the server of the article to fetch.
+     *
+     * @return mixed (object) body object on success or (object) pear_error on failure
+     * @access public
+     * @see Net_NNTP_Client::getHeader()
+     * @see Net_NNTP_Client::getArticle()
+     * @see Net_NNTP_Client::getBodyRaw()
+     */
+    function getBody($article, $class)
+    {
+        $body = $this->getBodyRaw($article, true);
+        if (PEAR::isError($body)) {
+    	    return $body;
+    	}
+
+    	if (!is_string($class)) {
+    	    return PEAR::throwError('UPS...');
+    	}
+
+    	if (!class_exists($class)) {
+    	    return PEAR::throwError("Class '$class' does not exist!");
+	}
+
+	$B = new $class($body);
+
+    	return $B;
+    }
 
     // }}}
     // {{{ getBodyRaw()
