@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!-- $Id: package.xml,v 1.20.2.3 2005-03-28 17:28:00 heino Exp $ -->
+<!-- $Id: package.xml,v 1.20.2.4 2005-05-13 21:18:28 heino Exp $ -->
 <package version="1.0">
   <name>Net_NNTP</name>
   <summary>Implementation of the NNTP protocol</summary>
@@ -19,12 +19,14 @@
    <dep type="pkg" rel="ge" version="1.0.3">Net_Socket</dep>
   </deps>
   <release>
-    <version>1.2.2</version>
-    <date>2005-03-28</date>
+    <version>1.2.3</version>
+    <date>2005-05-13</date>
     <license>W3C</license>
     <state>alpha</state>
     <notes>
-      - Bug #3967 fixed (typo in Net_NNTP_Header::decodeString())
+      - New method in Net_NNTP_Client: getBody().
+      - Added parameters to Net_NNTP_Client::getArticle/getHeader() to allow use of external return classes.
+      - Added status response code constants in Net_NNTP_Protocol_Clients.
     </notes>
     <filelist>
       <dir name="/" baseinstalldir="Net">
@@ -50,8 +52,16 @@
   </release>
   <changelog>
   <release>
-    <version>1.2.1</version>
+    <version>1.2.2</version>
     <date>2005-03-13</date>
+    <state>alpha</state>
+    <notes>
+      - Bug #3967 fixed (typo in Net_NNTP_Header::decodeString())
+    </notes>
+  </release>
+  <release>
+    <version>1.2.1</version>
+    <date>2005-03-28</date>
     <state>alpha</state>
     <notes>
       - New methods in Net_NNTP_Client: selectArticle(), selectNextArticle() and selectPreviousArticle().
