@@ -109,10 +109,11 @@ class Net_NNTP_Header
      * @access public
      * @since 0.1
      */
-    function Net_NNTP_Header()
+    function Net_NNTP_Header($input = null)
     {
 	// Reset object
 	$this->reset();
+	$this->setFields($input);
     }
 
     // }}}

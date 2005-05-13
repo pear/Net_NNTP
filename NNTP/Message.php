@@ -105,9 +105,10 @@ class Net_NNTP_Message
      *
      * @access public
      */
-    function Net_NNTP_Message()
+    function Net_NNTP_Message($input = null)
     {
 	$this->reset();
+	$this->setMessage($input);
     }
 
     // }}}
