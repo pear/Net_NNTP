@@ -383,9 +383,9 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @see Net_NNTP_Client::getHeader()
      * @see Net_NNTP_Client::getBody()
      */
-    function getArticle($article, $class)
+    function getArticle($article, $class, $implode)
     {
-        $message = $this->getArticleRaw($article, true);
+        $message = $this->getArticleRaw($article, $implode);
         if (PEAR::isError($message)) {
     	    return $data;
     	}
@@ -448,9 +448,9 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @see Net_NNTP_Client::getArticle()
      * @see Net_NNTP_Client::getBody()
      */
-    function getHeader($article, $class)
+    function getHeader($article, $class, $implode)
     {
-        $header = $this->getHeaderRaw($article, true);
+        $header = $this->getHeaderRaw($article, $implode);
         if (PEAR::isError($header)) {
     	    return $header;
     	}
@@ -513,9 +513,9 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @see Net_NNTP_Client::getArticle()
      * @see Net_NNTP_Client::getBodyRaw()
      */
-    function getBody($article, $class)
+    function getBody($article, $class, $implode)
     {
-        $body = $this->getBodyRaw($article, true);
+        $body = $this->getBodyRaw($article, $implode);
         if (PEAR::isError($body)) {
     	    return $body;
     	}
