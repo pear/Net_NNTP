@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!-- $Id: package.xml,v 1.19.2.2 2005-03-28 16:49:53 heino Exp $ -->
+<!-- $Id: package.xml,v 1.19.2.3 2005-05-13 21:06:49 heino Exp $ -->
 <package version="1.0">
   <name>Net_NNTP</name>
   <summary>Implementation of the NNTP protocol</summary>
@@ -19,12 +19,12 @@
    <dep type="pkg" rel="ge" version="1.0.3">Net_Socket</dep>
   </deps>
   <release>
-    <version>1.1.1</version>
-    <date>2005-03-28</date>
+    <version>1.1.2</version>
+    <date>2005-05-13</date>
     <license>W3C</license>
     <state>beta</state>
     <notes>
-      - Net_NNTP_Client::connectAuthenticated() removed - it should only exist in the MAINT_1_2 branch for now (was not removed by mistake in the v1.1.0 release)
+      - Three new Net_NNTP_Client methods: getArticle(), getHeader() and getBody() - stripped down versions from the v1.2 releases (no default return classes).
     </notes>
     <filelist>
       <dir name="/" baseinstalldir="Net">
@@ -47,6 +47,14 @@
     </filelist>
   </release>
   <changelog>
+  <release>
+    <version>1.1.1</version>
+    <date>2005-03-28</date>
+    <state>beta</state>
+    <notes>
+      - Net_NNTP_Client::connectAuthenticated() removed - it should only exist in the MAINT_1_2 branch for now (was not removed by mistake in the v1.1.0 release)
+    </notes>
+  </release>
   <release>
     <version>1.1.0</version>
     <date>2005-01-14</date>
