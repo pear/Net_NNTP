@@ -415,77 +415,89 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     // {{{ selectArticle()
 
     /**
-     * Selects article
+     * Selects an article by article message-number
      *
-     * @param int $article The message-number on the server of the article to fetch.
+     * @param int $article The message-number (on the server) of the article to select as current article.
      *
-     * @return mixed (???) ??? or (object) pear_error on failure
+     * @return mixed true on success, false if article doesn't exist, and (object) pear_error on unexpected failure
      * @access public
-     * @see Net_NNTP_Client::lastArticle()
+     * @see Net_NNTP_Client::selectNextArticle()
+     * @see Net_NNTP_Client::selectPreviousArticle()
      */
     function selectArticle($article)
     {
         $response_arr = $this->cmdStat($article);
 
     	if (PEAR::isError($response_arr)) {
-    	    return $response_arr;
+    	    switch ($response_arr->getCode()) {
+    	    	case 423:
+    	    	    return false;
+    	    	    break;
+
+    	    	default:
+    	    	    return $response_arr;
+    	    }
 	}
 
-    	return $response_arr;
+    	return true;
     }
 
     // }}}
     // {{{ selectNextArticle()
 
     /**
-     * Selects next article
+     * Select the next article in current group
      *
-     * @return mixed (???) ??? or (object) pear_error on failure
+     * @return mixed true on success, false if article doesn't exist, and (object) pear_error on unexpected failure
      * @access public
-     * @see Net_NNTP_Client::lastArticle()
+     * @see Net_NNTP_Client::selectArticle()
+     * @see Net_NNTP_Client::selectPreviousArticle()
      */
     function selectNextArticle()
     {
-        $response_arr = $this->cmdNext();
+        $response = $this->cmdNext();
 
-    	if (PEAR::isError($response_arr)) {
-    	    switch ($response_arr->getCode()) {
+    	if (PEAR::isError($response)) {
+    	    switch ($response->getCode()) {
     	    	case 421:
     	    	    return false;
     	    	    break;
+
     	    	default:
-    	    	    return $response_arr;
+    	    	    return $response;
     	    }
 	}
 
-    	return $response_arr;
+    	return true;
     }
 
     // }}}
     // {{{ selectPreviousArticle()
 
     /**
-     * Selects previous article
+     * Select the previous article in current group
      *
-     * @return mixed (???) ??? or (object) pear_error on failure
+     * @return mixed true on success, false if article doesn't exist, and (object) pear_error on unexpected failure
      * @access public
-     * @see Net_NNTP_Client::lastArticle()
+     * @see Net_NNTP_Client::selectArticle()
+     * @see Net_NNTP_Client::selectNextArticle()
      */
     function selectPreviousArticle()
     {
-        $response_arr = $this->cmdLast();
+        $response = $this->cmdLast();
 
-    	if (PEAR::isError($response_arr)) {
-    	    switch ($response_arr->getCode()) {
+    	if (PEAR::isError($response)) {
+    	    switch ($response->getCode()) {
     	    	case 422:
     	    	    return false;
     	    	    break;
+
     	    	default:
-    	    	    return $response_arr;
+    	    	    return $response;
     	    }
     	}
 
-    	return $response_arr;
+    	return true;
     }
 
     // }}}
@@ -506,15 +518,23 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @see Net_NNTP_Client::getHeader()
      * @see Net_NNTP_Client::getBody()
      */
-    function getArticle($article)
+    function getArticle($article, $class = 'Net_NNTP_Message', $implode = false)
     {
-        $message = $this->getArticleRaw($article, false);
+        $message = $this->getArticleRaw($article, $implode);
         if (PEAR::isError($message)) {
     	    return $data;
     	}
-	
-    	$M = Net_NNTP_Message::create($message);
-	
+
+    	if (!is_string($class)) {
+    	    return PEAR::throwError('UPS...');
+    	}
+
+    	if (!class_exists($class)) {
+    	    return PEAR::throwError("Class '$class' does not exist!");
+	}
+
+	$M = new $class($message);
+
     	return $M;
     }
 
@@ -563,14 +583,22 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @see Net_NNTP_Client::getArticle()
      * @see Net_NNTP_Client::getBody()
      */
-    function getHeader($article)
+    function getHeader($article, $class = 'Net_NNTP_Header', $implode = false)
     {
-        $header = $this->getHeaderRaw($article, false);
+        $header = $this->getHeaderRaw($article, $implode);
         if (PEAR::isError($header)) {
     	    return $header;
     	}
 
-    	$H = Net_NNTP_Header::create($header);
+    	if (!is_string($class)) {
+    	    return PEAR::throwError('UPS...');
+    	}
+
+    	if (!class_exists($class)) {
+    	    return PEAR::throwError("Class '$class' does not exist!");
+	}
+
+	$H = new $class($header);
 
     	return $H;
     }
@@ -607,7 +635,38 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     // }}}
     // {{{ getBody()
 
-	// Not written yet...
+    /**
+     * Get the body of an article
+     *
+     * Experimental
+     *
+     * @param mixed $article Either the (string) message-id or the (int) message-number on the server of the article to fetch.
+     *
+     * @return mixed (object) body object on success or (object) pear_error on failure
+     * @access public
+     * @see Net_NNTP_Client::getHeader()
+     * @see Net_NNTP_Client::getArticle()
+     * @see Net_NNTP_Client::getBodyRaw()
+     */
+    function getBody($article, $class, $implode = false)
+    {
+        $body = $this->getBodyRaw($article, $implode);
+        if (PEAR::isError($body)) {
+    	    return $body;
+    	}
+
+    	if (!is_string($class)) {
+    	    return PEAR::throwError('UPS...');
+    	}
+
+    	if (!class_exists($class)) {
+    	    return PEAR::throwError("Class '$class' does not exist!");
+	}
+
+	$B = new $class($body);
+
+    	return $B;
+    }
 
     // }}}
     // {{{ getBodyRaw()
