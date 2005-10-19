@@ -87,7 +87,7 @@ define('NET_NNTP_PROTOCOL_RESPONSECODE_READY_POSTING_PROHIBITED', 201);
  * @access     public
  * @since      1.1.3
  */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_DISCONNECTING_REQUESTED', 205);
+//define('NET_NNTP_PROTOCOL_RESPONSECODE_DISCONNECTING_REQUESTED', 205);   ///// goodbye
 
 /**
  * 'Service discontinued' (RFC977)
@@ -95,7 +95,7 @@ define('NET_NNTP_PROTOCOL_RESPONSECODE_DISCONNECTING_REQUESTED', 205);
  * @access     public
  * @since      1.1.3
  */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_DISCONNECTING_FORCED', 400);
+//define('NET_NNTP_PROTOCOL_RESPONSECODE_DISCONNECTING_FORCED', 400);   ///// unavailable / discontinued
 
 
 /**
@@ -114,11 +114,37 @@ define('NET_NNTP_PROTOCOL_RESPONSECODE_SLAVE_RECOGNIZED', 202);
 
 
 
-define('NET_NNTP_PROTOCOL_RESPONSECODE_COMMAND_UNRECOGNIZED', 500); /////
-define('NET_NNTP_PROTOCOL_RESPONSECODE_SYNTAX_ERROR', 501); /////
+/**
+ * 'Command not recognized' (RFC977)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
+define('NET_NNTP_PROTOCOL_RESPONSECODE_UNKNOWN_COMMAND', 500);
 
-define('NET_NNTP_PROTOCOL_RESPONSECODE_NO_PERMISSION', 502); ///////////// !!!!!
-define('NET_NNTP_PROTOCOL_RESPONSECODE_NOT_PERFORMED', 503); /////////////
+/**
+ * 'Command syntax error' (RFC977)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
+define('NET_NNTP_PROTOCOL_RESPONSECODE_SYNTAX_ERROR', 501);
+
+/**
+ * 'Access restriction or permission denied' (RFC977)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
+define('NET_NNTP_PROTOCOL_RESPONSECODE_NOT_PERMITTED', 502);
+
+/**
+ * 'Program fault - command not performed' (RFC977)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
+define('NET_NNTP_PROTOCOL_RESPONSECODE_NOT_SUPPORTED', 503);
 
 
 
@@ -410,11 +436,104 @@ define('NET_NNTP_PROTOCOL_RESPONSECODE_AUTHENTICATION_REJECTED', 482);
 
 
 
-//define('NET_NNTP_PROTOCOL_RESPONSECODE_GROUPS_FOLLOWS', 215);
-//define('NET_NNTP_PROTOCOL_RESPONSECODE_NEW_GROUPS_FOLLOWS', 231);
+/**
+ * 'Help text follows' (Draft)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
+define('NET_NNTP_PROTOCOL_RESPONSECODE_HELP_FOLLOWS', 100);
 
+/**
+ * 'Capabilities list follows' (Draft)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
+define('NET_NNTP_PROTOCOL_RESPONSECODE_CAPABILITIES_FOLLWOS', 101);
 
+/**
+ * 'Server date and time' (Draft)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
+define('NET_NNTP_PROTOCOL_RESPONSECODE_SERVER_DATE', 111);
 
+/**
+ * 'Information follows' (Draft)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
+define('NET_NNTP_PROTOCOL_RESPONSECODE_GROUPS_FOLLOW', 215);
+
+/**
+ * 'Overview information follows' (Draft)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
+define('NET_NNTP_PROTOCOL_RESPONSECODE_OVERVIEW_FOLLOWS', 224);
+
+/**
+ * 'Headers follow' (Draft)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
+define('NET_NNTP_PROTOCOL_RESPONSECODE_HEADERS_FOLLOW', 225);
+
+/**
+ * 'List of new articles follows' (Draft)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
+define('NET_NNTP_PROTOCOL_RESPONSECODE_NEW_ARTICLES_FOLLOW', 230);
+
+/**
+ * 'List of new newsgroups follows' (Draft)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
+define('NET_NNTP_PROTOCOL_RESPONSECODE_NEW_GROUPS_FOLLOW', 231);
+
+/**
+ * 'The server is in the wrong mode; the indicated capability should be used to change the mode' (Draft)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
+define('NET_NNTP_PROTOCOL_RESPONSECODE_WRONG_MODE', 401);
+
+/**
+ * 'Internal fault or problem preventing action being taken' (Draft)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
+define('NET_NNTP_PROTOCOL_RESPONSECODE_INTERNAL_FAULT', 403);
+
+/**
+ * 'Command unavailable until suitable privacy has been arranged' (Draft)
+ *
+ * (the client must negotiate appropriate privacy protection on the connection.
+ * This will involve the use of a privacy extension such as [NNTP-TLS].)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
+//define('NET_NNTP_PROTOCOL_RESPONSECODE_ENCRYPTION_REQUIRED', 483);
+
+/**
+ * 'Error in base64-encoding [RFC3548] of an argument' (Draft)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
+define('NET_NNTP_PROTOCOL_RESPONSECODE_BASE64_ENCODING_ERROR', 504);
 
 // }}}
 
