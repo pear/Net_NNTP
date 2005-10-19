@@ -61,81 +61,359 @@
 // $Id$
 
 
-// {{{ constants
 
-// Connection
+// {{{ Constants: Connection
 
+/**
+ * 'Server ready - posting allowed' (RFC977)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
 define('NET_NNTP_PROTOCOL_RESPONSECODE_READY_POSTING_ALLOWED', 200);
-define('NET_NNTP_PROTOCOL_RESPONSECODE_READY_POSTING_NOT_ALLOWED', 201);
-define('NET_NNTP_PROTOCOL_RESPONSECODE_CLOSING_CONNECTION', 205);
 
-define('NET_NNTP_PROTOCOL_RESPONSECODE_SERVICE_DISCONTINUED', 400);
+/**
+ * 'Server ready - no posting allowed' (RFC977)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
+define('NET_NNTP_PROTOCOL_RESPONSECODE_READY_POSTING_PROHIBITED', 201);
 
-define('NET_NNTP_PROTOCOL_RESPONSECODE_SLAVE_STATUS', 202);
 
-// Common failures
+/**
+ * 'Closing connection - goodbye!' (RFC977)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
+define('NET_NNTP_PROTOCOL_RESPONSECODE_DISCONNECTING_REQUESTED', 205);
 
-define('NET_NNTP_PROTOCOL_RESPONSECODE_COMMAND_NOT_RECOGNIZED', 500);
-define('NET_NNTP_PROTOCOL_RESPONSECODE_COMMAND_SYNTAX_ERROR', 501);
+/**
+ * 'Service discontinued' (RFC977)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
+define('NET_NNTP_PROTOCOL_RESPONSECODE_DISCONNECTING_FORCED', 400);
 
-define('NET_NNTP_PROTOCOL_RESPONSECODE_NO_PERMISSION', 502);
-define('NET_NNTP_PROTOCOL_RESPONSECODE_NOT_PERFORMED', 503);
 
-// Common request failures
+/**
+ * 'Slave status noted' (RFC977)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
+define('NET_NNTP_PROTOCOL_RESPONSECODE_SLAVE_RECOGNIZED', 202);
 
+
+
+
+// }}}
+// {{{ Constants: Common errors
+
+
+
+define('NET_NNTP_PROTOCOL_RESPONSECODE_COMMAND_UNRECOGNIZED', 500); /////
+define('NET_NNTP_PROTOCOL_RESPONSECODE_SYNTAX_ERROR', 501); /////
+
+define('NET_NNTP_PROTOCOL_RESPONSECODE_NO_PERMISSION', 502); ///////////// !!!!!
+define('NET_NNTP_PROTOCOL_RESPONSECODE_NOT_PERFORMED', 503); /////////////
+
+
+
+// }}}
+// {{{ Constants: Group selection
+
+
+
+/**
+ * 'Group selected' (RFC977)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
+define('NET_NNTP_PROTOCOL_RESPONSECODE_GROUP_SELECTED', 211);
+
+/**
+ * 'No such news group' (RFC977)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
 define('NET_NNTP_PROTOCOL_RESPONSECODE_NO_SUCH_GROUP', 411);
 
-define('NET_NNTP_PROTOCOL_RESPONSECODE_NO_GROUP_SELECTED', 412);
-define('NET_NNTP_PROTOCOL_RESPONSECODE_NO_ARTICLE_SELECTED', 420);
 
-define('NET_NNTP_PROTOCOL_RESPONSECODE_NO_NEXT_ARTICLE', 421);
-define('NET_NNTP_PROTOCOL_RESPONSECODE_NO_PREVIOUS_ARTICLE', 422);
 
-define('NET_NNTP_PROTOCOL_RESPONSECODE_NO_SUCH_ARTICLE_NUMBER', 423);
-define('NET_NNTP_PROTOCOL_RESPONSECODE_NO_SUCH_MESSAGE_ID', 430);
+// }}}
+// {{{ Constants: Article retrieval
 
-// Groups
 
-define('NET_NNTP_PROTOCOL_RESPONSECODE_GROUP_SELECTED', 211);
-define('NET_NNTP_PROTOCOL_RESPONSECODE_GROUPS_FOLLOWS', 215);
 
-define('NET_NNTP_PROTOCOL_RESPONSECODE_NEW_GROUPS_FOLLOWS', 231);
-
-// Articles
-
+/**
+ * 'Article retrieved - head and body follow' (RFC977)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
 define('NET_NNTP_PROTOCOL_RESPONSECODE_ARTICLE_FOLLOWS', 220);
+
+/**
+ * 'Article retrieved - head follows' (RFC977)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
 define('NET_NNTP_PROTOCOL_RESPONSECODE_HEAD_FOLLOWS', 221);
+
+/**
+ * 'Article retrieved - body follows' (RFC977)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
 define('NET_NNTP_PROTOCOL_RESPONSECODE_BODY_FOLLOWS', 222);
+
+/**
+ * 'Article retrieved - request text separately' (RFC977)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
 define('NET_NNTP_PROTOCOL_RESPONSECODE_ARTICLE_SELECTED', 223);
 
-// Transferring
 
-define('NET_NNTP_PROTOCOL_RESPONSECODE_TRANSFER_NOT_WANTED', 435);
-define('NET_NNTP_PROTOCOL_RESPONSECODE_TRANSFER_START', 335);
+
+
+
+/**
+ * 'No newsgroup has been selected' (RFC977)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
+define('NET_NNTP_PROTOCOL_RESPONSECODE_NO_GROUP_SELECTED', 412);
+
+
+/**
+ * 'No current article has been selected' (RFC977)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
+define('NET_NNTP_PROTOCOL_RESPONSECODE_NO_ARTICLE_SELECTED', 420);
+
+/**
+ * 'No next article in this group' (RFC977)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
+define('NET_NNTP_PROTOCOL_RESPONSECODE_NO_NEXT_ARTICLE', 421);
+
+/**
+ * 'No previous article in this group' (RFC977)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
+define('NET_NNTP_PROTOCOL_RESPONSECODE_NO_PREVIOUS_ARTICLE', 422);
+
+
+/**
+ * 'No such article number in this group' (RFC977)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
+define('NET_NNTP_PROTOCOL_RESPONSECODE_NO_SUCH_ARTICLE_NUMBER', 423);
+
+/**
+ * 'No such article found' (RFC977)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
+define('NET_NNTP_PROTOCOL_RESPONSECODE_NO_SUCH_ARTICLE_ID', 430);
+
+
+
+
+
+// }}}
+// {{{ Constants: Transferring
+
+
+
+/**
+ * 'Send article to be transferred' (RFC977)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
+define('NET_NNTP_PROTOCOL_RESPONSECODE_TRANSFER_SEND', 335);
+
+/**
+ * 'Article transferred ok' (RFC977)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
 define('NET_NNTP_PROTOCOL_RESPONSECODE_TRANSFER_SUCCESS', 235);
+
+/**
+ * 'Article not wanted - do not send it' (RFC977)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
+define('NET_NNTP_PROTOCOL_RESPONSECODE_TRANSFER_UNWANTED', 435);
+
+/**
+ * 'Transfer failed - try again later' (RFC977)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
 define('NET_NNTP_PROTOCOL_RESPONSECODE_TRANSFER_FAILURE', 436);
+
+/**
+ * 'Article rejected - do not try again' (RFC977)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
 define('NET_NNTP_PROTOCOL_RESPONSECODE_TRANSFER_REJECTED', 437);
 
-// Posting
 
-define('NET_NNTP_PROTOCOL_RESPONSECODE_POSTING_NOT_ALLOWED', 440);
-define('NET_NNTP_PROTOCOL_RESPONSECODE_POSTING_START', 340);
+
+// }}}
+// {{{ Constants: Posting
+
+
+
+/**
+ * 'Send article to be posted' (RFC977)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
+define('NET_NNTP_PROTOCOL_RESPONSECODE_POSTING_SEND', 340);
+
+/**
+ * 'Article posted ok' (RFC977)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
 define('NET_NNTP_PROTOCOL_RESPONSECODE_POSTING_SUCCESS', 240);
+
+/**
+ * 'Posting not allowed' (RFC977)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
+define('NET_NNTP_PROTOCOL_RESPONSECODE_POSTING_PROHIBITED', 440);
+
+/**
+ * 'Posting failed' (RFC977)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
 define('NET_NNTP_PROTOCOL_RESPONSECODE_POSTING_FAILURE', 441);
 
-// Authorization
 
+
+
+// }}}
+// {{{ Constants: Authorization
+
+
+
+/**
+ * 'Authorization required for this command' (RFC2980)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
 define('NET_NNTP_PROTOCOL_RESPONSECODE_AUTHORIZATION_REQUIRED', 450);
+
+/**
+ * 'Continue with authorization sequence' (RFC2980)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
 define('NET_NNTP_PROTOCOL_RESPONSECODE_AUTHORIZATION_CONTINUE', 350);
+
+/**
+ * 'Authorization accepted' (RFC2980)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
 define('NET_NNTP_PROTOCOL_RESPONSECODE_AUTHORIZATION_ACCEPTED', 250);
+
+/**
+ * 'Authorization rejected' (RFC2980)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
 define('NET_NNTP_PROTOCOL_RESPONSECODE_AUTHORIZATION_REJECTED', 452);
 
-// Authentication
 
+
+
+// }}}
+// {{{ Constants: Authentication
+
+
+
+/**
+ * 'Authentication required' (RFC2980)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
 define('NET_NNTP_PROTOCOL_RESPONSECODE_AUTHENTICATION_REQUIRED', 480);
+
+/**
+ * 'More authentication information required' (RFC2980)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
 define('NET_NNTP_PROTOCOL_RESPONSECODE_AUTHENTICATION_CONTINUE', 381);
+
+/**
+ * 'Authentication accepted' (RFC2980)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
 define('NET_NNTP_PROTOCOL_RESPONSECODE_AUTHENTICATION_ACCEPTED', 281);
+
+/**
+ * 'Authentication rejected' (RFC2980)
+ *
+ * @access     public
+ * @since      1.1.3
+ */
 define('NET_NNTP_PROTOCOL_RESPONSECODE_AUTHENTICATION_REJECTED', 482);
+    
+
+// }}}
+// {{{ Constants: Misc
+
+
+
+//define('NET_NNTP_PROTOCOL_RESPONSECODE_GROUPS_FOLLOWS', 215);
+//define('NET_NNTP_PROTOCOL_RESPONSECODE_NEW_GROUPS_FOLLOWS', 231);
+
+
 
 
 // }}}
