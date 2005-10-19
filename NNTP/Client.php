@@ -430,7 +430,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 
     	if (PEAR::isError($response_arr)) {
     	    switch ($response_arr->getCode()) {
-    	    	case 423:
+    	    	case NET_NNTP_PROTOCOL_RESPONSECODE_NO_SUCH_ARTICLE_NUMBER: 423
     	    	    return false;
     	    	    break;
 
@@ -459,7 +459,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 
     	if (PEAR::isError($response)) {
     	    switch ($response->getCode()) {
-    	    	case 421:
+    	    	case NET_NNTP_PROTOCOL_RESPONSECODE_NO_NEXT_ARTICLE: // 421
     	    	    return false;
     	    	    break;
 
@@ -488,7 +488,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 
     	if (PEAR::isError($response)) {
     	    switch ($response->getCode()) {
-    	    	case 422:
+    	    	case NET_NNTP_PROTOCOL_RESPONSECODE_NO_PREVIOUS_ARTICLE: // 422
     	    	    return false;
     	    	    break;
 
@@ -708,7 +708,9 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      */
     function getGroupArticles($newsgroup)
     {
-        return $this->cmdListgroup($newsgroup);
+        $data = $this->cmdListgroup($newsgroup);
+
+	return $data['articles'];
     }
 
     // }}}
