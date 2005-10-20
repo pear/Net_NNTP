@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!-- $Id: package.xml,v 1.20.2.4 2005-05-13 21:18:28 heino Exp $ -->
+<!-- $Id: package.xml,v 1.20.2.5 2005-10-20 17:54:02 heino Exp $ -->
 <package version="1.0">
   <name>Net_NNTP</name>
   <summary>Implementation of the NNTP protocol</summary>
@@ -16,17 +16,20 @@
     </maintainer>
   </maintainers>
   <deps>
-   <dep type="pkg" rel="ge" version="1.0.3">Net_Socket</dep>
+   <dep type="pkg" rel="ge" version="1.0.6">Net_Socket</dep>
   </deps>
   <release>
-    <version>1.2.3</version>
-    <date>2005-05-13</date>
+    <version>1.2.4</version>
+    <date>2005-10-20</date>
     <license>W3C</license>
     <state>alpha</state>
     <notes>
-      - New method in Net_NNTP_Client: getBody().
-      - Added parameters to Net_NNTP_Client::getArticle/getHeader() to allow use of external return classes.
-      - Added status response code constants in Net_NNTP_Protocol_Clients.
+      - Fix: connect() now returns false when posting is prohibited, like cmdModeReader() does
+      - Misc. internal rewrites in protocol implementation:
+      - Expected response codes in cmdArticle(), cmdHead() and cmdBody() reduced to correspond actual implementations.
+      - First parameter in cmdXOver(), cmdXROver() and cmdListgroup() is now optional
+      - New third optional parameter in getNewNews() and cmdNewnews().
+      - cmdNext(), cmdLast() and cmdStat() now returns array by default
     </notes>
     <filelist>
       <dir name="/" baseinstalldir="Net">
@@ -36,6 +39,7 @@
           <file>Message.php</file>
           <dir name="Protocol">
             <file>Client.php</file>
+            <file>Responsecode.php</file>
           </dir>
         </dir>
         <dir name="docs" role="doc">
@@ -51,6 +55,16 @@
     </filelist>
   </release>
   <changelog>
+  <release>
+    <version>1.2.3</version>
+    <date>2005-05-13</date>
+    <state>alpha</state>
+    <notes>
+      - New method in Net_NNTP_Client: getBody().
+      - Added parameters to Net_NNTP_Client::getArticle/getHeader() to allow use of external return classes.
+      - Added status response code constants in Net_NNTP_Protocol_Clients.
+    </notes>
+  </release>
   <release>
     <version>1.2.2</version>
     <date>2005-03-13</date>
