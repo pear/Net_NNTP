@@ -959,8 +959,8 @@ class Net_NNTP_Protocol_Client
     	        // XXX Use the splitHeaders() algorithm for supporting
     	        //     multiline headers?
     	        foreach ($data as $line) {
-    	            $line = current(explode(':', trim($line)));
-    	            $format[] = $line;
+    	            $line = explode(':', trim($line));
+    	            $format[] = $line[0];
     	        }
     	        return $format;
     	    	break;
