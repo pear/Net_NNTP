@@ -54,7 +54,7 @@ if( PEAR::isError($ret)) {
                     echo 'moderated';
                     break;         
                 default:
-                    echo 'n/a';                       
+                    echo 'unknown';
             }
             echo "<hr>";
             echo "<h2>last 10 messages</h2>";
