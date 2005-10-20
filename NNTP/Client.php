@@ -430,7 +430,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 
     	if (PEAR::isError($response_arr)) {
     	    switch ($response_arr->getCode()) {
-    	    	case NET_NNTP_PROTOCOL_RESPONSECODE_NO_SUCH_ARTICLE_NUMBER: 423
+    	    	case NET_NNTP_PROTOCOL_RESPONSECODE_NO_SUCH_ARTICLE_NUMBER: // 423
     	    	    return false;
     	    	    break;
 
@@ -746,7 +746,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @access public
      * @since 0.3
      */
-    function getNewNews($time, $newsgroups = '*')
+    function getNewNews($time, $newsgroups = '*', $distribution = null)
     {
     	switch (gettype($time)) {
     	    case 'integer':
@@ -758,7 +758,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	        return PEAR::throwError('UPS...');
     	}
 
-    	return $this->cmdNewnews($time, $newsgroups);
+    	return $this->cmdNewnews($time, $newsgroups, $distribution);
     }
 
     // }}}
