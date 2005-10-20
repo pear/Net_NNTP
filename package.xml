@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!-- $Id: package.xml,v 1.20.2.6 2005-10-20 18:03:06 heino Exp $ -->
+<!-- $Id: package.xml,v 1.20.2.7 2005-10-20 18:44:16 heino Exp $ -->
 <package version="1.0">
   <name>Net_NNTP</name>
   <summary>Implementation of the NNTP protocol</summary>
@@ -19,18 +19,12 @@
    <dep type="pkg" rel="ge" version="1.0.6">Net_Socket</dep>
   </deps>
   <release>
-    <version>1.2.4</version>
+    <version>1.2.5</version>
     <date>2005-10-20</date>
     <license>W3C</license>
     <state>alpha</state>
     <notes>
-      + Fix: connect() now returns false when posting is prohibited, like cmdModeReader() does
-      + New: Response code constants
-      + Misc. internal rewrites in protocol implementation:
-      - Expected response codes in cmdArticle(), cmdHead() and cmdBody() reduced to correspond actual implementations.
-      - First parameter in cmdXOver(), cmdXROver() and cmdListgroup() is now optional
-      - New third optional parameter in getNewNews() and cmdNewnews().
-      - cmdNext(), cmdLast() and cmdStat() now returns array by default
+      - connectAuthenticated() removed
     </notes>
     <filelist>
       <dir name="/" baseinstalldir="Net">
@@ -56,6 +50,20 @@
     </filelist>
   </release>
   <changelog>
+  <release>
+    <version>1.2.4</version>
+    <date>2005-10-20</date>
+    <state>alpha</state>
+    <notes>
+      + Fix: connect() now returns false when posting is prohibited, like cmdModeReader() does
+      + New: Response code constants
+      + Misc. internal rewrites in protocol implementation:
+      - Expected response codes in cmdArticle(), cmdHead() and cmdBody() reduced to correspond actual implementations.
+      - First parameter in cmdXOver(), cmdXROver() and cmdListgroup() is now optional
+      - New third optional parameter in getNewNews() and cmdNewnews().
+      - cmdNext(), cmdLast() and cmdStat() now returns array by default
+    </notes>
+  </release>
   <release>
     <version>1.2.3</version>
     <date>2005-05-13</date>
