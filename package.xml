@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!-- $Id: package.xml,v 1.20.2.5 2005-10-20 17:54:02 heino Exp $ -->
+<!-- $Id: package.xml,v 1.20.2.6 2005-10-20 18:03:06 heino Exp $ -->
 <package version="1.0">
   <name>Net_NNTP</name>
   <summary>Implementation of the NNTP protocol</summary>
@@ -24,8 +24,9 @@
     <license>W3C</license>
     <state>alpha</state>
     <notes>
-      - Fix: connect() now returns false when posting is prohibited, like cmdModeReader() does
-      - Misc. internal rewrites in protocol implementation:
+      + Fix: connect() now returns false when posting is prohibited, like cmdModeReader() does
+      + New: Response code constants
+      + Misc. internal rewrites in protocol implementation:
       - Expected response codes in cmdArticle(), cmdHead() and cmdBody() reduced to correspond actual implementations.
       - First parameter in cmdXOver(), cmdXROver() and cmdListgroup() is now optional
       - New third optional parameter in getNewNews() and cmdNewnews().
