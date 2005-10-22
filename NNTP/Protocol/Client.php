@@ -100,6 +100,11 @@ define('NET_NNTP_PROTOCOL_CLIENT_DEFAULT_PORT', '119');
  *          stable, for as long as such changes doesn't affect the public API of
  *          the Net_NNTP_Client class, which is considered stable.
  *
+ * TODO:	cmdListActive()
+ *      	cmdListActiveTimes()
+ *      	cmdDistribPats()
+ *      	cmdHeaders()
+ *
  * @category   Net
  * @package    Net_NNTP
  * @author     Heino H. Gehlsen <heino@gehlsen.dk>
@@ -332,6 +337,36 @@ class Net_NNTP_Protocol_Client
         return PEAR::throwError("The auth mode: 'generic' is has not been implemented yet", null);
     }
 	
+    // }}}
+    // {{{ cmdHelp()
+
+    /**
+     *
+     *
+     * @return mixed (array) help text on success or (object) pear_error on failure 
+     * @access protected
+     */
+    function cmdHelp()
+    {
+        // tell the newsserver we want an article
+        $response = $this->_sendCommand('HELP');
+        if (PEAR::isError($response)) {
+            return $response;
+        }
+	
+    	switch ($response) {
+            case NET_NNTP_PROTOCOL_RESPONSECODE_HELP_FOLLOWS: // 100
+    	    	$data = $this->_getTextResponse();
+    	    	if (PEAR::isError($data)) {
+    	    	    return $data;
+    	    	}
+    	    	return $data;
+    	        break;
+    	    default:
+    	    	return $this->_handleUnexpectedResponse($response);
+    	}
+    }
+
     // }}}
     // {{{ cmdCapabilities()
 
@@ -770,6 +805,67 @@ class Net_NNTP_Protocol_Client
     	    	break;
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_POSTING_FAILURE: // 441, RFC977: 'posting failed'
     	    	return PEAR::throwError('Posting failed', $response, $this->_currentStatusResponse());
+    	    	break;
+    	    default:
+    	    	return $this->_handleUnexpectedResponse($response);
+    	}
+    }
+
+    // }}}
+    // {{{ cmdIhave()
+
+    /**
+     *
+     *
+     * @param string $id
+     * @param mixed $message (string/array)
+     *
+     * @return mixed (bool) true on success or (object) pear_error on failure
+     * @access protected
+     */
+    function cmdIhave($id, $message)
+    {
+        // tell the newsserver we want to post an article
+    	$response = $this->_sendCommand('IHAVE ' . $id);
+    	if (PEAR::isError($response)) {
+    	    return $response;
+        }
+
+    	switch ($response) {
+    	    case NET_NNTP_PROTOCOL_RESPONSECODE_TRANSFER_SEND: // 335
+    	    	// continue...
+    	    	break;
+    	    case NET_NNTP_PROTOCOL_RESPONSECODE_TRANSFER_UNWANTED: // 435
+    	    	return PEAR::throwError('Article not wanted', $response, $this->_currentStatusResponse());
+    	    	break;
+    	    case NET_NNTP_PROTOCOL_RESPONSECODE_TRANSFER_FAILURE: // 436
+    	    	return PEAR::throwError('Transfer not possible; try again later', $response, $this->_currentStatusResponse());
+    	    	break;
+    	    default:
+    	    	return $this->_handleUnexpectedResponse($response);
+    	}
+
+    	/* should be presented in the format specified by RFC850 */
+	    
+    	// Send standard headers and x-poster header
+        $this->_socket->write($message);
+        $this->_socket->write("\r\n.\r\n");
+
+    	// Retrive server's response.
+    	$response = $this->_getStatusResponse();
+    	if (PEAR::isError($response)) {
+    	    return $response;
+    	}
+
+    	switch ($response) {
+    	    case NET_NNTP_PROTOCOL_RESPONSECODE_TRANSFER_SUCCESS: // 235
+    	    	return true;
+    	    	break;
+    	    case NET_NNTP_PROTOCOL_RESPONSECODE_TRANSFER_FAILURE: // 436
+    	    	return PEAR::throwError('Transfer not possible; try again later', $response, $this->_currentStatusResponse());
+    	    	break;
+    	    case NET_NNTP_PROTOCOL_RESPONSECODE_TRANSFER_REJECTED: // 437
+    	    	return PEAR::throwError('Transfer rejected; do not retry', $response, $this->_currentStatusResponse());
     	    	break;
     	    default:
     	    	return $this->_handleUnexpectedResponse($response);
