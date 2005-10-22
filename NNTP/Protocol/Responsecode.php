@@ -450,7 +450,7 @@ define('NET_NNTP_PROTOCOL_RESPONSECODE_HELP_FOLLOWS', 100);
  * @access     public
  * @since      1.1.3
  */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_CAPABILITIES_FOLLOWS', 101);
+define('NET_NNTP_PROTOCOL_RESPONSECODE_CAPABILITIES_FOLLOW', 101);
 
 /**
  * 'Server date and time' (Draft)
