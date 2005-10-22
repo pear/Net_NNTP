@@ -350,7 +350,7 @@ class Net_NNTP_Protocol_Client
         }
 	
     	switch ($response) {
-            case NET_NNTP_PROTOCOL_RESPONSECODE_CAPABILITIES_FOLLWOS: // 101, Draft: 'Capability list follows'
+            case NET_NNTP_PROTOCOL_RESPONSECODE_CAPABILITIES_FOLLOW: // 101, Draft: 'Capability list follows'
     	    	$data = $this->_getTextResponse();
     	    	if (PEAR::isError($data)) {
     	    	    return $data;
