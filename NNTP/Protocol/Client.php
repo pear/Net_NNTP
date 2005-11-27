@@ -885,13 +885,10 @@ class Net_NNTP_Protocol_Client
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_GROUP_SELECTED: // 211, RFC977: 'n f l s group selected'
     	    	$response_arr = split(' ', trim($this->_currentStatusResponse()));
 
-    	    	$data = array();
-    	    	$data['count'] = $response_arr[0];
-    	        $data['first'] = $response_arr[1];
-    	    	$data['last']  = $response_arr[2];
-    	    	$data['group'] = $response_arr[3];
-
-    	    	return $data;
+    	    	return array('count' => $response_arr[0],
+    	                     'first' => $response_arr[1],
+    	    	             'last'  => $response_arr[2],
+    	    	             'group' => $response_arr[3]);
     	    	break;
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_NO_SUCH_GROUP: // 411, RFC977: 'no such news group'
     	    	return PEAR::throwError('No such news group', $response, $this->_currentStatusResponse());
@@ -923,12 +920,14 @@ class Net_NNTP_Protocol_Client
     	    	if (PEAR::isError($data)) {
     	    	    return $data;
     	    	}
+
+    	    	$groups = array();
     	    	foreach($data as $line) {
     	    	    $arr = explode(' ', trim($line));
 
-    	    	    $group = array('group' => $arr[0],
-    	    	                   'last' => $arr[1],
-    	    	                   'first' => $arr[2],
+    	    	    $group = array('group'   => $arr[0],
+    	    	                   'last'    => $arr[1],
+    	    	                   'first'   => $arr[2],
     	    	                   'posting' => $arr[3]);
 
     	    	    $groups[$group['group']] = $group;
