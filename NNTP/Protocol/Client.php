@@ -534,7 +534,7 @@ class Net_NNTP_Protocol_Client
      * @return mixed (???) ??? on success or (object) pear_error on failure 
      * @access protected
      */
-    function cmdStat($article, $ret = 0)
+    function cmdStat($article, $ret = -1)
     {
         // tell the newsserver we want an article
         $response = $this->_sendCommand('STAT '.$article);
@@ -546,20 +546,17 @@ class Net_NNTP_Protocol_Client
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_ARTICLE_SELECTED: // 223, RFC977: 'n <a> article retrieved - request text separately' (actually not documented, but copied from the ARTICLE command)
     	    	$response_arr = split(' ', trim($this->_currentStatusResponse()));
 
-    	    	$data = array('number' => (int) $response_arr[0],
-	                      'id' =>  (string) $response_arr[1]);
-
     	    	switch ($ret) {
+    	    	    case -1:
+    	    	    	return array('number' => (int) $response_arr[0], 'id' =>  (string) $response_arr[1]);
+    	    	    	break;
     	    	    case 0:
-  	    		return $data;
+    	    	        return (int) $response_arr[0];
     	    	    	break;
     	    	    case 1:
-    	    	        return $data['number'];
+    	    	        return (string) $response_arr[1];
     	    	    	break;
-    	    	    case 2:
-    	    	        return $data['id'];
-    	    	    	break;
-		}
+    	    	}
 		
     	    	break;
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_NO_GROUP_SELECTED: // 412, RFC977: 'no newsgroup has been selected' (actually not documented, but copied from the ARTICLE command)
