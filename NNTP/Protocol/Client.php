@@ -1252,18 +1252,22 @@ class Net_NNTP_Protocol_Client
     /**
      *
      *
-     * @param string $newsgroup 
+     * @param optional string $newsgroup 
+     * @param optional mixed $range 
      *
      * @return optional mixed (array) on success or (object) pear_error on failure
      * @access protected
      */
-    function cmdListgroup($newsgroup = null)
+    function cmdListgroup($newsgroup = null, $range = null)
     {
-
-        if (is_null($range)) {
-	    $command = 'LISTGROUP';
-	} else {
-    	    $command = 'LISTGROUP ' . $newsgroup;
+        if (is_null($newsgroup)) {
+    	    $command = 'LISTGROUP';
+    	} else {
+    	    if (is_null($range)) {
+    	        $command = 'LISTGROUP ' . $newsgroup;
+    	    } else {
+    	        $command = 'LISTGROUP ' . $newsgroup . ' ' . $range;
+    	    }
         }
 
         $response = $this->_sendCommand($command);
@@ -1278,14 +1282,14 @@ class Net_NNTP_Protocol_Client
     	        if (PEAR::isError($articles)) {
     	            return $articles;
     	        }
+		
+    	        $response_arr = split(' ', trim($this->_currentStatusResponse()));
 
-    	    	$data = array('count' => $response_arr[0],
-    	                      'first' => $response_arr[1],
-    	    	              'last' => $response_arr[2],
-    	    	              'group' => $response_arr[3],
-    	    	              'articles' => $articles);
-
-    	        return $data;
+    	    	return array('count'    => $response_arr[0],
+    	                     'first'    => $response_arr[1],
+    	    	             'last'     => $response_arr[2],
+    	    	             'group'    => $response_arr[3],
+    	    	             'articles' => $articles);
     	    	break;
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_NO_GROUP_SELECTED: // 412, RFC2980: 'Not currently in newsgroup'
     	    	return PEAR::throwError('Not currently in newsgroup', $response, $this->_currentStatusResponse());
