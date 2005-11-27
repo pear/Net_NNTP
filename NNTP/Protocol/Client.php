@@ -970,6 +970,8 @@ class Net_NNTP_Protocol_Client
     	            return $data;
     	        }
 
+    	    	$groups = array();
+
     	        foreach($data as $line) {
     	            preg_match("/^(.*?)\s(.*?$)/", trim($line), $matches);
     	            $groups[$matches[1]] = (string) $matches[2];
@@ -1009,6 +1011,8 @@ class Net_NNTP_Protocol_Client
     	            return $data;
     	        }
 
+    	    	$groups = array();
+
     	        foreach($data as $line) {
     	            preg_match("/^(.*?)\s(.*?$)/", trim($line), $matches);
     	            $groups[$matches[1]] = (string) $matches[2];
@@ -1032,7 +1036,7 @@ class Net_NNTP_Protocol_Client
      * Fetches a list of all newsgroups created since a specified date.
      *
      * @param int $time Last time you checked for groups (timestamp).
-     * @param optional string $distributions 
+     * @param optional string $distributions (deprecaded in rfc draft)
      *
      * @return mixed (array) nested array with informations about existing newsgroups on success or (object) pear_error on failure
      * @access protected
@@ -1057,10 +1061,11 @@ class Net_NNTP_Protocol_Client
     	    	$groups = array();
     	        foreach($this->_getTextResponse() as $line) {
     	    	    $arr = explode(' ', $line);
-    	    	    $groups[$arr[0]]['group'] = $arr[0];
-    	    	    $groups[$arr[0]]['last'] = $arr[1];
-    	    	    $groups[$arr[0]]['first'] = $arr[2];
-    	    	    $groups[$arr[0]]['posting'] = $arr[3];
+    	    	    $groups[$arr[0]] = array('group'   => $arr[0],
+    	    	                             'last'    => $arr[1],
+    	    	                             'first'   => $arr[2],
+    	    	                             'posting' => $arr[3]);
+
     	    	}
     	    	return $groups;
     	    	break;
