@@ -438,7 +438,7 @@ class Net_NNTP_Protocol_Client
      * @return
      * @access protected
      */
-    function cmdNext($ret = 0)
+    function cmdNext($ret = -1)
     {
         // 
         $response = $this->_sendCommand('NEXT');
@@ -450,18 +450,15 @@ class Net_NNTP_Protocol_Client
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_ARTICLE_SELECTED: // 223, RFC977: 'n a article retrieved - request text separately (n = article number, a = unique article id)'
     	    	$response_arr = split(' ', trim($this->_currentStatusResponse()));
 
-    	    	$data = array('number' => (int) $response_arr[0],
-	                      'id' =>  (string) $response_arr[1]);
-
     	    	switch ($ret) {
+    	    	    case -1:
+    	    	    	return array('number' => (int) $response_arr[0], 'id' =>  (string) $response_arr[1]);
+    	    	    	break;
     	    	    case 0:
-    	    	    	return $data;
+    	    	        return (int) $response_arr[0];
     	    	    	break;
     	    	    case 1:
-    	    	        return $data['number'];
-    	    	    	break;
-    	    	    case 2:
-    	    	        return $data['id'];
+    	    	        return (string) $response_arr[1];
     	    	    	break;
     	    	}
     	    	break;
@@ -488,7 +485,7 @@ class Net_NNTP_Protocol_Client
      * @return
      * @access protected
      */
-    function cmdLast($ret = 0)
+    function cmdLast($ret = -1)
     {
         // 
         $response = $this->_sendCommand('LAST');
@@ -500,18 +497,15 @@ class Net_NNTP_Protocol_Client
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_ARTICLE_SELECTED: // 223, RFC977: 'n a article retrieved - request text separately (n = article number, a = unique article id)'
     	    	$response_arr = split(' ', trim($this->_currentStatusResponse()));
 
-    	    	$data = array('number' => (int) $response_arr[0],
-	                      'id' =>  (string) $response_arr[1]);
-
     	    	switch ($ret) {
+    	    	    case -1:
+    	    	    	return array('number' => (int) $response_arr[0], 'id' =>  (string) $response_arr[1]);
+    	    	    	break;
     	    	    case 0:
-    	    	    	return $data;
+    	    	        return (int) $response_arr[0];
     	    	    	break;
     	    	    case 1:
-    	    	        return $data['number'];
-    	    	    	break;
-    	    	    case 2:
-    	    	        return $data['id'];
+    	    	        return (string) $response_arr[1];
     	    	    	break;
     	    	}
     	    	break;
