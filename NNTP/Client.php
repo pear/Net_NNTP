@@ -127,7 +127,6 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @access public
      * @see Net_NNTP_Client::quit()
      * @see Net_NNTP_Client::authenticate()
-     * @see Net_NNTP_Client::connectAuthenticated()
      */
     function connect($host = NET_NNTP_PROTOCOL_CLIENT_DEFAULT_HOST,
                      $port = NET_NNTP_PROTOCOL_CLIENT_DEFAULT_PORT)
@@ -165,7 +164,6 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @return mixed (bool) true on success or (object) pear_error on failure
      * @access public
      * @see Net_NNTP_Client::connect()
-     * @see Net_NNTP_Client::connectAuthenticated()
      */
     function authenticate($user, $pass, $mode = NET_NNTP_CLIENT_AUTH_ORIGINAL)
     {
@@ -306,7 +304,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     }
 
     // }}}
-    // {{{ getOverviewFmt()
+    // {{{ getOverviewFormat()
 
     /**
      * Returns a list of avaible headers which are send from NNTP-server to the client for every news message
@@ -317,7 +315,16 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      */
     function getOverviewFormat()
     {
-    	return $this->cmdListOverviewFmt();
+        $format = $this->cmdListOverviewFmt();
+    	if (PEAR::isError($format)) {
+    	    return $format;
+    	}
+
+    	if (true) {
+    	    return array_keys($format);
+    	} else {
+    	    return $format;
+    	}
     }
 
     // }}}
@@ -335,12 +342,51 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      */
     function getReferencesOverview($first, $last)
     {
-    	$overview = $this->cmdXROver($first.'-'.$last);
-    	if (PEAR::isError($overview)) {
-    	    return $overview;
+    	$range = $first.'-'.$last;
+
+    	$references = $this->cmdXROver($range);
+    	if (PEAR::isError($references)) {
+    	    if ($references->getCode() != 500) {
+    	    	return $references;
+    	    }
+
+    	    $references = $this->cmdXHdr('References', $range);
+    	    if (PEAR::isError($references)) {
+    	        return $references;
+    	    }
     	}
-	
-    	return $overview;
+
+    	foreach ($references as $key=>$val) {
+    	    $references[$key] = preg_split("/ +/", trim($val), -1, PREG_SPLIT_NO_EMPTY);
+    	}
+
+    	return $references;
+    }
+
+    // }}}
+    // {{{ getHeaderField()
+
+    /**
+     *
+     *
+     * @param stringr $field 
+     * @param integer $first first article to fetch
+     * @param integer $last  last article to fetch
+     *
+     * @return mixed (array) nested array of references on success or (object) pear_error on failure
+     * @access public
+     * @see Net_NNTP_Client::getOverview()
+     */
+    function getHeaderField($field, $first, $last)
+    {
+    	$range = $first.'-'.$last;
+
+    	$fields = $this->cmdXHdr($field, $range);
+    	if (PEAR::isError($fields)) {
+    	    return $fields;
+    	}
+
+    	return $fields;
     }
 
     // }}}
