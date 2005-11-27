@@ -1097,13 +1097,20 @@ class Net_NNTP_Protocol_Client
     	            return $data;
     	        }
 
-    	        $format = array('number');
-    	        // XXX Use the splitHeaders() algorithm for supporting
-    	        //     multiline headers?
+    	        $format = array();
+
     	        foreach ($data as $line) {
-    	            $line = explode(':', trim($line));
-    	            $format[] = $line[0];
+
+		    // Check if postfixed by ':full' (case-insensitive)
+		    if (0 == strcasecmp(substr($line, -5, 5), ':full')) {
+    	    		// ':full' is _not_ included in tag, but value set to true
+    	    		$format[substr($line, 0, -5)] = true;
+		    } else {
+    	    		// ':' is _not_ included in tag; value set to false
+    	    		$format[substr($line, 0, -1)] = false;
+    	            }
     	        }
+
     	        return $format;
     	    	break;
     	    case 503: // RFC2980: 'program error, function not performed'
@@ -1114,6 +1121,90 @@ class Net_NNTP_Protocol_Client
     	}
     }
 
+    // }}}
+    // {{{ cmdOver()
+
+    /**
+     * Fetch message header from message number $first until $last
+     *
+     * The format of the returned array is:
+     * $messages[][header_name]
+     *
+     * @param optional string $range articles to fetch
+     *
+     * @return mixed (array) nested array of message and there headers on success or (object) pear_error on failure
+     * @access protected
+     */
+    function cmdOver($range = null)
+    {
+        if (is_null($range)) {
+	    $command = 'XOVER';
+    	} else {
+    	    $command = 'XOVER ' . $range;
+        }
+
+        $response = $this->_sendCommand($command);
+        if (PEAR::isError($response)){
+            return $response;
+        }
+
+    	switch ($response) {
+    	    case NET_NNTP_PROTOCOL_RESPONSECODE_OVERVIEW_FOLLOWS: // 224, RFC2980: 'Overview information follows'
+    	    	$data = $this->_getTextResponse();
+    	        if (PEAR::isError($data)) {
+    	            return $data;
+    	        }
+
+    	    	$format = $this->cmdListOverviewFmt();
+            	if (PEAR::isError($format)){
+            	    return $format;
+            	}
+    	    	array_splice($format, 0, 7);
+
+    	    	$messages = array();
+    	        foreach($data as $line) {
+    	    	    $fields = explode("\t", trim($line));
+
+    	    	    $message = array('Number'     => $fields[0],
+		                     'Subject'    => $fields[1],
+		                     'From'       => $fields[2],
+		                     'Date'       => $fields[3],
+		                     'Message-ID' => $fields[4],
+		                     'References' => $fields[5],
+		                     ':bytes'     => $fields[6],
+		                     ':lines'     => $fields[7]);
+
+    	    	    $i = 7;
+    	    	    foreach ($format as $tag => $full) {
+    	                if ($full === true) {
+    	            	    $field = explode(':', $fields[++$i], 2);
+    	                    $message[$tag] = ltrim($field[1], " \t");
+    	                } else {
+    	                    $message[$tag] = $fields[++$i];
+    	                }
+    	            }
+
+    	            $messages[] = $message;
+    	        }
+    	    	return $messages;
+    	    	break;
+    	    case NET_NNTP_PROTOCOL_RESPONSECODE_NO_GROUP_SELECTED: // 412, RFC2980: 'No news group current selected'
+    	    	return PEAR::throwError('No news group current selected', $response, $this->_currentStatusResponse());
+    	    	break;
+    	    case NET_NNTP_PROTOCOL_RESPONSECODE_NO_ARTICLE_SELECTED: // 420, RFC2980: 'No article(s) selected'
+    	    	return PEAR::throwError('No article(s) selected', $response, $this->_currentStatusResponse());
+    	    	break;
+    	    case NET_NNTP_PROTOCOL_RESPONSECODE_NO_SUCH_ARTICLE_NUMBER: // 423:, Draft27: 'No articles in that range'
+    	    	return PEAR::throwError('No articles in that range', $response, $this->_currentStatusResponse());
+    	    	break;
+    	    case 502: // RFC2980: 'no permission'
+    	    	return PEAR::throwError('No permission', $response, $this->_currentStatusResponse());
+    	    	break;
+    	    default:
+    	    	return $this->_handleUnexpectedResponse($response);
+    	}
+    }
+    
     // }}}
     // {{{ cmdXOver()
 
@@ -1137,7 +1228,7 @@ class Net_NNTP_Protocol_Client
 
         $format = $this->cmdListOverviewFmt();
         if (PEAR::isError($format)){
-            return $formt;
+            return $format;
         }
 
         if (is_null($range)) {
@@ -1157,13 +1248,28 @@ class Net_NNTP_Protocol_Client
     	        if (PEAR::isError($data)) {
     	            return $data;
     	        }
+
     	    	$messages = array();
     	        foreach($data as $line) {
-    	            $i=0;
-    	            foreach(explode("\t", trim($line)) as $line) {
-    	                $message[$format[$i++]] = $line;
+    	    	    $fields = explode("\t", trim($line));
+
+    	    	    $message = array();
+
+//    	            $message['number'] = $fields[0];
+    	            $message['Number'] = $fields[0];
+
+    	    	    $i = 0;
+    	    	    foreach ($format as $tag => $full) {
+    	                if ($full === true) {
+    	            	    $field = explode(':', $fields[++$i], 2);
+    	                    $message[$tag] = ltrim($field[1], " \t");
+    	                } else {
+    	                    $message[$tag] = $fields[++$i];
+    	                }
     	            }
-    	            $messages[$message['Message-ID']] = $message;
+
+//    	            $messages[$fields[4]] = $message;
+    	            $messages[] = $message;
     	        }
     	    	return $messages;
     	    	break;
