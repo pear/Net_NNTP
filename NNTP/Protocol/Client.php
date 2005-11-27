@@ -1348,6 +1348,65 @@ class Net_NNTP_Protocol_Client
     }
 
     // }}}
+    // {{{ cmdXHdr()
+
+    /**
+     * 
+     *
+     * The format of the returned array is:
+     * $messages[message_id]
+     *
+     * @param optional string $range articles to fetch
+     *
+     * @return mixed (array) nested array of message and there headers on success or (object) pear_error on failure
+     * @access protected
+     */
+    function cmdXHdr($field, $range = null)
+    {
+        if (is_null($range)) {
+	    $command = 'XHDR ' . $field;
+    	} else {
+    	    $command = 'XHDR ' . $field . ' ' . $range;
+        }
+
+        $response = $this->_sendCommand($command);
+        if (PEAR::isError($response)){
+            return $response;
+        }
+
+    	switch ($response) {
+    	    case 221: // 221, RFC2980: 'Header follows'
+    	    	$data = $this->_getTextResponse();
+    	        if (PEAR::isError($data)) {
+    	            return $data;
+    	        }
+
+    	    	$return = array();
+    	        foreach($data as $line) {
+    	    	    $line = explode(' ', trim($line), 2);
+    	    	    $return[$line[0]] = $line[1];
+    	        }
+
+    	    	return $return;
+    	    	break;
+    	    case NET_NNTP_PROTOCOL_RESPONSECODE_NO_GROUP_SELECTED: // 412, RFC2980: 'No news group current selected'
+    	    	return PEAR::throwError('No news group current selected', $response, $this->_currentStatusResponse());
+    	    	break;
+    	    case NET_NNTP_PROTOCOL_RESPONSECODE_NO_ARTICLE_SELECTED: // 420, RFC2980: 'No current article selected'
+    	    	return PEAR::throwError('No current article selected', $response, $this->_currentStatusResponse());
+    	    	break;
+    	    case 430: // 430, RFC2980: 'No such article'
+    	    	return PEAR::throwError('No current article selected', $response, $this->_currentStatusResponse());
+    	    	break;
+    	    case 502: // RFC2980: 'no permission'
+    	    	return PEAR::throwError('No permission', $response, $this->_currentStatusResponse());
+    	    	break;
+    	    default:
+    	    	return $this->_handleUnexpectedResponse($response);
+    	}
+    }
+    
+    // }}}
     // {{{ cmdListgroup()
 
     /**
