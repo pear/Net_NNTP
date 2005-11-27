@@ -1138,9 +1138,9 @@ class Net_NNTP_Protocol_Client
     function cmdOver($range = null)
     {
         if (is_null($range)) {
-	    $command = 'XOVER';
+	    $command = 'OVER';
     	} else {
-    	    $command = 'XOVER ' . $range;
+    	    $command = 'OVER ' . $range;
         }
 
         $response = $this->_sendCommand($command);
