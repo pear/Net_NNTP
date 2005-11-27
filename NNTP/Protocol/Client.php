@@ -1305,8 +1305,8 @@ class Net_NNTP_Protocol_Client
     	    die('The second parameter in cmdXROver() has been deprecated! Use x-y instead...');
     	}
 
-        if (! is_null($range)) {
-	    $command = 'XROVER';
+        if (is_null($range)) {
+    	    $command = 'XROVER';
     	} else {
     	    $command = 'XROVER ' . $range;
         }
@@ -1323,15 +1323,12 @@ class Net_NNTP_Protocol_Client
     	            return $data;
     	        }
 
+    	    	$return = array();
     	        foreach($data as $line) {
-
-    	            $references = preg_split("/ +/", trim($line), -1, PREG_SPLIT_NO_EMPTY);
-
-    	            $id = array_shift($references);
-
-    	            $messages[$id] = $references;
+    	    	    $line = explode(' ', trim($line), 2);
+    	    	    $return[$line[0]] = $line[1];
     	        }
-    	    	return $messages;
+    	    	return $return;
     	    	break;
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_NO_GROUP_SELECTED: // 412, RFC2980: 'No news group current selected'
     	    	return PEAR::throwError('No news group current selected', $response, $this->_currentStatusResponse());
