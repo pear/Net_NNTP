@@ -341,7 +341,7 @@ class Net_NNTP_Protocol_Client
     // {{{ cmdHelp()
 
     /**
-     *
+     * Returns the server's help text
      *
      * @return mixed (array) help text on success or (object) pear_error on failure 
      * @access protected
@@ -371,7 +371,7 @@ class Net_NNTP_Protocol_Client
     // {{{ cmdCapabilities()
 
     /**
-     *
+     * Returns servers capabilities
      *
      * @return mixed (array) list of capabilities on success or (object) pear_error on failure 
      * @access protected
@@ -401,7 +401,7 @@ class Net_NNTP_Protocol_Client
     // {{{ cmdModeReader()
 
     /**
-     *
+     * 
      *
      * @return mixed (bool) true when posting allowed, false when postind disallowed or (object) pear_error on failure 
      * @access protected
@@ -435,7 +435,7 @@ class Net_NNTP_Protocol_Client
     /**
      * 
      *
-     * @return
+     * @return mixed (array) or (string) or (int) or (object) pear_error on failure
      * @access protected
      */
     function cmdNext($ret = -1)
@@ -482,7 +482,7 @@ class Net_NNTP_Protocol_Client
     /**
      * 
      *
-     * @return
+     * @return mixed (array) or (string) or (int) or (object) pear_error on failure
      * @access protected
      */
     function cmdLast($ret = -1)
@@ -531,7 +531,7 @@ class Net_NNTP_Protocol_Client
      *
      * @param mixed $article 
      *
-     * @return mixed (???) ??? on success or (object) pear_error on failure 
+     * @return mixed (array) or (string) or (int) or (object) pear_error on failure 
      * @access protected
      */
     function cmdStat($article, $ret = -1)
