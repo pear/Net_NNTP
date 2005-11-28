@@ -18,35 +18,53 @@
 // +----------------------------------------------------------------------+
 //
 // $Id$
+
+$host = 'news.php.net';
+$debug = false;
+
 ?>
 <html>
+
 <head>
-    <title>NNTP news.php.net</title>
+    <title>NNTP <?php echo $host; ?></title>
 </head>
+
 <body>
 <?php
+
 require_once "Net/NNTP/Client.php";
 
 $nntp = new Net_NNTP_Client();
+$nntp->setDebug($debug);
 
-$ret = $nntp->connect("news.php.net");
-if( PEAR::isError($ret)) {
- echo '<font color="red">No connection to newsserver!</font><br>' ;
- echo $ret->getMessage();
-} else {
-    echo "<h1>Avaible groups</h1>";    
-    $groups = $nntp->getGroups();
-    $descriptions = $nntp->getDescriptions();
-    foreach($groups as $group) {
-        echo '<a href="group.php?group='.urlencode($group['group']).
-            '&writable='.urlencode($group['posting_allowed']).'">'.
-            $group['group'].'</a>' ;
-        $msgcount = $group['last']-$group['first']; 
-        echo '&nbsp;('.$msgcount.' messages)<br>';
-        echo $descriptions[$group['group']].'<br><br>';
-    }
-    $nntp->quit();
-}    
+$posting = $nntp->connect($host);
+if (PEAR::isError($posting)) {
+    echo '<font color="red">No connection to newsserver!</font><br>';
+    die($posting->getMessage());
+}
+
+$groups = $nntp->getGroups();
+if (PEAR::isError($groups)) {
+    die('<font color="red">' . $groups->getMessage() . '</font><br>');
+}
+
+
+$descriptions = $nntp->getDescriptions();
+if (PEAR::isError($descriptions)) {
+    echo '<font color="red">' . $descriptions->getMessage() . '</font><br>';
+}
+
+echo "<h1>Avaible groups</h1>";
+
+foreach($groups as $group) {
+    echo '<a href="group.php?group=', urlencode($group['group']), '&writable=', urlencode($group['posting']), '">', $group['group'], '</a> ';
+    echo '(', ($group['last'] - $group['first']), ' messages)<br>';
+    echo $descriptions[$group['group']], '<br><br>';
+}
+
+$nntp->quit();
+
 ?>
 </body>
+
 </html>
