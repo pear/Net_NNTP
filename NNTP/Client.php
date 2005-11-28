@@ -756,7 +756,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     }
 
     // }}}
-    // {{{ getNewNews()
+    // {{{ getNewArticles()
 
     /**
      * Returns a list of message-ids of new articles (since the specified date and time) in the groups whose names match the wildmat
@@ -767,7 +767,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @access public
      * @since 0.3
      */
-    function getNewNews($time, $newsgroups = '*', $distribution = null)
+    function getNewArticles($time, $newsgroups = '*', $distribution = null)
     {
     	switch (gettype($time)) {
     	    case 'integer':
@@ -780,6 +780,23 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	}
 
     	return $this->cmdNewnews($time, $newsgroups, $distribution);
+    }
+
+    // }}}
+    // {{{ getNewNews()
+
+    /**
+     * Deprecated alias for getNewArticles()
+     *
+     * Experimental
+     *
+     * @return mixed (array) on success or (object) pear_error on failure
+     * @access public
+     * @since 0.3
+     */
+    function getNewNews($time, $newsgroups = '*', $distribution = null)
+    {
+    	return $this->getNewNews($time, $newsgroups, $distribution);
     }
 
     // }}}
