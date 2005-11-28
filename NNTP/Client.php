@@ -121,7 +121,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @param optional string $host The adress of the NNTP-server to connect to.
      * @param optional int $port The port to connect to.
      *
-     * @return mixed (bool) true on success or (object) pear_error on failure
+     * @return mixed (bool) on success (true when posting allowed, otherwise false) or (object) pear_error on failure
      * @access public
      * @see Net_NNTP_Client::quit()
      * @see Net_NNTP_Client::authenticate()
@@ -136,7 +136,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     // {{{ quit()
 
     /**
-     * Close connection to the newsserver
+     * Close connection to the server
      *
      * @access public
      * @see Net_NNTP_Client::connect()
@@ -152,6 +152,8 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     /**
      * Authenticate
      * 
+     * Experimental / Partially implemented
+     *
      * Auth process (not yet standarized but used any way)
      * http://www.mibsoftware.com/userkt/nntpext/index.html
      *
@@ -206,11 +208,11 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     // {{{ selectGroup()
 
     /**
-     * Selects a newsgroup
+     * Selects a newsgroup as the currently selected newsgroup and returns summary information about it
      *
-     * @param string $newsgroup Newsgroup name
+     * @param string $group Newsgroup name
      *
-     * @return mixed (array) Info about the newsgroup on success or (object) pear_error on failure
+     * @return mixed (array) summary about the group on success or (object) pear_error on failure
      * @access public
      * @see Net_NNTP_Client::group()
      * @see Net_NNTP_Client::first()
@@ -218,24 +220,24 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @see Net_NNTP_Client::count()
      * @see Net_NNTP_Client::getGroups()
      */
-    function selectGroup($newsgroup)
+    function selectGroup($group)
     {
-        $response_arr = $this->cmdGroup($newsgroup);
-    	if (PEAR::isError($response_arr)) {
-    	    return $response_arr;
+        $summary = $this->cmdGroup($group);
+    	if (PEAR::isError($summary)) {
+    	    return $summary;
     	}
 
     	// Store group info in the object
-    	$this->_currentGroup = $response_arr;
+    	$this->_currentGroup = $summary;
 
-    	return $response_arr;
+    	return $summary;
     }
 
     // }}}
     // {{{ getGroups()
 
     /**
-     * Fetches a list of all avaible newsgroups
+     * Returns a list of valid newsgroups and associated information
      *
      * @return mixed (array) nested array with informations about existing newsgroups on success or (object) pear_error on failure
      * @access public
@@ -278,7 +280,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     // {{{ getOverview()
 
     /**
-     * Fetch message header fields from message number $first to $last
+     * Returns the contents of all the fields in the database for an article specified by message-id, or from a specified article, or range of articles in the currently selected newsgroup
      *
      * The format of the returned array is:
      * $messages[message_id][header_name]
@@ -293,7 +295,9 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      */
     function getOverview($first, $last)
     {
-    	$overview = $this->cmdXOver($first.'-'.$last);
+    	$range = $first . '-' . $last;
+
+    	$overview = $this->cmdXOver($range);
     	if (PEAR::isError($overview)) {
     	    return $overview;
     	}
@@ -302,10 +306,10 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     }
 
     // }}}
-    // {{{ getOverviewFmt()
+    // {{{ getOverviewFormat()
 
     /**
-     * Returns a list of avaible headers which are send from NNTP-server to the client for every news message
+     * Returns a description of the fields in the database for which it is consistent
      *
      * @return mixed (array) header names on success or (object) pear_error on failure
      * @access public
@@ -313,14 +317,23 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      */
     function getOverviewFormat()
     {
-    	return $this->cmdListOverviewFmt();
+        $format = $this->cmdListOverviewFmt();
+    	if (PEAR::isError($format)) {
+    	    return $format;
+    	}
+
+    	if (true) {
+    	    return array_keys($format);
+    	} else {
+    	    return $format;
+    	}
     }
 
     // }}}
     // {{{ getReferencesOverview()
 
     /**
-     * Fetch a list of each message's reference header.
+     * Fetch a list of each message's reference header field.
      *
      * @param integer $first first article to fetch
      * @param integer $last  last article to fetch
@@ -328,15 +341,58 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @return mixed (array) nested array of references on success or (object) pear_error on failure
      * @access public
      * @see Net_NNTP_Client::getOverview()
+     * @see Net_NNTP_Client::getHeaderField()
      */
     function getReferencesOverview($first, $last)
     {
-    	$overview = $this->cmdXROver($first.'-'.$last);
-    	if (PEAR::isError($overview)) {
-    	    return $overview;
+    	$range = $first . '-' . $last;
+
+    	$references = $this->cmdXHdr('References', $range);
+    	if (PEAR::isError($references)) {
+    	    if ($references->getCode() != 500) {
+    	    	return $references;
+    	    }
+
+    	    $references = $this->cmdXROver($range);
+    	    if (PEAR::isError($references)) {
+    	        return $references;
+    	    }
     	}
-	
-    	return $overview;
+
+    	foreach ($references as $key => $val) {
+    	    $references[$key] = preg_split("/ +/", trim($val), -1, PREG_SPLIT_NO_EMPTY);
+    	}
+
+    	return $references;
+    }
+
+    // }}}
+    // {{{ getHeaderField()
+
+    /**
+     * Fetch a header field from a number of message.
+     *
+     * Experimental
+     *
+     * @param stringr $field 
+     * @param integer $first first article to fetch
+     * @param integer $last  last article to fetch
+     *
+     * @return mixed (array) nested array of references on success or (object) pear_error on failure
+     * @access public
+     * @see Net_NNTP_Client::getOverview()
+     * @see Net_NNTP_Client::getReferencesOverview()
+     */
+    function getHeaderField($field, $first, $last)
+    {
+    	$range = $first . '-' . $last;
+
+    	$fields = $this->cmdXHdr($field, $range);
+    	if (PEAR::isError($fields)) {
+    	    return $fields;
+    	}
+
+    	return $fields;
     }
 
     // }}}
@@ -366,10 +422,99 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     }
 
     // }}}
+    // {{{ selectArticle()
+
+    /**
+     * Selects an article by article message-number
+     *
+     * @param int $article The message-number (on the server) of the article to select as current article.
+     *
+     * @return mixed true on success, false if article doesn't exist, and (object) pear_error on unexpected failure
+     * @access public
+     * @see Net_NNTP_Client::selectNextArticle()
+     * @see Net_NNTP_Client::selectPreviousArticle()
+     */
+    function selectArticle($article)
+    {
+        $response_arr = $this->cmdStat($article);
+
+    	if (PEAR::isError($response_arr)) {
+    	    switch ($response_arr->getCode()) {
+    	    	case NET_NNTP_PROTOCOL_RESPONSECODE_NO_SUCH_ARTICLE_NUMBER: // 423
+    	    	    return false;
+    	    	    break;
+
+    	    	default:
+    	    	    return $response_arr;
+    	    }
+	}
+
+    	return true;
+    }
+
+    // }}}
+    // {{{ selectNextArticle()
+
+    /**
+     * Select the next article in current group
+     *
+     * @return mixed true on success, false if article doesn't exist, and (object) pear_error on unexpected failure
+     * @access public
+     * @see Net_NNTP_Client::selectArticle()
+     * @see Net_NNTP_Client::selectPreviousArticle()
+     */
+    function selectNextArticle()
+    {
+        $response = $this->cmdNext();
+
+    	if (PEAR::isError($response)) {
+    	    switch ($response->getCode()) {
+    	    	case NET_NNTP_PROTOCOL_RESPONSECODE_NO_NEXT_ARTICLE: // 421
+    	    	    return false;
+    	    	    break;
+
+    	    	default:
+    	    	    return $response;
+    	    }
+	}
+
+    	return true;
+    }
+
+    // }}}
+    // {{{ selectPreviousArticle()
+
+    /**
+     * Select the previous article in current group
+     *
+     * @return mixed true on success, false if article doesn't exist, and (object) pear_error on unexpected failure
+     * @access public
+     * @see Net_NNTP_Client::selectArticle()
+     * @see Net_NNTP_Client::selectNextArticle()
+     */
+    function selectPreviousArticle()
+    {
+        $response = $this->cmdLast();
+
+    	if (PEAR::isError($response)) {
+    	    switch ($response->getCode()) {
+    	    	case NET_NNTP_PROTOCOL_RESPONSECODE_NO_PREVIOUS_ARTICLE: // 422
+    	    	    return false;
+    	    	    break;
+
+    	    	default:
+    	    	    return $response;
+    	    }
+    	}
+
+    	return true;
+    }
+
+    // }}}
     // {{{ getArticle()
 
     /**
-     * Get an article
+     * Selects an article based on the arguments and returns the entire article.
      *
      * Experimental
      *
@@ -383,7 +528,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @see Net_NNTP_Client::getHeader()
      * @see Net_NNTP_Client::getBody()
      */
-    function getArticle($article, $class, $implode)
+    function getArticle($article, $class, $implode = false)
     {
         $message = $this->getArticleRaw($article, $implode);
         if (PEAR::isError($message)) {
@@ -407,7 +552,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     // {{{ getArticleRaw()
 
     /**
-     * Get a article (raw data)
+     * Selects an article based on the arguments and returns the entire article (raw data)
      *
      * @param mixed $article Either the message-id or the message-number on the server of the article to fetch.
      * @param optional bool  $implode When true the result array is imploded to a string, defaults to false.
@@ -436,7 +581,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     // {{{ getHeader()
 
     /**
-     * Get the header of an article
+     * Selects an article based on the arguments and returns the article header 
      *
      * Experimental
      *
@@ -448,7 +593,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @see Net_NNTP_Client::getArticle()
      * @see Net_NNTP_Client::getBody()
      */
-    function getHeader($article, $class, $implode)
+    function getHeader($article, $class, $implode = false)
     {
         $header = $this->getHeaderRaw($article, $implode);
         if (PEAR::isError($header)) {
@@ -472,7 +617,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     // {{{ getHeaderRaw()
 
     /**
-     * Get the header of an article (raw data)
+     * Selects an article based on the arguments and returns the article header (raw data)
      *
      * @param mixed $article Either the (string) message-id or the (int) message-number on the server of the article to fetch.
      * @param optional bool $implode When true the result array is imploded to a string, defaults to false.
@@ -501,7 +646,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     // {{{ getBody()
 
     /**
-     * Get the body of an article
+     * Selects an article based on the arguments and returns the article body
      *
      * Experimental
      *
@@ -513,7 +658,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @see Net_NNTP_Client::getArticle()
      * @see Net_NNTP_Client::getBodyRaw()
      */
-    function getBody($article, $class, $implode)
+    function getBody($article, $class, $implode = false)
     {
         $body = $this->getBodyRaw($article, $implode);
         if (PEAR::isError($body)) {
@@ -537,7 +682,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     // {{{ getBodyRaw()
 
     /**
-     * Get the body of an article (raw data)
+     * Selects an article based on the arguments and returns the article body (raw data)
      *
      * @param mixed $article Either the message-id or the message-number on the server of the article to fetch.
      * @param optional bool $implode When true the result array is imploded to a string, defaults to false.
@@ -566,22 +711,30 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     // {{{ getGroupArticles()
 
     /**
+     * Selects a group in the same manner as the the selectGroup method, but also provides a list of article numbers in the group
+     *
      * Experimental
      *
+     * @return mixed (array) on success or (object) pear_error on failure
      * @access public
      * @since 0.3
      */
     function getGroupArticles($newsgroup)
     {
-        return $this->cmdListgroup($newsgroup);
+        $data = $this->cmdListgroup($newsgroup);
+
+	return $data['articles'];
     }
 
     // }}}
     // {{{ getNewGroups()
 
     /**
+     * Returns a list of newsgroups created on the server since the specified date and time
+     *
      * Experimental
      *
+     * @return mixed (array) on success or (object) pear_error on failure
      * @access public
      * @since 0.3
      */
@@ -601,15 +754,18 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     }
 
     // }}}
-    // {{{ getNewNews()
+    // {{{ getNewArticles()
 
     /**
+     * Returns a list of message-ids of new articles (since the specified date and time) in the groups whose names match the wildmat
+     *
      * Experimental
      *
+     * @return mixed (array) on success or (object) pear_error on failure
      * @access public
      * @since 0.3
      */
-    function getNewNews($time, $newsgroups = '*')
+    function getNewArticles($time, $newsgroups = '*', $distribution = null)
     {
     	switch (gettype($time)) {
     	    case 'integer':
@@ -621,7 +777,24 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	        return PEAR::throwError('UPS...');
     	}
 
-    	return $this->cmdNewnews($time, $newsgroups);
+    	return $this->cmdNewnews($time, $newsgroups, $distribution);
+    }
+
+    // }}}
+    // {{{ getNewNews()
+
+    /**
+     * Deprecated alias for getNewArticles()
+     *
+     * Experimental
+     *
+     * @return mixed (array) on success or (object) pear_error on failure
+     * @access public
+     * @since 0.3
+     */
+    function getNewNews($time, $newsgroups = '*', $distribution = null)
+    {
+    	return $this->getNewNews($time, $newsgroups, $distribution);
     }
 
     // }}}
