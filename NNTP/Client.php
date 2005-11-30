@@ -293,7 +293,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @return mixed (array) nested array of message and their headers on success or (object) pear_error on failure
      * @access public
      * @see Net_NNTP_Client::getOverviewFormat()
-     * @see Net_NNTP_Client::getReferencesOverview()
+     * @see Net_NNTP_Client::getReferences()
      */
     function getOverview($first, $last)
     {
@@ -332,7 +332,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     }
 
     // }}}
-    // {{{ getReferencesOverview()
+    // {{{ getReferences()
 
     /**
      * Fetch a list of each message's reference header field.
@@ -342,10 +342,9 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      *
      * @return mixed (array) nested array of references on success or (object) pear_error on failure
      * @access public
-     * @see Net_NNTP_Client::getOverview()
      * @see Net_NNTP_Client::getHeaderField()
      */
-    function getReferencesOverview($first, $last)
+    function getReferences($first, $last)
     {
     	$range = $first . '-' . $last;
 
@@ -366,6 +365,25 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	}
 
     	return $references;
+    }
+
+    // }}}
+    // {{{ getReferencesOverview()
+
+    /**
+     * Deprecated alias for getReferences()
+     *
+     * @param integer $first first article to fetch
+     * @param integer $last  last article to fetch
+     *
+     * @return mixed (array) nested array of references on success or (object) pear_error on failure
+     * @access public
+     * @see Net_NNTP_Client::getOverview()
+     * @see Net_NNTP_Client::getHeaderField()
+     */
+    function getReferencesOverview($first, $last)
+    {
+    	return $this->getReferences($first, $last)
     }
 
     // }}}
@@ -796,7 +814,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      */
     function getNewNews($time, $newsgroups = '*', $distribution = null)
     {
-    	return $this->getNewNews($time, $newsgroups, $distribution);
+    	return $this->getNewArticles($time, $newsgroups, $distribution);
     }
 
     // }}}
