@@ -534,10 +534,16 @@ class Net_NNTP_Protocol_Client
      * @return mixed (array) or (string) or (int) or (object) pear_error on failure 
      * @access protected
      */
-    function cmdStat($article, $ret = -1)
+    function cmdStat($article = null, $ret = -1)
     {
+        if (is_null($article)) {
+    	    $command = 'STAT';
+    	} else {
+            $command = 'STAT ' . $article;
+        }
+
         // tell the newsserver we want an article
-        $response = $this->_sendCommand('STAT '.$article);
+        $response = $this->_sendCommand($command);
         if (PEAR::isError($response)) {
             return $response;
         }
@@ -584,10 +590,16 @@ class Net_NNTP_Protocol_Client
      * @return mixed (array) article on success or (object) pear_error on failure 
      * @access protected
      */
-    function cmdArticle($article)
+    function cmdArticle($article = null)
     {
+        if (is_null($article)) {
+    	    $command = 'ARTICLE';
+    	} else {
+            $command = 'ARTICLE ' . $article;
+        }
+
         // tell the newsserver we want an article
-        $response = $this->_sendCommand('ARTICLE '.$article);
+        $response = $this->_sendCommand($command);
         if (PEAR::isError($response)) {
             return $response;
         }
@@ -628,10 +640,16 @@ class Net_NNTP_Protocol_Client
      * @return mixed (array) headers on success or (object) pear_error on failure 
      * @access protected
      */
-    function cmdHead($article)
+    function cmdHead($article = null)
     {
+        if (is_null($article)) {
+    	    $command = 'HEAD';
+    	} else {
+            $command = 'HEAD ' . $article;
+        }
+
         // tell the newsserver we want the header of an article
-        $response = $this->_sendCommand('HEAD '.$article);
+        $response = $this->_sendCommand($command);
         if (PEAR::isError($response)) {
             return $response;
         }
@@ -672,10 +690,16 @@ class Net_NNTP_Protocol_Client
      * @return mixed (array) body on success or (object) pear_error on failure 
      * @access protected
      */
-    function cmdBody($article)
+    function cmdBody($article = null)
     {
+        if (is_null($article)) {
+    	    $command = 'BODY';
+    	} else {
+            $command = 'BODY ' . $article;
+        }
+
         // tell the newsserver we want the body of an article
-        $response = $this->_sendCommand('BODY '.$article);
+        $response = $this->_sendCommand($command);
         if (PEAR::isError($response)) {
             return $response;
         }
