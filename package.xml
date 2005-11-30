@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!-- $Id: package.xml,v 1.19.2.3 2005-05-13 21:06:49 heino Exp $ -->
+<!-- $Id: package.xml,v 1.19.2.4 2005-11-30 00:47:57 heino Exp $ -->
 <package version="1.0">
   <name>Net_NNTP</name>
   <summary>Implementation of the NNTP protocol</summary>
@@ -16,15 +16,48 @@
     </maintainer>
   </maintainers>
   <deps>
-   <dep type="pkg" rel="ge" version="1.0.3">Net_Socket</dep>
+   <dep type="pkg" rel="ge" version="1.0.6">Net_Socket</dep>
   </deps>
   <release>
-    <version>1.1.2</version>
-    <date>2005-05-13</date>
+    <version>1.1.3</version>
+    <date>2005-11-30</date>
     <license>W3C</license>
     <state>beta</state>
     <notes>
-      - Three new Net_NNTP_Client methods: getArticle(), getHeader() and getBody() - stripped down versions from the v1.2 releases (no default return classes).
+      Implements many new features from v1.2.6:
+
+      + Changes in Net_NNTP_Client:
+        - fixed: connect(), now returns false when posting is prohibited (like cmdModeReader())
+        - added: getHeaderField()
+        - added: getBody()
+	- added: selectArticle()
+	- added: selectNextArticle()
+	- added: selectPreviousArticle()
+	- renamed: getNewNews() into getNewArticles()
+        - removed: connectAuthenticated() (as in MAINT_1_0 and MAINT_1_2)
+        - rewritten & newnamed: getReferencesOverview() into getReferences()
+
+      + Changes in Net_NNTP_Protocol Client:
+        - added: cmdOver()
+        - added: cmdXHdr()
+        - added: cmdCapabilities()
+        - added: cmdHelp()
+
+        - modified: cmdNext(), now returns array by default
+	- modified: cmdLast(), now returns array by default
+	- modified: cmdStat(), now returns array by default
+
+        - modified: cmdXOver(), first parameter now optional
+	- modified: cmdXROver(), first parameter now optional
+	- modified: cmdListgroup(), first parameter now optional
+
+	- rewritten: cmdListOverviewFmt(), now returns an array
+        - rewritten: cmdXOver()
+
+        - misc: Use of status response code constants in Net_NNTP_Protocol_Responsecode
+
+      + Examples rewritten
+
     </notes>
     <filelist>
       <dir name="/" baseinstalldir="Net">
@@ -47,6 +80,14 @@
     </filelist>
   </release>
   <changelog>
+  <release>
+    <version>1.1.2</version>
+    <date>2005-05-13</date>
+    <state>beta</state>
+    <notes>
+      - Three new Net_NNTP_Client methods: getArticle(), getHeader() and getBody() - stripped down versions from the v1.2 releases (no default return classes).
+    </notes>
+  </release>
   <release>
     <version>1.1.1</version>
     <date>2005-03-28</date>
