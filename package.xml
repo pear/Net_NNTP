@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!-- $Id: package.xml,v 1.19.2.4 2005-11-30 00:47:57 heino Exp $ -->
+<!-- $Id: package.xml,v 1.19.2.5 2005-11-30 00:52:49 heino Exp $ -->
 <package version="1.0">
   <name>Net_NNTP</name>
   <summary>Implementation of the NNTP protocol</summary>
@@ -35,7 +35,7 @@
 	- added: selectPreviousArticle()
 	- renamed: getNewNews() into getNewArticles()
         - removed: connectAuthenticated() (as in MAINT_1_0 and MAINT_1_2)
-        - rewritten & newnamed: getReferencesOverview() into getReferences()
+        - rewritten and newnamed: getReferencesOverview() into getReferences()
 
       + Changes in Net_NNTP_Protocol Client:
         - added: cmdOver()
