@@ -97,7 +97,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @access private
      * @since 0.3
      */
-    var $_currentGroup = null;
+    var $_currentGroupSummary = null;
 
     // }}}
     // {{{ constructor
@@ -180,12 +180,15 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
             case NET_NNTP_CLIENT_AUTH_ORIGINAL:
                 return $this->cmdAuthinfo($user, $pass);
                 break;
+
             case NET_NNTP_CLIENT_AUTH_SIMPLE:
                 return $this->cmdAuthinfoSimple($user, $pass);
                 break;
+
             case NET_NNTP_CLIENT_AUTH_GENERIC:
                 return $this->cmdAuthinfoGeneric($user, $pass);
                 break;
+
             default:
                 return PEAR::throwError("The auth mode: '$mode' is unknown", null);
         }
@@ -235,7 +238,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	}
 
     	// Store group info in the object
-    	$this->_currentGroup = $summary;
+    	$this->_currentGroupSummary = $summary;
 
     	return $summary;
     }
@@ -473,7 +476,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * Or "Organization: <org>" which contain the name of the organization
      * the post originates from)
      *
-     * @param string	$newsgroups	The groups to post to.
+     * @param string	$groups	The groups to post to.
      * @param string	$subject	The subject of the article.
      * @param string	$body	The body of the article.
      * @param string	$from	Sender's email address.
@@ -483,9 +486,9 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      *               (object)	Pear_Error on failure
      * @access public
      */
-    function post($newsgroups, $subject, $body, $from, $aditional = null)
+    function post($groups, $subject, $body, $from, $aditional = null)
     {
-    	return $this->cmdPost($newsgroups, $subject, $body, $from, $aditional);
+    	return $this->cmdPost($groups, $subject, $body, $from, $aditional);
     }
 
     // }}}
@@ -622,11 +625,6 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      */
     function getArticle($article = null, $class, $implode = false)
     {
-        $message = $this->getArticleRaw($article, $implode);
-        if (PEAR::isError($message)) {
-    	    return $data;
-    	}
-
     	if (!is_string($class)) {
     	    return PEAR::throwError('UPS...');
     	}
@@ -634,6 +632,11 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	if (!class_exists($class)) {
     	    return PEAR::throwError("Class '$class' does not exist!");
 	}
+
+        $message = $this->getArticleRaw($article, $implode);
+        if (PEAR::isError($message)) {
+    	    return $data;
+    	}
 
 	$M = new $class($message);
 
@@ -702,11 +705,6 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      */
     function getHeader($article = null, $class, $implode = false)
     {
-        $header = $this->getHeaderRaw($article, $implode);
-        if (PEAR::isError($header)) {
-    	    return $header;
-    	}
-
     	if (!is_string($class)) {
     	    return PEAR::throwError('UPS...');
     	}
@@ -714,6 +712,11 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	if (!class_exists($class)) {
     	    return PEAR::throwError("Class '$class' does not exist!");
 	}
+
+        $header = $this->getHeaderRaw($article, $implode);
+        if (PEAR::isError($header)) {
+    	    return $header;
+    	}
 
 	$H = new $class($header);
 
@@ -783,11 +786,6 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      */
     function getBody($article = null, $class, $implode = false)
     {
-        $body = $this->getBodyRaw($article, $implode);
-        if (PEAR::isError($body)) {
-    	    return $body;
-    	}
-
     	if (!is_string($class)) {
     	    return PEAR::throwError('UPS...');
     	}
@@ -795,6 +793,11 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	if (!class_exists($class)) {
     	    return PEAR::throwError("Class '$class' does not exist!");
 	}
+
+        $body = $this->getBodyRaw($article, $implode);
+        if (PEAR::isError($body)) {
+    	    return $body;
+    	}
 
 	$B = new $class($body);
 
@@ -851,21 +854,21 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * Experimental: This method uses non-standard commands, which is not part
      *               of the original RFC977, but has been formalized in RFC2890.
      *
-     * @param string	$newsgroup	
+     * @param string	$group	
      *
      * @return mixed (array)	
      *               (object)	Pear_Error on failure
      * @access public
      * @since 0.3
      */
-    function getGroupArticles($newsgroup)
+    function getGroupArticles($group)
     {
-        $summary = $this->cmdListgroup($newsgroup);
+        $summary = $this->cmdListgroup($group);
 
 	$articles = $summary['articles'];
 	unset($summary['articles']);
 
-    	$this->_currentGroup = $summary;
+    	$this->_currentGroupSummary = $summary;
 
 	return $articles;
     }
@@ -912,7 +915,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * and time) in the groups whose names match the wildmat
      *
      * @param mixed	$time	
-     * @param string	$newsgroups	(optional) 
+     * @param string	$groups	(optional) 
      * @param string	$distributions	(optional) 
      *
      * @return mixed (array)	
@@ -920,19 +923,21 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @access public
      * @since 0.3
      */
-    function getNewArticles($time, $newsgroups = '*', $distribution = null)
+    function getNewArticles($time, $groups = '*', $distribution = null)
     {
-    	switch (gettype($time)) {
-    	    case 'integer':
+    	switch (true) {
+    	    case is_integer($time):
     	    	break;
-    	    case 'string':
+
+    	    case is_string($time):
     	    	$time = (int) strtotime($time);
     	    	break;
+
     	    default:
     	        return PEAR::throwError('UPS...');
     	}
 
-    	return $this->cmdNewnews($time, $newsgroups, $distribution);
+    	return $this->cmdNewnews($time, $groups, $distribution);
     }
 
     // }}}
@@ -943,9 +948,9 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      *
      * @deprecated
      */
-    function getNewNews($time, $newsgroups = '*', $distribution = null)
+    function getNewNews($time, $groups = '*', $distribution = null)
     {
-    	return $this->getNewArticles($time, $newsgroups, $distribution);
+    	return $this->getNewArticles($time, $groups, $distribution);
     }
 
     // }}}
@@ -1003,7 +1008,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      */
     function count()
     {
-        return $this->_currentGroup['count'];
+        return $this->_currentGroupSummary['count'];
     }
 
     // }}}
@@ -1022,7 +1027,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      */
     function last()
     {
-    	return $this->_currentGroup['last'];
+    	return $this->_currentGroupSummary['last'];
     }
 
     // }}}
@@ -1041,7 +1046,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      */
     function first()
     {
-    	return $this->_currentGroup['first'];
+    	return $this->_currentGroupSummary['first'];
     }
 
     // }}}
@@ -1060,7 +1065,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      */
     function group()
     {
-    	return $this->_currentGroup['group'];
+    	return $this->_currentGroupSummary['group'];
     }
 
     // }}}
