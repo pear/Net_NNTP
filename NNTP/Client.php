@@ -99,6 +99,15 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      */
     var $_currentGroupSummary = null;
 
+    /**
+     * 
+     *
+     * @var array
+     * @access private
+     * @since
+     */
+    var $_formatCache = null;
+
     // }}}
     // {{{ constructor
 
@@ -322,25 +331,83 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * Experimental: This method uses non-standard commands, which is not part
      *               of the original RFC977, but has been formalized in RFC2890.
      *
-     * @param integer	$first	First article to fetch
-     * @param integer	$last	Last article to fetch
+     * @param mixed	$range	(optional)
+     *                            '<message number>'
+     *                            '<message number>-<message number>'
+     *                            '<message number>-'
+     *                            '<message-id>'
      *
      * @return mixed (array)	Nested array of article overview data
      *               (object)	Pear_Error on failure
      * @access public
+     * @see Net_NNTP_Client::getHeaderField()
      * @see Net_NNTP_Client::getOverviewFormat()
-     * @see Net_NNTP_Client::getReferences()
      */
-    function getOverview($first, $last)
+    function getOverview($range = null)
     {
-    	$range = $first . '-' . $last;
+    	if (func_num_args() >= 2) {
+    	    $range = func_get_arg(0) . '-' . func_get_arg(1);
+    	}
 
     	$overview = $this->cmdXOver($range);
     	if (PEAR::isError($overview)) {
     	    return $overview;
     	}
-	
-    	return $overview;
+
+    	if (true) {
+    	    $formatCache = $this->_formatCache;
+
+    	    if (is_null($formatCache)) {
+    	        $formatCache = $this->getOverviewFormat(true);
+    	        if (PEAR::isError($formatCache)){
+    	            return $formatCache;
+    	        }
+
+    	        $formatCache = array_merge(array('Number' => false), $formatCache);
+
+    	        $this->_formatCache = $formatCache;
+    	    }
+
+            foreach ($overview as $num => $article) {
+
+    	        // 
+    	        $format = $formatCache;
+
+    	        // 
+    	        $i = 0;
+    	        foreach ($format as $tag => $full) {
+    	            if ($full === true) {
+    	                $field = explode(':', $article[$i++], 2);
+    	                $format[$tag] = ltrim($field[1], " \t");
+    	            } else {
+    	                $format[$tag] = $article[$i++];
+    	            }
+    	        }
+
+    	        // 
+	        $overview[$num] = $format;
+    	    }
+    	}
+
+    	//
+    	switch (true) {
+
+    	    // Expect one article
+    	    case is_null($range);
+    	    case is_int($range);
+            case is_string($range) && ctype_digit($range):
+    	    case is_string($range) && substr($range, 0, 1) == '<' && substr($range, -1, 1) == '>':
+    	        if (count($overview) == 0) {
+    	    	    return false;
+    	    	} else {
+    	    	    return reset($overview);
+    	    	}
+    	    	break;
+
+    	    // Expect multiple articles
+    	    default:
+    	    	return $overview;
+    	}
     }
 
     // }}}
@@ -359,17 +426,29 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @access public
      * @see Net_NNTP_Client::getOverview()
      */
-    function getOverviewFormat()
+    function getOverviewFormat($_full = false)
     {
         $format = $this->cmdListOverviewFmt();
     	if (PEAR::isError($format)) {
     	    return $format;
     	}
 
-    	if (true) {
-    	    return array_keys($format);
-    	} else {
+    	// Force name of first seven fields
+    	if (false) {
+    	    array_splice($format, 0, 7);
+    	    $format = array_merge(array('Subject'    => false,
+    	                                'From'       => false,
+    	                                'Date'       => false,
+    	                                'Message-ID' => false,
+    	    	                        'References' => false,
+    	                                ':bytes'     => false,
+    	                                ':lines'     => false), $format);
+    	}
+
+    	if ($_full) {
     	    return $format;
+    	} else {
+    	    return array_keys($format);
     	}
     }
 
@@ -384,38 +463,77 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      *
      * Identical to getHeaderField('References').
      *
-     * @param integer	$first	First article to fetch
-     * @param integer	$last	Last article to fetch
-     *
      * Experimental: This method uses non-standard commands, which is not part
      *               of the original RFC977, but has been formalized in RFC2890.
+     *
+     * @param mixed	$range	(optional)
+     *                            '<message number>'
+     *                            '<message number>-<message number>'
+     *                            '<message number>-'
+     *                            '<message-id>'
      *
      * @return mixed (array)	Nested array of references
      *               (object)	Pear_Error on failure
      * @access public
      * @see Net_NNTP_Client::getHeaderField()
      */
-    function getReferences($first, $last)
+    function getReferences($range = null)
     {
-    	$range = $first . '-' . $last;
-
     	$references = $this->cmdXHdr('References', $range);
     	if (PEAR::isError($references)) {
-    	    if ($references->getCode() != 500) {
+    	    switch ($references->getCode()) {
+    	    	case 500:
+    	    	case 501:
+    	    	    $backup = true;
+		    break;
+    		default:
+    	    	    return $references;
+    	    }
+    	}
+
+    	if (true && (is_array($references) && count($references) == 0)) {
+    	    $backup = true;
+    	}
+
+    	if ($backup == true) {
+    	    $references2 = $this->cmdXROver($range);
+    	    if (PEAR::isError($references2)) {
+    		// Ignore...
+    	    } else {
+    	    	$references = $references2;
+    	    }
+	}
+
+    	if (PEAR::isError($references)) {
+    	    return $references;
+    	}
+
+    	if (is_array($references)) {
+    	    foreach ($references as $key => $val) {
+    	        $references[$key] = preg_split("/ +/", trim($val), -1, PREG_SPLIT_NO_EMPTY);
+    	    }
+	}
+
+    	//
+    	switch (true) {
+
+    	    // Expect one article
+    	    case is_null($range);
+    	    case is_int($range);
+    	    case is_string($range) && ctype_digit($range):
+    	    case is_string($range) && substr($range, 0, 1) == '<' && substr($range, -1, 1) == '>':
+    	        if (count($references) == 0) {
+    	    	    return array();
+    	    	    return false;
+    	    	} else {
+    	    	    return reset($references);
+    	    	}
+    	    	break;
+
+    	    // Expect multiple articles
+    	    default:
     	    	return $references;
-    	    }
-
-    	    $references = $this->cmdXROver($range);
-    	    if (PEAR::isError($references)) {
-    	        return $references;
-    	    }
     	}
-
-    	foreach ($references as $key => $val) {
-    	    $references[$key] = preg_split("/ +/", trim($val), -1, PREG_SPLIT_NO_EMPTY);
-    	}
-
-    	return $references;
     }
 
     // }}}
@@ -425,10 +543,11 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * Deprecated alias for getReferences()
      *
      * @deprecated
+     * @see Net_NNTP_Client::getReferences()
      */
     function getReferencesOverview($first, $last)
     {
-    	return $this->getReferences($first, $last);
+    	return $this->getReferences($first . '-' . $last);
     }
 
     // }}}
@@ -442,26 +561,46 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * Experimental: This method uses non-standard commands, which is not part
      *               of the original RFC977, but has been formalized in RFC2890.
      *
-     * @param stringr $field	The name of the header field to retreive
-     * @param integer $first	First article to fetch
-     * @param integer $last	Last article to fetch
+     * @param string	$field	The name of the header field to retreive
+     * @param mixed	$range	(optional)
+     *                            '<message number>'
+     *                            '<message number>-<message number>'
+     *                            '<message number>-'
+     *                            '<message-id>'
      *
      * @return mixed (array)	Nested array of 
      *               (object)	Pear_Error on failure
      * @access public
      * @see Net_NNTP_Client::getOverview()
-     * @see Net_NNTP_Client::getReferencesOverview()
+     * @see Net_NNTP_Client::getReferences()
      */
-    function getHeaderField($field, $first, $last)
+    function getHeaderField($field, $range = null)
     {
-    	$range = $first . '-' . $last;
-
     	$fields = $this->cmdXHdr($field, $range);
     	if (PEAR::isError($fields)) {
     	    return $fields;
     	}
 
-    	return $fields;
+    	//
+    	switch (true) {
+
+    	    // Expect one article
+    	    case is_null($range);
+    	    case is_int($range);
+            case is_string($range) && ctype_digit($range):
+    	    case is_string($range) && substr($range, 0, 1) == '<' && substr($range, -1, 1) == '>':
+
+    	        if (count($fields) == 0) {
+    	    	    return false;
+    	    	} else {
+    	    	    return reset($fields);
+    	    	}
+    	    	break;
+
+    	    // Expect multiple articles
+    	    default:
+    	    	return $fields;
+    	}
     }
 
     // }}}
@@ -480,15 +619,15 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @param string	$subject	The subject of the article.
      * @param string	$body	The body of the article.
      * @param string	$from	Sender's email address.
-     * @param mixed	$aditional	(optional) Aditional header fields to send.
+     * @param mixed	$additional	(optional) Additional header fields to send.
      *
      * @return mixed (string)	Server response
      *               (object)	Pear_Error on failure
      * @access public
      */
-    function post($groups, $subject, $body, $from, $aditional = null)
+    function post($groups, $subject, $body, $from, $additional = null)
     {
-    	return $this->cmdPost($groups, $subject, $body, $from, $aditional);
+    	return $this->cmdPost($groups, $subject, $body, $from, $additional);
     }
 
     // }}}
