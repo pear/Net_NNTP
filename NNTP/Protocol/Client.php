@@ -1179,38 +1179,11 @@ class Net_NNTP_Protocol_Client
     	            return $data;
     	        }
 
-    	    	$format = $this->cmdListOverviewFmt();
-            	if (PEAR::isError($format)){
-            	    return $format;
-            	}
-    	    	array_splice($format, 0, 7);
-
-    	    	$messages = array();
-    	        foreach($data as $line) {
-    	    	    $fields = explode("\t", trim($line));
-
-    	    	    $message = array('Number'     => $fields[0],
-		                     'Subject'    => $fields[1],
-		                     'From'       => $fields[2],
-		                     'Date'       => $fields[3],
-		                     'Message-ID' => $fields[4],
-		                     'References' => $fields[5],
-		                     ':bytes'     => $fields[6],
-		                     ':lines'     => $fields[7]);
-
-    	    	    $i = 7;
-    	    	    foreach ($format as $tag => $full) {
-    	                if ($full === true) {
-    	            	    $field = explode(':', $fields[++$i], 2);
-    	                    $message[$tag] = ltrim($field[1], " \t");
-    	                } else {
-    	                    $message[$tag] = $fields[++$i];
-    	                }
-    	            }
-
-    	            $messages[] = $message;
+    	        foreach ($data as $key => $value) {
+    	            $data[$key] = explode("\t", trim($value));
     	        }
-    	    	return $messages;
+
+    	    	return $data;
     	    	break;
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_NO_GROUP_SELECTED: // 412, RFC2980: 'No news group current selected'
     	    	return PEAR::throwError('No news group current selected', $response, $this->_currentStatusResponse());
@@ -1248,11 +1221,6 @@ class Net_NNTP_Protocol_Client
 	// deprecated API (the code _is_ still in alpha state)
     	if (func_num_args() > 1 ) {
     	    die('The second parameter in cmdXOver() has been deprecated! Use x-y instead...');
-    	}
-
-        $format = $this->cmdListOverviewFmt();
-        if (PEAR::isError($format)){
-            return $format;
         }
 
         if (is_null($range)) {
@@ -1273,29 +1241,11 @@ class Net_NNTP_Protocol_Client
     	            return $data;
     	        }
 
-    	    	$messages = array();
-    	        foreach($data as $line) {
-    	    	    $fields = explode("\t", trim($line));
-
-    	    	    $message = array();
-
-//    	            $message['number'] = $fields[0];
-    	            $message['Number'] = $fields[0];
-
-    	    	    $i = 0;
-    	    	    foreach ($format as $tag => $full) {
-    	                if ($full === true) {
-    	            	    $field = explode(':', $fields[++$i], 2);
-    	                    $message[$tag] = ltrim($field[1], " \t");
-    	                } else {
-    	                    $message[$tag] = $fields[++$i];
-    	                }
-    	            }
-
-//    	            $messages[$fields[4]] = $message;
-    	            $messages[] = $message;
+    	        foreach ($data as $key => $value) {
+    	            $data[$key] = explode("\t", trim($value));
     	        }
-    	    	return $messages;
+
+    	    	return $data;
     	    	break;
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_NO_GROUP_SELECTED: // 412, RFC2980: 'No news group current selected'
     	    	return PEAR::throwError('No news group current selected', $response, $this->_currentStatusResponse());
@@ -1347,12 +1297,10 @@ class Net_NNTP_Protocol_Client
     	            return $data;
     	        }
 
-    	    	$return = array();
-    	        foreach($data as $line) {
-    	    	    $line = explode(' ', trim($line), 2);
-    	    	    $return[$line[0]] = $line[1];
+    	        foreach($data as $key => $value) {
+    	    	    $return[$key] = explode(' ', trim($value), 2);
     	        }
-    	    	return $return;
+    	    	return $data;
     	    	break;
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_NO_GROUP_SELECTED: // 412, RFC2980: 'No news group current selected'
     	    	return PEAR::throwError('No news group current selected', $response, $this->_currentStatusResponse());
