@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!-- $Id: package.xml,v 1.19.2.6 2005-11-30 00:54:11 heino Exp $ -->
+<!-- $Id: package.xml,v 1.19.2.7 2005-12-05 20:49:57 heino Exp $ -->
 <package version="1.0">
   <name>Net_NNTP</name>
   <summary>Implementation of the NNTP protocol</summary>
@@ -28,31 +28,42 @@
 
       + Changes in Net_NNTP_Client:
         - fixed: connect(), now returns false when posting is prohibited (like cmdModeReader())
-        - added: getHeaderField()
-        - added: getBody()
-	- added: selectArticle()
-	- added: selectNextArticle()
-	- added: selectPreviousArticle()
-	- renamed: getNewNews() into getNewArticles()
-        - removed: connectAuthenticated() (as in MAINT_1_0 and MAINT_1_2)
-        - rewritten and newnamed: getReferencesOverview() into getReferences()
+        - fixed: getGroupArticles(), now updates internal group summary cache
 
-      + Changes in Net_NNTP_Protocol Client:
+        - added: getHeaderField()
+    	- added: selectArticle()
+    	- added: selectNextArticle()
+    	- added: selectPreviousArticle()
+
+        - modified: getArticle(), first parameter now optional
+        - modified: getArticleRaw(), first parameter now optional
+        - modified: getHeader(), first parameter now optional
+        - modified: getHeaderRaw(), first parameter now optional
+        - modified: getBody(), first parameter now optional
+        - modified: getBodyRaw(), first parameter now optional
+
+        - modified and rewritten: getOverview(), $first and $last parameters changed into $range
+
+    	- renamed: getNewNews() into getNewArticles()
+        - renamed and rewritten: getReferencesOverview() into getReferences()
+
+        - removed: connectAuthenticated() (as in MAINT_1_0 and MAINT_1_2)
+
+      + Changes in Net_NNTP_Protocol_Client:
         - added: cmdOver()
         - added: cmdXHdr()
         - added: cmdCapabilities()
         - added: cmdHelp()
 
         - modified: cmdNext(), now returns array by default
-	- modified: cmdLast(), now returns array by default
-	- modified: cmdStat(), now returns array by default
+    	- modified: cmdLast(), now returns array by default
+    	- modified: cmdStat(), now returns array by default
 
-        - modified: cmdXOver(), first parameter now optional
-	- modified: cmdXROver(), first parameter now optional
-	- modified: cmdListgroup(), first parameter now optional
+    	- modified: cmdListgroup(), first parameter now optional
+    	- modified: cmdXROver(), first parameter now optional
+        - modified and rewritten: cmdXOver(), first parameter now optional
 
-	- rewritten: cmdListOverviewFmt(), now returns an array
-        - rewritten: cmdXOver()
+    	- rewritten: cmdListOverviewFmt(), now returns an array
 
         - misc: Use of status response code constants in Net_NNTP_Protocol_Responsecode
 
