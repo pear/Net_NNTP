@@ -1297,10 +1297,12 @@ class Net_NNTP_Protocol_Client
     	            return $data;
     	        }
 
-    	        foreach($data as $key => $value) {
-    	    	    $return[$key] = explode(' ', trim($value), 2);
+    	    	$return = array();
+    	        foreach($data as $line) {
+    	    	    $line = explode(' ', trim($line), 2);
+    	    	    $return[$line[0]] = $line[1];
     	        }
-    	    	return $data;
+    	    	return $return;
     	    	break;
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_NO_GROUP_SELECTED: // 412, RFC2980: 'No news group current selected'
     	    	return PEAR::throwError('No news group current selected', $response, $this->_currentStatusResponse());
