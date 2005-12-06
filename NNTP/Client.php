@@ -267,10 +267,40 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @see Net_NNTP_Client::getDescriptions()
      * @see Net_NNTP_Client::selectGroup()
      */
-    function getGroups()
+    function getGroups($wildmat = null)
     {
+    	$backup = false;
+
     	// Get groups
-    	$groups = $this->cmdList();
+    	$groups = $this->cmdListActive($wildmat);
+    	if (PEAR::isError($groups)) {
+    	    switch ($groups->getCode()) {
+    	    	case 500:
+    	    	case 501:
+    	    	    $backup = true;
+		    break;
+    		default:
+    	    	    return $groups;
+    	    }
+    	}
+
+    	// 
+    	if ($backup == true) {
+
+    	    // 
+    	    if (!is_null($wildmat)) {
+    	    	return PEAR::throwError("The server does not support the 'LIST ACTIVE' command, and the 'LIST' command does not support the wildmat parameter!", null, null);
+    	    }
+	    
+    	    // 
+    	    $groups2 = $this->cmdList();
+    	    if (PEAR::isError($groups2)) {
+    		// Ignore...
+    	    } else {
+    	    	$groups = $groups2;
+    	    }
+	}
+
     	if (PEAR::isError($groups)) {
     	    return $groups;
     	}
@@ -287,6 +317,8 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * Fetches a list of known group descriptions - including groups which
      * the client is not permitted to select.
      *
+     * @param mixed	$wildmat	(optional) 
+     *
      * Experimental: This method uses non-standard commands, which is not part
      *               of the original RFC977, but has been formalized in RFC2890.
      *
@@ -295,13 +327,19 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @access public
      * @see Net_NNTP_Client::getGroups()
      */
-    function getDescriptions()
+    function getDescriptions($wildmat = null)
     {
+    	if (is_array($wildmat)) {
+	    $wildmat = implode(',', $wildmat);
+    	}
+
     	// Get group descriptions
-    	$descriptions = $this->cmdListNewsgroups();
+    	$descriptions = $this->cmdListNewsgroups($wildmat);
     	if (PEAR::isError($descriptions)) {
     	    return $descriptions;
     	}
+
+    	// TODO: add xgtitle as backup
 	
     	return $descriptions;
     }
@@ -479,6 +517,8 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      */
     function getReferences($range = null)
     {
+    	$backup = false;
+
     	$references = $this->cmdXHdr('References', $range);
     	if (PEAR::isError($references)) {
     	    switch ($references->getCode()) {
