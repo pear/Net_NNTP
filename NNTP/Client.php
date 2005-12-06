@@ -253,6 +253,38 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     }
 
     // }}}
+    // {{{ selectGroupArticles()
+
+    /**
+     * Select a group, and return list of its article numbers.
+     *
+     * Selects a group in the same manner as selectGroup(), but returns a list
+     * of article numbers within the group.
+     *
+     * Experimental: This method uses non-standard commands, which is not part
+     *               of the original RFC977, but has been formalized in RFC2890.
+     *
+     * @param string	$group	
+     *
+     * @return mixed (array)	
+     *               (object)	Pear_Error on failure
+     * @access public
+     * @since 0.3
+     */
+    function selectGroupArticles($group)
+    {
+        $summary = $this->cmdListgroup($group);
+    	if (PEAR::isError($summary)) {
+    	    return $summary;
+    	}
+
+    	$this->_currentGroupSummary = $summary;
+    	unset($this->_currentGroupSummary['articles']);
+
+    	return $summary;
+    }
+
+    // }}}
     // {{{ getGroups()
 
     /**
@@ -580,6 +612,9 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     // {{{ getReferencesOverview()
 
     /**
+     * Deprecated alias for getNewArticles()
+     *
+     * @deprecated
      * Deprecated alias for getReferences()
      *
      * @deprecated
@@ -1025,31 +1060,15 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     // {{{ getGroupArticles()
 
     /**
-     * Select a group, and return list of its article numbers.
+     * Deprecated alias for selectGroupArticles()
      *
-     * Selects a group in the same manner as selectGroup(), but returns a list
-     * of article numbers within the group.
-     *
-     * Experimental: This method uses non-standard commands, which is not part
-     *               of the original RFC977, but has been formalized in RFC2890.
-     *
-     * @param string	$group	
-     *
-     * @return mixed (array)	
-     *               (object)	Pear_Error on failure
-     * @access public
-     * @since 0.3
+     * @deprecated
      */
     function getGroupArticles($group)
     {
-        $summary = $this->cmdListgroup($group);
-
-	$articles = $summary['articles'];
-	unset($summary['articles']);
-
-    	$this->_currentGroupSummary = $summary;
-
-	return $articles;
+    	$summary = $this->selectGroupArticles($group);
+	
+    	return $summary['articles'];
     }
 
     // }}}
