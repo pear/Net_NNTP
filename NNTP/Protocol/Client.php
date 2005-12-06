@@ -913,10 +913,10 @@ class Net_NNTP_Protocol_Client
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_GROUP_SELECTED: // 211, RFC977: 'n f l s group selected'
     	    	$response_arr = split(' ', trim($this->_currentStatusResponse()));
 
-    	    	return array('count' => $response_arr[0],
-    	                     'first' => $response_arr[1],
-    	    	             'last'  => $response_arr[2],
-    	    	             'group' => $response_arr[3]);
+    	    	return array('group' => $response_arr[3],
+    	                     'first' => (int) $response_arr[1],
+    	    	             'last'  => (int) $response_arr[2],
+    	                     'count' => (int) $response_arr[0]);
     	    	break;
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_NO_SUCH_GROUP: // 411, RFC977: 'no such news group'
     	    	return PEAR::throwError('No such news group', $response, $this->_currentStatusResponse());
@@ -954,8 +954,8 @@ class Net_NNTP_Protocol_Client
     	    	    $arr = explode(' ', trim($line));
 
     	    	    $group = array('group'   => $arr[0],
-    	    	                   'last'    => $arr[1],
-    	    	                   'first'   => $arr[2],
+    	    	                   'last'    => (int) $arr[1],
+    	    	                   'first'   => (int) $arr[2],
     	    	                   'posting' => $arr[3]);
 
     	    	    $groups[$group['group']] = $group;
@@ -1003,8 +1003,8 @@ class Net_NNTP_Protocol_Client
     	    	    $arr = explode(' ', trim($line));
 
     	    	    $group = array('group'   => $arr[0],
-    	    	                   'last'    => $arr[1],
-    	    	                   'first'   => $arr[2],
+    	    	                   'last'    => (int) $arr[1],
+    	    	                   'first'   => (int) $arr[2],
     	    	                   'posting' => $arr[3]);
 
     	    	    $groups[$group['group']] = $group;
@@ -1139,8 +1139,8 @@ class Net_NNTP_Protocol_Client
     	        foreach($this->_getTextResponse() as $line) {
     	    	    $arr = explode(' ', $line);
     	    	    $groups[$arr[0]] = array('group'   => $arr[0],
-    	    	                             'last'    => $arr[1],
-    	    	                             'first'   => $arr[2],
+    	    	                             'last'    => (int) $arr[1],
+    	    	                             'first'   => (int) $arr[2],
     	    	                             'posting' => $arr[3]);
 
     	    	}
@@ -1520,10 +1520,10 @@ class Net_NNTP_Protocol_Client
 		
     	        $response_arr = split(' ', trim($this->_currentStatusResponse()));
 
-    	    	return array('count'    => $response_arr[0],
-    	                     'first'    => $response_arr[1],
-    	    	             'last'     => $response_arr[2],
-    	    	             'group'    => $response_arr[3],
+    	    	return array('group'    => $response_arr[3],
+    	                     'first'    => (int) $response_arr[1],
+    	    	             'last'     => (int) $response_arr[2],
+    	    	             'count'    => (int) $response_arr[0],
     	    	             'articles' => $articles);
     	    	break;
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_NO_GROUP_SELECTED: // 412, RFC2980: 'Not currently in newsgroup'

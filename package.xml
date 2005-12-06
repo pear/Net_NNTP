@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!-- $Id: package.xml,v 1.19.2.7 2005-12-05 20:49:57 heino Exp $ -->
+<!-- $Id: package.xml,v 1.19.2.8 2005-12-06 13:19:45 heino Exp $ -->
 <package version="1.0">
   <name>Net_NNTP</name>
   <summary>Implementation of the NNTP protocol</summary>
@@ -42,6 +42,8 @@
         - modified: getBody(), first parameter now optional
         - modified: getBodyRaw(), first parameter now optional
 
+        - modified and rewritten: getGroups(), addition of optional $wildmat parameter
+        - modified and rewritten: getDescriptions(), addition of optional $wildmat parameter
         - modified and rewritten: getOverview(), $first and $last parameters changed into $range
 
     	- renamed: getNewNews() into getNewArticles()
@@ -54,6 +56,8 @@
         - added: cmdXHdr()
         - added: cmdCapabilities()
         - added: cmdHelp()
+        - added: cmdListActive()
+        - added: cmdXPat()
 
         - modified: cmdNext(), now returns array by default
     	- modified: cmdLast(), now returns array by default
