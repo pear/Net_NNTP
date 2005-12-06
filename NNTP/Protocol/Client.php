@@ -167,14 +167,18 @@ class Net_NNTP_Protocol_Client
      */
     function connect($host = NET_NNTP_PROTOCOL_CLIENT_DEFAULT_HOST, $port = NET_NNTP_PROTOCOL_CLIENT_DEFAULT_PORT)
     {
+    	//
+    	$transport = 'tcp';
+
+    	//
         if ($this->isConnected() ) {
     	    return PEAR::throwError('Already connected, disconnect first!', null);
     	}
 
     	// Open Connection
-    	$R = @$this->_socket->connect($host, $port, false, 15);
+    	$R = @$this->_socket->connect($transport . '://' . $host, $port, false, 15);
     	if (PEAR::isError($R)) {
-    	    return PEAR::throwError('Could not connect to the server', null, $R->getMessage());
+    	    return PEAR::throwError("Could not connect to server at $transport://$host:$port" , null, $R->getMessage());
     	}
 
     	// Retrive the server's initial response.
@@ -964,6 +968,55 @@ class Net_NNTP_Protocol_Client
     }
 
     // }}}
+    // {{{ cmdListActive()
+
+    /**
+     * Fetches a list of all avaible newsgroups
+     *
+     * @param string $wildmat 
+     *
+     * @return mixed (array) nested array with informations about existing newsgroups on success or (object) pear_error on failure
+     * @access protected
+     */
+    function cmdListActive($wildmat = null)
+    {
+        if (is_null($wildmat)) {
+    	    $command = 'LIST ACTIVE';
+    	} else {
+            $command = 'LIST ACTIVE ' . $wildmat;
+        }
+
+        $response = $this->_sendCommand($command);
+        if (PEAR::isError($response)){
+            return $response;
+        }
+
+    	switch ($response) {
+    	    case NET_NNTP_PROTOCOL_RESPONSECODE_GROUPS_FOLLOW: // 215, RFC977: 'list of newsgroups follows'
+    	    	$data = $this->_getTextResponse();
+    	    	if (PEAR::isError($data)) {
+    	    	    return $data;
+    	    	}
+
+    	    	$groups = array();
+    	    	foreach($data as $line) {
+    	    	    $arr = explode(' ', trim($line));
+
+    	    	    $group = array('group'   => $arr[0],
+    	    	                   'last'    => $arr[1],
+    	    	                   'first'   => $arr[2],
+    	    	                   'posting' => $arr[3]);
+
+    	    	    $groups[$group['group']] = $group;
+    	    	}
+    	        return $groups;
+    	    	break;
+    	    default:
+    	    	return $this->_handleUnexpectedResponse($response);
+    	}
+    }
+
+    // }}}
     // {{{ cmdListNewsgroups()
 
     /**
@@ -1327,6 +1380,7 @@ class Net_NNTP_Protocol_Client
      * The format of the returned array is:
      * $messages[message_id]
      *
+     * @param optional string $field 
      * @param optional string $range articles to fetch
      *
      * @return mixed (array) nested array of message and there headers on success or (object) pear_error on failure
@@ -1365,6 +1419,56 @@ class Net_NNTP_Protocol_Client
     	    	break;
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_NO_ARTICLE_SELECTED: // 420, RFC2980: 'No current article selected'
     	    	return PEAR::throwError('No current article selected', $response, $this->_currentStatusResponse());
+    	    	break;
+    	    case 430: // 430, RFC2980: 'No such article'
+    	    	return PEAR::throwError('No current article selected', $response, $this->_currentStatusResponse());
+    	    	break;
+    	    case 502: // RFC2980: 'no permission'
+    	    	return PEAR::throwError('No permission', $response, $this->_currentStatusResponse());
+    	    	break;
+    	    default:
+    	    	return $this->_handleUnexpectedResponse($response);
+    	}
+    }
+    
+    // }}}
+    // {{{ cmdXPat()
+
+    /**
+     * 
+     *
+     * @param string $field 
+     * @param string $range
+     * @param mixed $wildmat
+     *
+     * @return mixed (array) nested array of message and there headers on success or (object) pear_error on failure
+     * @access protected
+     */
+    function cmdXPat($field, $range, $wildmat)
+    {
+        if (is_array($wildmat)) {
+	    $wildmat = implode(' ', $wildmat);
+    	}
+
+        $response = $this->_sendCommand('XPAT ' . $field . ' ' . $range . ' ' . $wildmat);
+        if (PEAR::isError($response)){
+            return $response;
+        }
+
+    	switch ($response) {
+    	    case 221: // 221, RFC2980: 'Header follows'
+    	    	$data = $this->_getTextResponse();
+    	        if (PEAR::isError($data)) {
+    	            return $data;
+    	        }
+
+    	    	$return = array();
+    	        foreach($data as $line) {
+    	    	    $line = explode(' ', trim($line), 2);
+    	    	    $return[$line[0]] = $line[1];
+    	        }
+
+    	    	return $return;
     	    	break;
     	    case 430: // 430, RFC2980: 'No such article'
     	    	return PEAR::throwError('No current article selected', $response, $this->_currentStatusResponse());
@@ -1536,9 +1640,9 @@ class Net_NNTP_Protocol_Client
     /**
      * Sets the debuging information on or off
      *
-     * @param boolean $debug True or false 
+     * @param mixed $debug 
      *
-     * @return bool previos state
+     * @return mixed previos state
      * @access protected
      */
     function setDebug($debug = true)
@@ -1591,7 +1695,7 @@ class Net_NNTP_Protocol_Client
         }
 
         if ($this->_debug) {
-            echo "S: $response\r\n";
+            echo 'S: ', $response;
         }
 
     	// Trim the start of the response in case of misplased whitespace (should not be needen!!!)
@@ -1662,6 +1766,13 @@ class Net_NNTP_Protocol_Client
 
             // Check if the line terminates the textresponse
             if ($line == '.') {
+
+    	        if ($this->_debug) {
+                    foreach ($data as $line) {
+            	    	echo 'T: ', $line, "\r\n";
+                    }
+                }
+
                 // return all previous lines
                 return $data;
                 break;
@@ -1715,7 +1826,7 @@ class Net_NNTP_Protocol_Client
         }
 	
         if ($this->_debug) {
-            echo "C: $cmd\r\n";
+            echo 'C: ', $cmd, "\r\n";
         }
 
     	return $this->_getStatusResponse();
