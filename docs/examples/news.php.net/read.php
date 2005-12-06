@@ -18,47 +18,57 @@
 // +----------------------------------------------------------------------+
 //
 // $Id$
+
+$host = 'news.php.net';
+$debug = false;
+
 ?>
 <html>
+
 <head>
-    <title>NNTP news.php.net</title>
+    <title>NNTP <?php echo $host; ?></title>
 </head>
+
 <body>
-<h1>Message</h1>
 <?php
-require_once "Net/NNTP/Client.php";
+
+if (!isset($_GET['msgid']) and isset($_GET['group'])){
+    echo '<font color="red">No message choosed!</font><br>' ;    
+}
+
+$group = $_GET['group'];
+$messageID = $_GET['msgid'];
+
+require_once 'Net/NNTP/Client.php';
 
 $nntp = new Net_NNTP_Client();
+$nntp->setDebug($debug);
 
-$ret = $nntp->connect("news.php.net");
-if( PEAR::isError($ret)) {
- echo '<font color="red">No connection to newsserver!</font><br>' ;
- echo $ret->getMessage();
-} else {
-    if(isset($_GET['msgid']) and isset($_GET['group'])){
-        $msgdata = $nntp->selectGroup($_GET['group']);
-        if(PEAR::isError($msgdata)) {
-            echo '<font color="red">'.$msgdata->getMessage().'</font><br>' ;        
-        } else {
-            $header = $nntp->getHeader($_GET['msgid']);
-            echo '<hr>';
-            echo '<h2>Header</h2>';
-            echo '<pre>';
-            foreach( $header->getFieldsArray() as $line) {
-                echo $line.'<br>';
-            }              
-            echo '</pre>';
-            echo '<hr>';
-            echo '<h2>Body</h2>';
-            echo '<form><textarea wrap="off" cols="79", rows="25">'.
-                    $nntp->getBodyRaw($_GET['msgid'], true).
-                '</textarea></form>';           
-        }        
-    } else {
-        echo '<font color="red">No message choosed!</font><br>' ;    
-    }
-    $nntp->quit();
-}    
+$posting = $nntp->connect($host);
+if (PEAR::isError($posting)) {
+    echo '<font color="red">No connection to newsserver!</font><br>';
+    die($posting->getMessage());
+}
+
+$currentgroup = $nntp->selectGroup($group);
+if (PEAR::isError($currentgroup)) {
+    die('<font color="red">' . $currentgroup->getMessage() . '</font><br>');
+}
+
+$header = $nntp->getHeaderRaw($messageID, true);
+$body = $nntp->getBodyRaw($messageID, true);
+
+echo '<h1>Message</h1>';
+echo '<hr>';
+echo '<h2>Header</h2>';
+echo '<pre>', $header, '</pre>';
+echo '<hr>';
+echo '<h2>Body</h2>';
+echo '<form><textarea wrap="off" cols="79", rows="25">', $body, '</textarea></form>';
+
+$nntp->quit();
+
 ?>
 </body>
+
 </html>

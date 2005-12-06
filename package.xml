@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!-- $Id: package.xml,v 1.20 2005-01-14 17:21:42 heino Exp $ -->
+<!-- $Id: package.xml,v 1.21 2005-12-06 13:48:12 heino Exp $ -->
 <package version="1.0">
   <name>Net_NNTP</name>
   <summary>Implementation of the NNTP protocol</summary>
@@ -16,24 +16,71 @@
     </maintainer>
   </maintainers>
   <deps>
-   <dep type="pkg" rel="ge" version="1.0.3">Net_Socket</dep>
+   <dep type="pkg" rel="ge" version="1.0.6">Net_Socket</dep>
   </deps>
   <release>
-    <version>1.2.0</version>
-    <date>2005-01-14</date>
+    <version>1.1.3</version>
+    <date>2005-11-30</date>
     <license>W3C</license>
-    <state>alpha</state>
+    <state>beta</state>
     <notes>
-      - Corresponds to v0.11.3 (exact feature match)
+      Implements many new features from v1.2.6:
+
+      + Changes in Net_NNTP_Client:
+        - fixed: connect(), now returns false when posting is prohibited (like cmdModeReader())
+        - fixed: getGroupArticles(), now updates internal group summary cache
+
+        - added: getHeaderField()
+    	- added: selectArticle()
+    	- added: selectNextArticle()
+    	- added: selectPreviousArticle()
+
+        - modified: getArticle(), first parameter now optional
+        - modified: getArticleRaw(), first parameter now optional
+        - modified: getHeader(), first parameter now optional
+        - modified: getHeaderRaw(), first parameter now optional
+        - modified: getBody(), first parameter now optional
+        - modified: getBodyRaw(), first parameter now optional
+
+        - modified and rewritten: getGroups(), addition of optional $wildmat parameter
+        - modified and rewritten: getDescriptions(), addition of optional $wildmat parameter
+        - modified and rewritten: getOverview(), $first and $last parameters changed into $range
+
+    	- renamed: getNewNews() into getNewArticles()
+        - renamed and rewritten: getReferencesOverview() into getReferences()
+
+        - removed: connectAuthenticated() (as in MAINT_1_0 and MAINT_1_2)
+
+      + Changes in Net_NNTP_Protocol_Client:
+        - added: cmdOver()
+        - added: cmdXHdr()
+        - added: cmdCapabilities()
+        - added: cmdHelp()
+        - added: cmdListActive()
+        - added: cmdXPat()
+
+        - modified: cmdNext(), now returns array by default
+    	- modified: cmdLast(), now returns array by default
+    	- modified: cmdStat(), now returns array by default
+
+    	- modified: cmdListgroup(), first parameter now optional
+    	- modified: cmdXROver(), first parameter now optional
+        - modified and rewritten: cmdXOver(), first parameter now optional
+
+    	- rewritten: cmdListOverviewFmt(), now returns an array
+
+        - misc: Use of status response code constants in Net_NNTP_Protocol_Responsecode
+
+      + Examples rewritten
+
     </notes>
     <filelist>
       <dir name="/" baseinstalldir="Net">
         <dir name="NNTP" role="php">
           <file>Client.php</file>
-          <file>Header.php</file>
-          <file>Message.php</file>
           <dir name="Protocol">
             <file>Client.php</file>
+            <file>Responsecode.php</file>
           </dir>
         </dir>
         <dir name="docs" role="doc">
@@ -50,9 +97,63 @@
   </release>
   <changelog>
   <release>
+    <version>1.1.2</version>
+    <date>2005-05-13</date>
+    <state>beta</state>
+    <notes>
+      - Three new Net_NNTP_Client methods: getArticle(), getHeader() and getBody() - stripped down versions from the v1.2 releases (no default return classes).
+    </notes>
+  </release>
+  <release>
+    <version>1.1.1</version>
+    <date>2005-03-28</date>
+    <state>beta</state>
+    <notes>
+      - Net_NNTP_Client::connectAuthenticated() removed - it should only exist in the MAINT_1_2 branch for now (was not removed by mistake in the v1.1.0 release)
+    </notes>
+  </release>
+  <release>
+    <version>1.1.0</version>
+    <date>2005-01-14</date>
+    <state>beta</state>
+    <notes>
+      - This release is NOT fully backward compatible with v0.11.3, since experimental features (Net_NNTP_Message and Net_NNTP_Header and related methods Net_NNTP_Client::getArticle() and Net_NNTP_Client::getHeader()) have been removed. Users of those features should consider v1.2.x in stead.
+    </notes>
+  </release>
+  <release>
+    <version>1.0.1</version>
+    <date>2005-03-28</date>
+    <license>W3C</license>
+    <state>stable</state>
+    <notes>
+      - Fix lack of $fp property in historical Net_NNTP class (only relevant for backward compatibility with v0.2.5)
+      - Fix typo in examples.
+    </notes>
+  </release>
+  <release>
+    <version>1.0.0</version>
+    <date>2005-01-18</date>
+    <state>stable</state>
+    <notes>
+      - This release is NOT backward compatible with v0.11.3, since all non-stable features (classes, methods etc.) have been removed!!!
+      - Users of releases between 0.3.x and 0.11.x should consider v1.1.x or v1.2.x in stead. (This release is meant only as a final replacement for v0.2.5 - and of cause as a way to finally get rid of the former protocol implementation).
+      - Backward compatible with v0.2.5 (this is ONLY guarantied in v1.0.x releases, and may be removed in the future).
+    </notes>
+  </release>
+  <release>
+    <version>1.0.0RC1</version>
+    <date>2005-01-14</date>
+    <state>beta</state>
+    <notes>
+      - This release is NOT backward compatible with v0.11.3, since all non-stable features (classes, methods etc.) have been removed!!!
+      - Users of releases between 0.3.x and 0.11.x should consider v1.1.x or v1.2.x in stead. (This release is meant only as a final replacement for v0.2.5 - and of cause as a way to finally get rid of the former protocol implementation).
+      - Backward compatible with v0.2.5 (this is ONLY guarantied in v1.0.x releases, and may be removed in the future).
+    </notes>
+  </release>
+  <release>
     <version>0.11.3</version>
     <date>2004-09-06</date>
-    <state>alpha</state>
+    <state>beta</state>
     <notes>
       - Going beta (features not documented in the manual should still be considered experiemental)
       - Added the 'distributions' parameter to getNewGroups() and cmdNewGroups()
