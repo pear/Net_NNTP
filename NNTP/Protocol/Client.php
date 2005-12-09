@@ -132,12 +132,12 @@ class Net_NNTP_Protocol_Client
     var $_currentStatusResponse = null;
 
     /**
-     * Whether to enable internal debug messages.
+     * 
      *
-     * @var     bool
+     * @var     object
      * @access  private
      */
-    var $_debug = false;
+    var $_logger = null;
 
     // }}}
     // {{{ constructor
@@ -1672,20 +1672,11 @@ class Net_NNTP_Protocol_Client
     // {{{ setDebug()
 
     /**
-     * Sets the debuging information on or off
-     *
-     * @param mixed $debug 
-     *
-     * @return mixed previos state
-     * @access protected
+     * @deprecated
      */
     function setDebug($debug = true)
     {
-//    	trigger_error('You are using deprecated API v1.0 in Net_NNTP_Protocol_Client: setDebug() !', E_USER_NOTICE);
-  
-        $tmp = $this->_debug;
-        $this->_debug = $debug;
-        return $tmp;
+    	trigger_error('You are using deprecated API v1.0 in Net_NNTP_Protocol_Client: setDebug() ! Debugging in now automatically handled when a logger is given.', E_USER_NOTICE);
     }
 
     // }}}
@@ -1746,10 +1737,8 @@ class Net_NNTP_Protocol_Client
         }
 
     	//
-    	if ($this->_debug) {
-    	    if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
-    	        $this->_logger->debug('S: ' . rtrim($response, "\r\n"));
-    	    }
+    	if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
+    	    $this->_logger->debug('S: ' . rtrim($response, "\r\n"));
         }
 
     	// Trim the start of the response in case of misplased whitespace (should not be needen!!!)
@@ -1795,10 +1784,8 @@ class Net_NNTP_Protocol_Client
         $line = '';
 
     	//
-    	if ($this->_debug) {
-    	    if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
-    	        $debug = true;
-    	    }
+    	if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
+    	    $debug = true;
     	}
 
         // Continue until connection is lost
@@ -1890,10 +1877,8 @@ class Net_NNTP_Protocol_Client
         }
 	
     	//
-    	if ($this->_debug) {
-    	    if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
-    	        $this->_logger->debug('C: ' . $cmd);
-    	    }
+    	if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
+    	    $this->_logger->debug('C: ' . $cmd);
         }
 
     	//
