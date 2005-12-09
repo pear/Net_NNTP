@@ -23,15 +23,15 @@ The protocol implementation does not parse the actual article data, but at the c
   <active>yes</active>
  </lead>
 
- <date>2005-12-07</date>
+ <date>2005-12-10</date>
  <time>00:00:00</time>
  <version>
   <release>1.3.0</release>
   <api>0.8.0</api>
  </version>
  <stability>
-  <release>devel</release>
-  <api>devel</api>
+  <release>alpha</release>
+  <api>alpha</api>
  </stability>
 
  <license uri="http://www.heino.gehlsen.dk/software/license">W3C</license>
@@ -39,55 +39,60 @@ The protocol implementation does not parse the actual article data, but at the c
  <notes>
 + WARNING!
   - Serious backward compatibility break with v1.2.x (alpha) releases!!! The experimental classes Net_NNTP_Header and Net_NNTP_Message has been droped, since such features does not belong in this package! For now loading either class results in a notice/warning, but later on both classes will be removed! Previously unimplementet NNTP commands now allow access to article headers...
+  - Some backward compatibility break with v1.1.x (beta) releases!!!
 
 + Changes in Net_NNTP_Client:
   - fixed: connect(), now returns false when posting is prohibited (like cmdModeReader()).
   - fixed: getGroupArticles(), now updates internal group summary cache.
   - added: getHeaderField().
-  - modified: getArticle(), first parameter now optional.
-  - modified: getArticleRaw(), first parameter now optional.
-  - modified: getHeader(), first parameter now optional.
-  - modified: getHeaderRaw(), first parameter now optional.
-  - modified: getBody(), first parameter now optional.
-  - modified: getBodyRaw(), first parameter now optional.
+  - modified: connect(), added $encryption parameter to support ssl/tls connections. 
+  - modified: getOverview(), added two (experimental) parameters (rewritten to preserve backward compatible with v1.0).
   - modified and rewritten: getGroups(), addition of optional $wildmat parameter.
   - modified and rewritten: getDescriptions(), addition of optional $wildmat parameter.
   - modified and rewritten: getOverview(), $first and $last parameters changed into $range.
+  - renamed: getArticleRaw() into getArticle(), (temporarily) preserving backward compatible with v1.1.
+  - renamed: getHeaderRaw() into getHeader(), (temporarily) preserving backward compatible with v1.1.
+  - renamed: getBodyRaw() into getBody(), (temporarily) preserving backward compatible with v1.1.
   - renamed and rewritten: getReferencesOverview() into getReferences().
   - removed: connectAuthenticated() (as in MAINT_1_0 and MAINT_1_2).
+  - removed: isConnected() removed due to use of private members in Net_Socket! 
+  - Phpdoc updates.
 
 + Changes in Net_NNTP_Protocol_Client:
-  - added: cmdOver().
   - added: cmdXHdr().
   - added: cmdCapabilities().
   - added: cmdHelp().
   - added: cmdListActive().
   - added: cmdXPat().
+  - modified connect(), added $encryption parameter to support ssl/tls connections. 
   - modified: cmdNext(), now returns array by default.
   - modified and rewritten: cmdXOver(), first parameter now optional.
+  - renamed: isConnected() into _isConnected(), due to use of private members in Net_Socket. 
+  - misc: support for logging via the Log package (debugging rewritten to use logger).
   - misc: Use of status response code constants in Net_NNTP_Protocol_Responsecode.
 
 + Examples rewritten.
 
++ License upgraded to newer edition of 'W3C SOFTWARE NOTICE AND LICENSE'
  </notes>
 
  <contents>
   <dir name="/">
-   <dir name="NNTP">
-    <file baseinstalldir="Net" name="Client.php" role="php">
+   <dir baseinstalldir="Net" name="NNTP">
+    <file name="Client.php" role="php">
      <tasks:replace from="@package_version@" to="version" type="package-info" />
      <tasks:replace from="@package_state@" to="state" type="package-info" />
      <tasks:replace from="@api_version@" to="api-version" type="package-info" />
      <tasks:replace from="@api_state@" to="api-state" type="package-info" />
     </file>
     <dir name="Protocol">
-     <file baseinstalldir="Net" name="Client.php" role="php">
+     <file name="Client.php" role="php">
       <tasks:replace from="@package_version@" to="version" type="package-info" />
       <tasks:replace from="@package_state@" to="state" type="package-info" />
       <tasks:replace from="@api_version@" to="api-version" type="package-info" />
       <tasks:replace from="@api_state@" to="api-state" type="package-info" />
      </file>
-     <file baseinstalldir="Net" name="Responsecode.php" role="php">
+     <file name="Responsecode.php" role="php">
       <tasks:replace from="@package_version@" to="version" type="package-info" />
       <tasks:replace from="@package_state@" to="state" type="package-info" />
       <tasks:replace from="@api_version@" to="api-version" type="package-info" />
@@ -95,13 +100,14 @@ The protocol implementation does not parse the actual article data, but at the c
      </file>
     </dir> <!-- /NNTP/Protocol -->
    </dir> <!-- /NNTP -->
+   <file name="LICENSE" role="doc" />
    <dir name="docs">
     <dir name="examples">
      <dir name="demo">
-      <file baseinstalldir="Net" name="article.php" role="doc" />
-      <file baseinstalldir="Net" name="group.php" role="doc" />
-      <file baseinstalldir="Net" name="groups.php" role="doc" />
-      <file baseinstalldir="Net" name="index.php" role="doc" />
+      <file name="article.php" role="doc" />
+      <file name="group.php" role="doc" />
+      <file name="groups.php" role="doc" />
+      <file name="index.php" role="doc" />
      </dir> <!-- /docs/examples/demo -->
     </dir> <!-- /docs/examples -->
    </dir> <!-- /docs -->
@@ -127,6 +133,13 @@ The protocol implementation does not parse the actual article data, but at the c
     <min>1.0.6</min>
    </package>
   </required>
+  <optional>
+   <package>
+    <name>Log</name>
+    <channel>pear.php.net</channel>
+    <min>1.8.7</min>
+   </package>
+  </optional>
  </dependencies>
 
  <phprelease />
