@@ -69,22 +69,29 @@
 <body>
 <?php
 
-$debug =  isset($_GET['debug']) && !empty($_GET['debug']) ? true : false;
+$loglevel = isset($_GET['loglevel']) && !empty($_GET['loglevel']) ? $_GET['loglevel'] : PEAR_LOG_NOTICE;
 
-$host = isset($_GET['host']) ? $_GET['host'] : null;
-$port = isset($_GET['port']) ? $_GET['port'] : null;
+//
+require_once "Log.php";
 
-$group = isset($_GET['group']) ? $_GET['group'] : null;
+//
+$logger = &Log::factory('display', '', 'Net_NNTP Demo',
+                        array('linebreak' => "<br>\r\n",
+                              'error_prepend' => '',
+                              'error_append' => ''
+                             ),
+			$loglevel);
 
-if (empty($host)) {
-    die('<font color="cc0000">No host set!</font>');
-}
+// Register common input
+$transport = isset($_GET['encryption']) && !empty($_GET['encryption']) ? $_GET['encryption'] : null;
+$host = isset($_GET['host']) && !empty($_GET['host']) ? $_GET['host'] : null;
+$port = isset($_GET['port']) && !empty($_GET['port']) ? $_GET['port'] : null;
 
-if (empty($port)) {
-    die('<font color="cc0000">No port set!</font>');
-}
+// Register local input
+$group = isset($_GET['group']) && !empty($_GET['group']) ? $_GET['group'] : null;
 
-if (empty($port)) {
+// Validate local input
+if (empty($group)) {
     die('<font color="cc0000">No newsgroup choosed!</font>');
 }
 
@@ -93,25 +100,24 @@ require_once "Net/NNTP/Client.php";
 
 //
 $nntp = new Net_NNTP_Client();
-$nntp->setDebug($debug);
+$nntp->setLogger($logger);
 
 // Connect
-$posting = $nntp->connect($host, $port);
+$posting = $nntp->connect($host, $transport, $port);
 if (PEAR::isError($posting)) {
-    echo '<font color="#cc0000">No connection to newsserver!</font>';
-    die ($posting->getMessage());
+    die('<b><font color="#cc0000">' . $posting->getMessage() . '</font></b>');    
 }
 
 // Select group
 $currentgroup = $nntp->selectGroup($group);
 if (PEAR::isError($currentgroup)) {
-    echo '<font color="#cc0000">' . $currentgroup->getMessage() . '</font><br>';
+    die('<b><font color="cc0000">' . $currentgroup->getMessage() . '</font></b>');
 }
 
 // select last article
 $article = $nntp->selectArticle($nntp->last());
 if (PEAR::isError($article)) {
-    die('<font color="#cc0000">' . $article->getMessage() . '</font><br>');
+    die('<b><font color="#cc0000">' . $article->getMessage() . '</font></b>');
 }
 
 //
@@ -166,12 +172,12 @@ echo '<tr bgcolor="#cccccc"><th>#</th><th>Subject</th><th>Author</th><th>Date</t
 
 foreach ($articles as $overview) {
 
-    $link = 'article.php?' . "host=$host&port=$port" . ($debug ? '&debug=true' : '') . '&group=' . urlencode($group) . '&msgnum=' . urlencode($overview['Number']);
+    $link = 'article.php?' . "host=$host&port=$port&group=" . urlencode($group) . '&msgnum=' . urlencode($overview['Number']) . "&loglevel=$loglevel";
 
     echo '<tr>';
     echo '<td><a href="', $link, '">', $overview['Number'], '</a></td>';
     echo '<td>';
-    echo '<a href="article.php?', "host=$host&port=$port", ($debug ? '&debug=true' : ''), '&group=', urlencode($group), '&msgnum=', urlencode($overview['Number']), '"><b>', $overview['Subject'], '</b></a><br>';
+    echo '<a href="', $link, '"><b>', $overview['Subject'], '</b></a><br>';
     echo '</td>';
     echo '<td>', $overview['From'], '</td>';
     echo '<td>', str_replace(" ", "&nbsp;", strftime("%c", strtotime($overview['Date']))), '</td>';

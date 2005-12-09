@@ -67,36 +67,42 @@
 </head>
 
 <body>
-<pre>
 <?php
 
-$debug = isset($_GET['debug']) && !empty($_GET['debug']) ? true : false;
+$loglevel = isset($_GET['loglevel']) && !empty($_GET['loglevel']) ? $_GET['loglevel'] : PEAR_LOG_NOTICE;
 
-$host = isset($_GET['host']) ? $_GET['host'] : null;
-$port = isset($_GET['port']) ? $_GET['port'] : null;
+//
+require_once "Log.php";
 
-$group = isset($_GET['group']) ? $_GET['group'] : null;
-$messageNum = isset($_GET['msgnum']) ? $_GET['msgnum'] : null;
-$messageID = isset($_GET['msgid']) ? $_GET['msgid'] : null;
+//
+$logger = &Log::factory('display', '', 'Net_NNTP Demo',
+                        array('linebreak' => "<br>\r\n",
+                              'error_prepend' => '',
+                              'error_append' => ''
+                             ),
+			$loglevel);
 
-if (empty($host)) {
-    die('<font color="#cc0000">No host set!</font>');
-}
+// Register common input
+$transport = isset($_GET['encryption']) && !empty($_GET['encryption']) ? $_GET['encryption'] : null;
+$host = isset($_GET['host']) && !empty($_GET['host']) ? $_GET['host'] : null;
+$port = isset($_GET['port']) && !empty($_GET['port']) ? $_GET['port'] : null;
 
-if (empty($port)) {
-    die('<font color="#cc0000">No port set!</font>');
-}
+// Register local input
+$group = isset($_GET['group']) && !empty($_GET['group']) ? $_GET['group'] : null;
+$messageNum = isset($_GET['msgnum']) && !empty($_GET['msgnum'])? $_GET['msgnum'] : null;
+$messageID = isset($_GET['msgid']) && !empty($_GET['msgid']) ? $_GET['msgid'] : null;
 
+// Validate local input
 if (is_null($group) and is_null($messageID)) {
-    die('<font color="#cc0000">Error: Nither group nor message-id provided!</font>');
+    die('<b><font color="#cc0000">Error: Nither group nor message-id provided!</font></b>');
 }
 
 if (!is_null($group) and is_null($messageNum)) {
-    die('<font color="#cc0000">Error: Group needs message number!</font>');
+    die('<b><font color="#cc0000">Error: Group needs message number!</font></b>');
 }
 
 if (!is_null($messageID) and !is_null($messageNum)) {
-    die('<font color="#cc0000">Error: Both message-id AND message number provided!</font>');
+    die('<b><font color="#cc0000">Error: Both message-id AND message number provided!</font></b>');
 }
 
 //
@@ -104,10 +110,10 @@ require_once 'Net/NNTP/Client.php';
 
 //
 $nntp = new Net_NNTP_Client();
-$nntp->setDebug($debug);
+$nntp->setLogger($logger);
 
 // Connect
-$posting = $nntp->connect($host, $port);
+$posting = $nntp->connect($host, $transport, $port);
 if (PEAR::isError($posting)) {
     echo '<font color="#cc0000">No connection to newsserver: ', $posting->getMessage(), '</font>';
 }
@@ -116,12 +122,12 @@ if (PEAR::isError($posting)) {
 if ($group !== null && $messageNum !== null) {
     $currentgroup = $nntp->selectGroup($group);
     if (PEAR::isError($currentgroup)) {
-        die('<font color="cc0000">' . $currentgroup->getMessage() . '</font>');
+        die('<b><font color="cc0000">' . $currentgroup->getMessage() . '</font></b>');
     }
 
     $currentmessage = $nntp->selectArticle($messageNum);
     if (PEAR::isError($currentmessage)) {
-        die('<font color="cc0000">' . $currentmessage->getMessage() . '</font>');
+        die('<b><font color="cc0000">' . $currentmessage->getMessage() . '</font></b>');
     }
 }
 
@@ -129,44 +135,49 @@ if ($group !== null && $messageNum !== null) {
 // Fetch 'Subject' header field
 $subject = $nntp->getHeaderField('Subject', $messageID);
 if (PEAR::isError($subject)) {
-    echo '<font color="#999900">', 'Error: Error fetching \'Subject\' header field (Server response: ', $subject->getMessage(), ')', '</font><br>';
-    $subject = '[unknown]';
+    $logger->warning('Error: Error fetching \'Subject\' header field (Server response: ' . $subject->getMessage() . ')');
+    $subject = null;
 }
 
 // Fetch 'From' header field
 $from = $nntp->getHeaderField('From', $messageID);
 if (PEAR::isError($from)) {
-    echo '<font color="#999900">', 'Error: Error fetching \'From\' header field (Server response: ', $from->getMessage(), ')', '</font><br>';
-    $from = '[unknown]';
+    $logger->warning('Error: Error fetching \'From\' header field (Server response: ' . $from->getMessage() . ')');
+    $from = null;
 }
 
 // Fetch 'From' header field
 $groups = $nntp->getHeaderField('Newsgroups', $messageID);
 if (PEAR::isError($groups)) {
-    echo '<font color="#999900">', 'Error: Error fetching \'Newsgroups\' header field (Server response: ', $groups->getMessage(), ')', '</font><br>';
-    $groups = '[unknown]';
+    $logger->warning('Error: Error fetching \'Newsgroups\' header field (Server response: ' . $groups->getMessage() . ')');
+    $groups = null;
 }
-if ($groups == '') {
-    echo '<font color="#999900">', 'Notice: Empty \'Newsgroups\' header.', '</font><br>';
-}
-
 // Fetch list of references
 $references = $nntp->getReferences($messageID);
 if (PEAR::isError($references)) {
-    echo '<font color="#999900">', 'Error: Error fetching \'References\' header field (Server response: ', $references->getMessage(), ')', '</font><br>';
+    $logger->warning('Error: Error fetching \'References\' header field (Server response: ' . $references->getMessage() . ')');
     $references = array();
 }
 
-// Fetch list of references
-//$x = $nntp->cmdXPat('Newsgroups', $messageNum, '*');
-$x = $nntp->cmdXPat('Newsgroups', '1-7', '*');
-if (PEAR::isError($x)) {
-}
-var_dump($x);
-
 // Fetch Raw header and body
-$header = $nntp->getHeaderRaw($messageID, true);
-$body = $nntp->getBodyRaw($messageID, true);
+$header = $nntp->getHeader($messageID, true);
+$body = $nntp->getBody($messageID, true);
+
+
+
+if (empty($subject)) {
+    $logger->info('Empty \'Subject\' header.');
+    $subject = '[unknown]';
+}
+if (empty($from)) {
+    $logger->info('Empty \'From\' header.');
+    $from = '[unknown]';
+}
+if (empty($groups)) {
+    $logger->info('Empty \'Newsgroups\' header.');
+    $groups = '[unknown]';
+}
+
 
 
 // Close connection
@@ -180,7 +191,7 @@ echo '<hr>';
 echo '<b>References:</b>';
 if (!PEAR::isError($references)) {
     foreach ($references as $reference) {
-	echo ' <a href="article.php?', "host=$host&port=$port", ($debug ? '&debug=true' : ''), '&msgid=', $reference, '">#', ++$i, '</a>';
+	echo ' <a href="article.php?', "host=$host&port=$port&msgid=$reference&loglevel=$loglevel", '">#', ++$i, '</a>';
     }
 }
 echo '<hr>';

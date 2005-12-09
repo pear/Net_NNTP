@@ -67,33 +67,41 @@
 </head>
 
 <body>
-
 <?php
 
-$debug = isset($_GET['debug']) && !empty($_GET['debug']) ? true : false;
+$loglevel = isset($_GET['loglevel']) && !empty($_GET['loglevel']) ? $_GET['loglevel'] : PEAR_LOG_NOTICE;
 
-$host = isset($_GET['host']) ? $_GET['host'] : null;
-$port = isset($_GET['port']) ? $_GET['port'] : null;
+//
+require_once "Log.php";
 
-$wildmat = isset($_GET['wildmat']) ? $_GET['wildmat'] : null;
+//
+$logger = &Log::factory('display', '', 'Net_NNTP Demo',
+                        array('linebreak' => "<br>\r\n",
+                              'error_prepend' => '',
+                              'error_append' => ''
+                             ),
+			$loglevel);
 
-if (empty($host)) {
-    die('<b><font color="#cc0000">No host set</font></b>');
-}
+// Register common input
+$transport = isset($_GET['encryption']) && !empty($_GET['encryption']) ? $_GET['encryption'] : null;
+$host = isset($_GET['host']) && !empty($_GET['host']) ? $_GET['host'] : null;
+$port = isset($_GET['port']) && !empty($_GET['port']) ? $_GET['port'] : null;
 
-if (empty($port)) {
-    die('<b><font color="#cc0000">No port set</font></b>');
-}
+// Register local input
+$wildmat = isset($_GET['wildmat']) && !empty($_GET['wildmat']) ? $_GET['wildmat'] : null;
 
 //
 require_once "Net/NNTP/Client.php";
+require_once "Net/NNTP/Message.php";
+require_once "Net/NNTP/Header.php";
 
 //
 $nntp = new Net_NNTP_Client();
-$nntp->setDebug($debug);
+$nntp->setLogger($logger);
 
 // Connect
-$posting = $nntp->connect($host, $port);
+$posting = $nntp->connect($host, $transport, $port);
+//$posting = $nntp->connect();
 if (PEAR::isError($posting)) {
     die('<b><font color="#cc0000">' . $posting->getMessage() . '</font></b>');
 }
@@ -107,7 +115,7 @@ if (PEAR::isError($groups)) {
 // Fetch known (to the server) group descriptions
 $descriptions = $nntp->getDescriptions($wildmat);
 if (PEAR::isError($descriptions)) {
-    echo '<b><font color="999900">', $descriptions->getMessage(), '</font></b>';
+    $logger->notice(' (' . $descriptions->getMessage() . ')');
     $descriptions = array();
 }
 
@@ -141,7 +149,7 @@ foreach($groups as $group) {
 
     echo '<tr>';
     echo '<td>';
-    echo '<b><a href="group.php?', "host=$host&port=$port", ($debug ? '&debug=true' : '') , '&group=', urlencode($group['group']), '">', '<font color="', $color , '">', $group['group'], '</font>', '</a></b>';
+    echo '<b><a href="group.php?', "host=$host&port=$port&group=", urlencode($group['group']), "&loglevel=$loglevel", '">', '<font color="', $color , '">', $group['group'], '</font>', '</a></b>';
     echo '</td>';
     echo '<td align="center">', ($group['last'] - $group['first'] + 1), '</td>';
     echo '<td>';

@@ -70,11 +70,15 @@
 <h1>PEAR::Net_NNTP demo</h1><hr>
 
 <form action="groups.php" method="GET">
-<table>
-<tr><td>Host:</td><td><input type="text" name="host" value="news.php.net"></td></tr>
-<tr><td>Port:</td><td><input type="text" name="port" value="119"></td></tr>
+<table border="0" cellspacing="2" cellpadding="2">
+<tr><td>Host:</td><td><input type="text" name="host" value="news.php.net"></td><td>(If empty, use default 'localhost')</td></tr>
+<tr><td>Port:</td><td><input type="text" name="port" value=""></td><td>(If empty, use default: '119' on non-encrypted connections, and '563' on encrypted connections)</td></tr>
 <tr><td>Windmat:</td><td><input type="text" name="wildmat" value=""></td><td>(Group wildmat)</td></tr>
-<tr><td>Debug:</td><td><input type="checkbox" name="debug"></td></tr>
+<tr><td colspan="3"><hr></td></tr>
+<tr><td valign="top">Encryption:</td><td><input type="radio" name="encryption" value="" checked="checked">none<br><input type="radio" name="encryption" value="tls">TLS<br><input type="radio" name="encryption" value="ssl">SSL</td><td>(Requires a running NNTPS server)</td></tr>
+<tr><td colspan="3"><hr></td></tr>
+<tr><td valign="top">Loglevel:</td><td><input type="radio" name="loglevel" value="4" checked="checked">warning<br><input type="radio" name="loglevel" value="5" checked="checked">notice<br><input type="radio" name="loglevel" value="6">info<br><input type="radio" name="loglevel" value="7">debug</td><td>(Application logging level)</td></tr>
+<tr><td colspan="3"><hr></td></tr>
 <tr><td></td><td><input type="submit" value="View newsgroups"></td></tr>
 </table>
 </form>
