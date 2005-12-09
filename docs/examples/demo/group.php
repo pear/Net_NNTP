@@ -89,6 +89,8 @@ $port = isset($_GET['port']) && !empty($_GET['port']) ? $_GET['port'] : null;
 
 // Register local input
 $group = isset($_GET['group']) && !empty($_GET['group']) ? $_GET['group'] : null;
+$from = isset($_GET['from']) && !empty($_GET['from']) ? $_GET['from'] : null;
+$next = isset($_GET['next']) && !empty($_GET['next']) ? true : false;
 
 // Validate local input
 if (empty($group)) {
@@ -114,10 +116,27 @@ if (PEAR::isError($currentgroup)) {
     die('<b><font color="cc0000">' . $currentgroup->getMessage() . '</font></b>');
 }
 
-// select last article
-$article = $nntp->selectArticle($nntp->last());
-if (PEAR::isError($article)) {
-    die('<b><font color="#cc0000">' . $article->getMessage() . '</font></b>');
+if ($from) {
+    // select last article
+    $article = $nntp->selectArticle($from);
+    if (PEAR::isError($article)) {
+        die('<b><font color="#cc0000">' . $article->getMessage() . '</font></b>');
+    }
+
+    if ($next) {
+        $article = $nntp->selectNextArticle();
+    } else {
+        $article = $nntp->selectPreviousArticle();
+    }
+    if (PEAR::isError($article)) {
+        die('<b><font color="#cc0000">' . $article->getMessage() . '</font></b>');
+    }
+} else {
+    // select last article
+    $article = $nntp->selectArticle($nntp->last());
+    if (PEAR::isError($article)) {
+        die('<b><font color="#cc0000">' . $article->getMessage() . '</font></b>');
+    }
 }
 
 //
@@ -147,7 +166,11 @@ while (true) {
     }
 
     // Select previous article
-    $article = $nntp->selectPreviousArticle();
+    if ($next) {
+        $article = $nntp->selectNextArticle();
+    } else {
+        $article = $nntp->selectPreviousArticle();
+    }
     if (PEAR::isError($article)) {
         die('<font color="cc0000">' . $article->getMessage() . '</font>');
     }
@@ -158,29 +181,62 @@ while (true) {
 $nntp->quit();
 
 //
-$articles = array_reverse($articles);
+if (!$next) {
+    $articles = array_reverse($articles);
+}
+
+// get the first and the last article number from returned articles
+$first = reset($articles);
+$last = end($articles);
 
 // Output
 echo '<h1>Avaible articles in <i>', $group, ' @ ', $host, '</i>:</h1>';
 echo $messageCount ;
 echo '<hr>';
-echo '<h2>Last ', $i, ' out of ', $currentgroup['count'], ' messages:</h2>';
+echo '<h2>Article ', $first['Number'], '-', $last['Number'], ' out of ', $currentgroup['last'], ' messages (', $currentgroup['count'], ' on server) :</h2>';
+
+// Previous/Next # links
+if ($first['Number'] > $nntp->first()) {
+    echo '<a href="group.php?', "host=$host&port=$port&group=", urlencode($group), '&from=', $first['Number'], "&loglevel=$loglevel", '">Previous 10</a> ';
+}
+if ($last['Number'] < $nntp->last()) {
+    echo '<a href="group.php?', "host=$host&port=$port&group=", urlencode($group), '&from=', $last['Number'], '&next=true', "&loglevel=$loglevel", '">Next 10</a> ';
+}
 
 echo '<table border="0" cellpadding="2" cellspacing="3">';
 echo '<tr bgcolor="#cccccc"><th>#</th><th>Subject</th><th>Author</th><th>Date</th></tr>';
-
-
 foreach ($articles as $overview) {
 
-    $link = 'article.php?' . "host=$host&port=$port&group=" . urlencode($group) . '&msgnum=' . urlencode($overview['Number']) . "&loglevel=$loglevel";
+
+    $number = $overview['Number'];
+    $subject = $overview['Subject'];
+    $from = $overview['From'];
+    $date = $overview['Date'];
+
+    $link = 'article.php?' . "host=$host&port=$port&group=" . urlencode($group) . '&msgnum=' . urlencode($number) . "&loglevel=$loglevel";
+
+    // Decode subject and from header fields, if mime-extension is loaded...
+    if (function_exists('imap_mime_header_decode')) {
+    	$decoded = imap_mime_header_decode($subject);
+	$subject = '';
+    	foreach ($decoded as $element) {
+    	    $subject .= $element->text;
+    	}
+
+    	$decoded = imap_mime_header_decode($from);
+	$from = '';
+    	foreach ($decoded as $element) {
+    	    $from .= $element->text;
+    	}
+    }
 
     echo '<tr>';
-    echo '<td><a href="', $link, '">', $overview['Number'], '</a></td>';
+    echo '<td><a href="', $link, '">', $number, '</a></td>';
     echo '<td>';
-    echo '<a href="', $link, '"><b>', $overview['Subject'], '</b></a><br>';
+    echo '<a href="', $link, '"><b>', $subject, '</b></a><br>';
     echo '</td>';
-    echo '<td>', $overview['From'], '</td>';
-    echo '<td>', str_replace(" ", "&nbsp;", strftime("%c", strtotime($overview['Date']))), '</td>';
+    echo '<td>', $from, '</td>';
+    echo '<td>', str_replace(" ", "&nbsp;", strftime("%c", strtotime($date))), '</td>';
 
     echo '</tr>';
 }
