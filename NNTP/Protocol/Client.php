@@ -100,15 +100,13 @@ define('NET_NNTP_PROTOCOL_CLIENT_DEFAULT_PORT', '119');
  *          stable, for as long as such changes doesn't affect the public API of
  *          the Net_NNTP_Client class, which is considered stable.
  *
- * TODO:	cmdListActive()
- *      	cmdListActiveTimes()
+ * TODO:	cmdListActiveTimes()
  *      	cmdDistribPats()
- *      	cmdHeaders()
  *
  * @category   Net
  * @package    Net_NNTP
  * @author     Heino H. Gehlsen <heino@gehlsen.dk>
- * @version    $Id$
+ * @version    @package_version@
  * @access     private
  * @see        Net_NNTP_Client
  * @since      Class available since Release 0.11.0
@@ -159,19 +157,40 @@ class Net_NNTP_Protocol_Client
     /**
      * Connect to a NNTP server
      *
-     * @param optional string $host The address of the NNTP-server to connect to, defaults to 'localhost'.
-     * @param optional int $port The port number to connect to, defaults to 119.
+     * @param string	$host	(optional) The address of the NNTP-server to connect to, defaults to 'localhost'.
+     * @param mixed	$encryption	(optional) 
+     * @param int	$port	(optional) The port number to connect to, defaults to 119.
      *
      * @return mixed (bool) on success (true when posting allowed, otherwise false) or (object) pear_error on failure
      * @access protected
      */
-    function connect($host = NET_NNTP_PROTOCOL_CLIENT_DEFAULT_HOST, $port = NET_NNTP_PROTOCOL_CLIENT_DEFAULT_PORT)
+    function connect($host = NET_NNTP_PROTOCOL_CLIENT_DEFAULT_HOST,
+                     $encryption = false, $port = null)
     {
-    	//
-    	$transport = 'tcp';
+    	// v1.0.x API
+    	if (is_int($encryption)) {
+	    trigger_error('You are using deprecated API v1.0 in Net_NNTP_Protocol_Client: connect() !', E_USER_NOTICE);
+    	    $port = $encryption;
+	    $encryption = false;
+    	}
+
+    	// Choose transport based on encryption, and if no port is given, use default for that encryption
+    	switch ($encryption) {
+	    case false:
+		$transport = 'tcp';
+    	    	$port = is_null($port) ? NET_NNTP_PROTOCOL_CLIENT_DEFAULT_PORT : $port;
+		break;
+	    case 'ssl':
+	    case 'tls':
+		$transport = $encryption;
+    	    	$port = is_null($port) ? 563 : $port;
+		break;
+	    default:
+		error(); // ;-)
+    	}
 
     	//
-        if ($this->isConnected() ) {
+        if ($this->_isConnected() ) {
     	    return PEAR::throwError('Already connected, disconnect first!', null);
     	}
 
@@ -179,6 +198,11 @@ class Net_NNTP_Protocol_Client
     	$R = @$this->_socket->connect($transport . '://' . $host, $port, false, 15);
     	if (PEAR::isError($R)) {
     	    return PEAR::throwError("Could not connect to server at $transport://$host:$port" , null, $R->getMessage());
+    	}
+
+    	//
+    	if ($this->_logger) {
+    	    $this->_logger->info("Connection to $transport://$host:$port has been opened.");
     	}
 
     	// Retrive the server's initial response.
@@ -193,8 +217,13 @@ class Net_NNTP_Protocol_Client
     	        return true;
     	        break;
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_READY_POSTING_PROHIBITED: // 201, Posting NOT allowed
-    	    	// TODO: Set some variable
-    	        return false;
+    	        //
+    	    	if ($this->_logger) {
+    	    	    $this->_logger->info('Posting not allowed!');
+    	    	}
+
+	    	// TODO: Set some variable
+    	    	return false;
     	        break;
     	    case 400:
     	    	return PEAR::throwError('Server refused connection', $response, $this->_currentStatusResponse());
@@ -240,9 +269,14 @@ class Net_NNTP_Protocol_Client
         switch ($response) {
     	    case 205: // RFC977: 'closing connection - goodbye!'
     	    	// If socket is still open, close it.
-    	    	if ($this->isConnected()) {
+    	    	if ($this->_isConnected()) {
     	    	    $this->_socket->disconnect();
     	    	}
+
+    	    	if ($this->_logger) {
+    	    	    $this->_logger->info('Connection closed.');
+    	    	}
+
     	    	return true;
     	    	break;
     	    default:
@@ -1621,7 +1655,7 @@ class Net_NNTP_Protocol_Client
     	}
     }
     // }}}
-    // {{{ isConnected()
+    // {{{ _isConnected()
 
     /**
      * Test whether we are connected or not.
@@ -1629,7 +1663,7 @@ class Net_NNTP_Protocol_Client
      * @return bool true or false
      * @access protected
      */
-    function isConnected()
+    function _isConnected()
     {
     	return (is_resource($this->_socket->fp) && (!$this->_socket->eof()));
     }
@@ -1647,9 +1681,26 @@ class Net_NNTP_Protocol_Client
      */
     function setDebug($debug = true)
     {
+//    	trigger_error('You are using deprecated API v1.0 in Net_NNTP_Protocol_Client: setDebug() !', E_USER_NOTICE);
+  
         $tmp = $this->_debug;
         $this->_debug = $debug;
         return $tmp;
+    }
+
+    // }}}
+    // {{{ setLogger()
+
+    /**
+     *
+     *
+     * @param object $logger
+     *
+     * @access protected
+     */
+    function setLogger($logger)
+    {
+        $this->_logger = $logger;
     }
 
     // }}}
@@ -1694,8 +1745,11 @@ class Net_NNTP_Protocol_Client
     	    return PEAR::throwError('Failed to read from socket!', null, $response->getMessage());
         }
 
-        if ($this->_debug) {
-            echo 'S: ', $response;
+    	//
+    	if ($this->_debug) {
+    	    if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
+    	        $this->_logger->debug('S: ' . rtrim($response, "\r\n"));
+    	    }
         }
 
     	// Trim the start of the response in case of misplased whitespace (should not be needen!!!)
@@ -1706,6 +1760,7 @@ class Net_NNTP_Protocol_Client
     	                                      (string) rtrim(substr($response, 4))
     	    	    	    	    	     );
 
+    	//
     	return $this->_currentStatusResponse[0];
     }
     
@@ -1738,7 +1793,14 @@ class Net_NNTP_Protocol_Client
     {
         $data = array();
         $line = '';
-	
+
+    	//
+    	if ($this->_debug) {
+    	    if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
+    	        $debug = true;
+    	    }
+    	}
+
         // Continue until connection is lost
         while(!$this->_socket->eof()) {
 
@@ -1757,6 +1819,9 @@ class Net_NNTP_Protocol_Client
             if (false) {
                 // Lines should/may not be longer than 998+2 chars (RFC2822 2.3)
                 if (strlen($line) > 1000) {
+    	    	    if ($this->_logger) {
+    	    	    	$this->_logger->notice('T: ' . $line);
+    	    	    }
                     return PEAR::throwError('Invalid line recieved!', null);
                 }
             }
@@ -1767,15 +1832,8 @@ class Net_NNTP_Protocol_Client
             // Check if the line terminates the textresponse
             if ($line == '.') {
 
-    	        if ($this->_debug) {
-                    foreach ($data as $line) {
-            	    	echo 'T: ', $line, "\r\n";
-                    }
-                }
-
                 // return all previous lines
                 return $data;
-                break;
             }
 
             // If 1st char is '.' it's doubled (NNTP/RFC977 2.4.1)
@@ -1783,6 +1841,11 @@ class Net_NNTP_Protocol_Client
                 $line = substr($line, 1);
             }
             
+    	    //
+    	    if ($debug) {
+    	    	$this->_logger->debug('T: ' . $line);
+    	    }
+
             // Add the line to the array of lines
             $data[] = $line;
 
@@ -1790,6 +1853,7 @@ class Net_NNTP_Protocol_Client
             $line = '';
         }
 
+    	//
     	return PEAR::throwError('Data stream not terminated with period', null);
     }
 
@@ -1815,7 +1879,7 @@ class Net_NNTP_Protocol_Client
         }
 
     	// Check if connected
-    	if (!$this->isConnected()) {
+    	if (!$this->_isConnected()) {
             return PEAR::throwError('Failed to write to socket! (connection lost!)');
         }
 
@@ -1825,10 +1889,14 @@ class Net_NNTP_Protocol_Client
             return PEAR::throwError('Failed to write to socket!', null, $R->getMessage());
         }
 	
-        if ($this->_debug) {
-            echo 'C: ', $cmd, "\r\n";
+    	//
+    	if ($this->_debug) {
+    	    if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
+    	        $this->_logger->debug('C: ' . $cmd);
+    	    }
         }
 
+    	//
     	return $this->_getStatusResponse();
     }
     
