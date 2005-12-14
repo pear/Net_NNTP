@@ -23,7 +23,7 @@ The protocol implementation does not parse the actual article data, but at the c
   <active>yes</active>
  </lead>
 
- <date>2005-12-10</date>
+ <date>2005-12-14</date>
  <time>00:00:00</time>
  <version>
   <release>1.3.0</release>
@@ -34,7 +34,7 @@ The protocol implementation does not parse the actual article data, but at the c
   <api>alpha</api>
  </stability>
 
- <license uri="http://www.heino.gehlsen.dk/software/license">W3C</license>
+ <license uri="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">W3C</license>
 
  <notes>
 + WARNING!
@@ -45,18 +45,23 @@ The protocol implementation does not parse the actual article data, but at the c
   - fixed: connect(), now returns false when posting is prohibited (like cmdModeReader()).
   - fixed: getGroupArticles(), now updates internal group summary cache.
   - added: getHeaderField().
-  - modified: connect(), added $encryption parameter to support ssl/tls connections. 
+  - added: getGroupArticles().
+  - modified: connect(), added $encryption parameter to support ssl/tls connections, and $timeout parameter. 
+  - modified: selectGroup(), added (experimental) parameter to allow fetching of article numbers at once.
   - modified: getOverview(), added two (experimental) parameters (rewritten to preserve backward compatible with v1.0).
   - modified and rewritten: getGroups(), addition of optional $wildmat parameter.
   - modified and rewritten: getDescriptions(), addition of optional $wildmat parameter.
   - modified and rewritten: getOverview(), $first and $last parameters changed into $range.
+  - renamed: quit() into disconnect(), (temporarily) preserving backward compatible with v1.0.
   - renamed: getArticleRaw() into getArticle(), (temporarily) preserving backward compatible with v1.1.
   - renamed: getHeaderRaw() into getHeader(), (temporarily) preserving backward compatible with v1.1.
   - renamed: getBodyRaw() into getBody(), (temporarily) preserving backward compatible with v1.1.
   - renamed and rewritten: getReferencesOverview() into getReferences().
   - removed: connectAuthenticated() (as in MAINT_1_0 and MAINT_1_2).
   - removed: isConnected() removed due to use of private members in Net_Socket! 
-  - Phpdoc updates.
+  - misc: all internal PEAR::throwError() changed to $this->throwError().
+  - misc: major phpdoc rewrite.
+  - misc: removal of code related to not yet implemented alternative authentication methods.
 
 + Changes in Net_NNTP_Protocol_Client:
   - added: cmdXHdr().
@@ -69,9 +74,11 @@ The protocol implementation does not parse the actual article data, but at the c
   - modified and rewritten: cmdXOver(), first parameter now optional.
   - renamed: isConnected() into _isConnected(), due to use of private members in Net_Socket. 
   - misc: support for logging via the Log package (debugging rewritten to use logger).
-  - misc: Use of status response code constants in Net_NNTP_Protocol_Responsecode.
+  - misc: use of status response code constants in Net_NNTP_Protocol_Responsecode.
+  - misc: extends PEAR (as in v1.0.x).
+  - misc: all internal PEAR::throwError() changed to $this->throwError().
 
-+ Examples rewritten.
++ Examples replaced by fully functional newsgroup reader demo.
 
 + License upgraded to newer edition of 'W3C SOFTWARE NOTICE AND LICENSE'
  </notes>
@@ -80,6 +87,18 @@ The protocol implementation does not parse the actual article data, but at the c
   <dir name="/">
    <dir baseinstalldir="Net" name="NNTP">
     <file name="Client.php" role="php">
+     <tasks:replace from="@package_version@" to="version" type="package-info" />
+     <tasks:replace from="@package_state@" to="state" type="package-info" />
+     <tasks:replace from="@api_version@" to="api-version" type="package-info" />
+     <tasks:replace from="@api_state@" to="api-state" type="package-info" />
+    </file>
+    <file name="Header.php" role="php">
+     <tasks:replace from="@package_version@" to="version" type="package-info" />
+     <tasks:replace from="@package_state@" to="state" type="package-info" />
+     <tasks:replace from="@api_version@" to="api-version" type="package-info" />
+     <tasks:replace from="@api_state@" to="api-state" type="package-info" />
+    </file>
+    <file name="Message.php" role="php">
      <tasks:replace from="@package_version@" to="version" type="package-info" />
      <tasks:replace from="@package_state@" to="state" type="package-info" />
      <tasks:replace from="@api_version@" to="api-version" type="package-info" />
@@ -108,6 +127,23 @@ The protocol implementation does not parse the actual article data, but at the c
       <file name="group.php" role="doc" />
       <file name="groups.php" role="doc" />
       <file name="index.php" role="doc" />
+      <file name="common.inc.php" role="doc" />
+      <file name="config.inc.php" role="doc" />
+      <file name="footer.inc.php" role="doc" />
+      <file name="header.inc.php" role="doc" />
+      <file name="style.css" role="doc" />
+     </dir> <!-- /docs/examples/demo -->
+     <dir name="phpdoc">
+      <file name="authenticate.php" role="doc" />
+      <file name="connect.php" role="doc" />
+      <file name="constructor.php" role="doc" />
+      <file name="getDescriptions.php" role="doc" />
+      <file name="getGroups.php" role="doc" />
+      <file name="getOverview.php" role="doc" />
+      <file name="selectArticle.php" role="doc" />
+      <file name="selectGroup.php" role="doc" />
+      <file name="selectNextArticle.php" role="doc" />
+      <file name="selectPreviousArticle.php" role="doc" />
      </dir> <!-- /docs/examples/demo -->
     </dir> <!-- /docs/examples -->
    </dir> <!-- /docs -->
