@@ -128,10 +128,15 @@ The protocol implementation does not parse the actual article data, but at the c
       <file name="groups.php" role="doc" />
       <file name="index.php" role="doc" />
       <file name="common.inc.php" role="doc" />
-      <file name="config.inc.php" role="doc" />
       <file name="footer.inc.php" role="doc" />
       <file name="header.inc.php" role="doc" />
       <file name="style.css" role="doc" />
+      <file name="config.inc.php" role="doc">
+       <tasks:replace from="@package_version@" to="version" type="package-info" />
+       <tasks:replace from="@package_state@" to="state" type="package-info" />
+       <tasks:replace from="@api_version@" to="api-version" type="package-info" />
+       <tasks:replace from="@api_state@" to="api-state" type="package-info" />
+      </file>
      </dir> <!-- /docs/examples/demo -->
      <dir name="phpdoc">
       <file name="authenticate.php" role="doc" />
