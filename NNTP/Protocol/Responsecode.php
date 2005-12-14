@@ -6,6 +6,7 @@
  * 
  * PHP versions 4 and 5
  *
+ * <pre>
  * +-----------------------------------------------------------------------+
  * |                                                                       |
  * | W3C® SOFTWARE NOTICE AND LICENSE                                      |
@@ -54,6 +55,7 @@
  * | remain with copyright holders.                                        |
  * |                                                                       |
  * +-----------------------------------------------------------------------+
+ * </pre>
  *
  * @category   Net
  * @package    Net_NNTP
