@@ -231,25 +231,6 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     }
 
     // }}}
-    // {{{ isConnected()
-
-    /**
-     * Test whether a connection is currently open or closed.
-     *
-     * @return bool	True if connected, otherwise false
-     * @access public
-     * @see Net_NNTP_Client::connect()
-     * @see Net_NNTP_Client::quit()
-     * @deprecated	since v1.3.0 due to use of protected method: Net_NNTP_Protocol_Client::isConnected()
-     * @ignore
-     */
-    function isConnected()
-    {
-	trigger_error('You are using deprecated API v1.0 in Net_NNTP_Client: isConnected() !', E_USER_NOTICE);
-        return parent::_isConnected();
-    }
-
-    // }}}
     // {{{ selectGroup()
 
     /**
@@ -310,6 +291,471 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	}
 	
     	return $summary;
+    }
+
+    // }}}
+    // {{{ selectPreviousArticle()
+
+    /**
+     * Select the previous article.
+     *
+     * Select the previous article in current group.
+     *
+     * <b>Usage example:</b>
+     * {@example docs/examples/inline/selectPreviousArticle.php}
+     *
+     * @param int	$_ret	(optional) Experimental
+     *
+     * @return mixed <br>
+     *  - (integer)	Article number, if $ret=0 (default)
+     *  - (string)	Message-id, if $ret=1
+     *  - (array)	Both article number and message-id, if $ret=-1
+     *  - (bool)	False if no prevoius article exists
+     *  - (object)	Pear_Error on failure
+     * @access public
+     * @see Net_NNTP_Client::selectArticle()
+     * @see Net_NNTP_Client::selectNextArticle()
+     */
+    function selectPreviousArticle($_ret = 0)
+    {
+        $response = $this->cmdLast();
+
+    	if (PEAR::isError($response)) {
+    	    return false;
+    	}
+
+    	switch ($_ret) {
+    	    case -1:
+    	    	return array('Number' => (int) $response[0], 'Message-ID' =>  (string) $response[1]);
+    	    	break;
+    	    case 0:
+    	        return (int) $response[0];
+    	    	break;
+    	    case 1:
+    	        return (string) $response[1];
+    	    	break;
+    	    default:
+		error(); // ...
+	}
+    }
+
+    // }}}
+    // {{{ selectNextArticle()
+
+    /**
+     * Select the next article.
+     *
+     * Select the next article in current group.
+     *
+     * <b>Usage example:</b>
+     * {@example docs/examples/inline/selectNextArticle.php}
+     *
+     * @param int	$_ret	(optional) Experimental
+     *
+     * @return mixed <br>
+     *  - (integer)	Article number, if $ret=0 (default)
+     *  - (string)	Message-id, if $ret=1
+     *  - (array)	Both article number and message-id, if $ret=-1
+     *  - (bool)	False if no further articles exist
+     *  - (object)	Pear_Error on unexpected failure
+     * @access public
+     * @see Net_NNTP_Client::selectArticle()
+     * @see Net_NNTP_Client::selectPreviousArticle()
+     */
+    function selectNextArticle($_ret = 0)
+    {
+        $response = $this->cmdNext();
+
+    	if (PEAR::isError($response)) {
+    	    return $response;
+	}
+
+    	switch ($_ret) {
+    	    case -1:
+    	    	return array('Number' => (int) $response[0], 'Message-ID' =>  (string) $response[1]);
+    	    	break;
+    	    case 0:
+    	        return (int) $response[0];
+    	    	break;
+    	    case 1:
+    	        return (string) $response[1];
+    	    	break;
+    	    default:
+		error(); // ...
+	}
+    }
+
+    // }}}
+    // {{{ selectArticle()
+
+    /**
+     * Selects an article by article message-number.
+     *
+     * xxx
+     *
+     * <b>Usage example:</b>
+     * {@example docs/examples/inline/selectArticle.php}
+     *
+     * @param mixed	$article	The message-number (on the server) of
+     *                                  the article to select as current article.
+     * @param int	$_ret	(optional) Experimental
+     *
+     * @return mixed <br>
+     *  - (integer)	Article number
+     *  - (bool)	False if article doesn't exists
+     *  - (object)	Pear_Error on failure
+     * @access public
+     * @see Net_NNTP_Client::selectNextArticle()
+     * @see Net_NNTP_Client::selectPreviousArticle()
+     */
+    function selectArticle($article = null, $_ret = 0)
+    {
+        $response = $this->cmdStat($article);
+
+    	if (PEAR::isError($response)) {
+    	    return $response;
+	}
+
+    	switch ($ret) {
+    	    case -1:
+    	    	return array('Number' => (int) $response[0], 'Message-ID' =>  (string) $response[1]);
+    	    	break;
+    	    case 0:
+    	        return (int) $response[0];
+    	    	break;
+    	    case 1:
+    	        return (string) $response[1];
+    	    	break;
+    	    default:
+		error(); // ...
+	}
+    }
+
+    // }}}
+    // {{{ getArticle()
+
+    /**
+     * Fetch article into transfer object.
+     *
+     * Select an article based on the arguments, and return the entire
+     * article (raw data).
+     *
+     * <b>Usage example:</b>
+     * {@example docs/examples/inline/getArticle.php}
+     *
+     * @param mixed	$article	(optional) Either the message-id or the
+     *                                  message-number on the server of the
+     *                                  article to fetch.
+     * @param bool	$implode	(optional) When true the result array
+     *                                  is imploded to a string, defaults to
+     *                                  false.
+     *
+     * @return mixed <br>
+     *  - (array)	Complete article (when $implode is false)
+     *  - (string)	Complete article (when $implode is true)
+     *  - (object)	Pear_Error on failure
+     * @access public
+     * @see Net_NNTP_Client::getHeader()
+     * @see Net_NNTP_Client::getBody()
+     */
+    function getArticle($article = null, $implode = false)
+    {
+    	// v1.1.x API
+    	if (is_string($implode)) {
+    	    trigger_error('You are using deprecated API v1.1 in Net_NNTP_Client: getHeader() !', E_USER_NOTICE);
+		     
+    	    $class = $implode;
+    	    $implode = false;
+
+    	    if (!class_exists($class)) {
+    	        return $this->throwError("Class '$class' does not exist!");
+	    }
+    	}
+
+        $data = $this->cmdArticle($article);
+        if (PEAR::isError($data)) {
+    	    return $data;
+    	}
+
+    	if ($implode == true) {
+    	    $data = implode("\r\n", $data);
+    	}
+
+    	// v1.1.x API
+    	if (isset($class)) {
+    	    return $obj = new $class($data);
+    	}
+
+    	//
+    	return $data;
+    }
+
+    // }}}
+    // {{{ getHeader()
+
+    /**
+     * Fetch article header.
+     *
+     * Select an article based on the arguments, and return the article
+     * header (raw data).
+     *
+     * <b>Usage example:</b>
+     * {@example docs/examples/inline/getHeader.php}
+     *
+     * @param mixed	$article	(optional) Either message-id or message
+     *                                  number of the article to fetch.
+     * @param bool	$implode	(optional) When true the result array
+     *                                  is imploded to a string, defaults to
+     *                                  false.
+     *
+     * @return mixed <br>
+     *  - (bool)	False if article does not exist
+     *  - (array)	Header fields (when $implode is false)
+     *  - (string)	Header fields (when $implode is true)
+     *  - (object)	Pear_Error on failure
+     * @access public
+     * @see Net_NNTP_Client::getArticle()
+     * @see Net_NNTP_Client::getBody()
+     */
+    function getHeader($article = null, $implode = false)
+    {
+    	// v1.1.x API
+    	if (is_string($implode)) {
+    	    trigger_error('You are using deprecated API v1.1 in Net_NNTP_Client: getHeader() !', E_USER_NOTICE);
+		     
+    	    $class = $implode;
+    	    $implode = false;
+
+    	    if (!class_exists($class)) {
+    	        return $this->throwError("Class '$class' does not exist!");
+	    }
+    	}
+
+        $data = $this->cmdHead($article);
+        if (PEAR::isError($data)) {
+    	    return $data;
+    	}
+
+    	if ($implode == true) {
+    	    $data = implode("\r\n", $data);
+    	}
+
+    	// v1.1.x API
+    	if (isset($class)) {
+    	    return $obj = new $class($data);
+    	}
+
+    	//
+    	return $data;
+    }
+
+    // }}}
+    // {{{ getBody()
+
+    /**
+     * Fetch article body.
+     *
+     * Select an article based on the arguments, and return the article
+     * body (raw data).
+     *
+     * <b>Usage example:</b>
+     * {@example docs/examples/inline/getBody.php}
+     *
+     * @param mixed	$article	(optional) Either the message-id or the
+     *                                  message-number on the server of the
+     *                                  article to fetch.
+     * @param bool	$implode	(optional) When true the result array
+     *                                  is imploded to a string, defaults to
+     *                                  false.
+     *
+     * @return mixed <br>
+     *  - (array)	Message body (when $implode is false)
+     *  - (string)	Message body (when $implode is true)
+     *  - (object)	Pear_Error on failure
+     * @access public
+     * @see Net_NNTP_Client::getHeader()
+     * @see Net_NNTP_Client::getArticle()
+     */
+    function getBody($article = null, $implode = false)
+    {
+    	// v1.1.x API
+    	if (is_string($implode)) {
+    	    trigger_error('You are using deprecated API v1.1 in Net_NNTP_Client: getHeader() !', E_USER_NOTICE);
+		     
+    	    $class = $implode;
+    	    $implode = false;
+
+    	    if (!class_exists($class)) {
+    	        return $this->throwError("Class '$class' does not exist!");
+	    }
+    	}
+
+        $data = $this->cmdBody($article);
+        if (PEAR::isError($data)) {
+    	    return $data;
+    	}
+
+    	if ($implode == true) {
+    	    $data = implode("\r\n", $data);
+    	}
+
+    	// v1.1.x API
+    	if (isset($class)) {
+    	    return $obj = new $class($data);
+    	}
+
+    	//
+    	return $data;
+    }
+
+    // }}}
+    // {{{ post()
+
+    /**
+     * Post an article to a number of groups.
+     *
+     * (Among the aditional headers you might think of adding could be:
+     * "NNTP-Posting-Host: <ip-of-author>", which should contain the IP-address
+     * of the author of the post, so the message can be traced back to him.
+     * Or "Organization: <org>" which contain the name of the organization
+     * the post originates from)
+     *
+     * <b>Usage example:</b>
+     * {@example docs/examples/inline/post.php}
+     *
+     * @param string	$groups	The groups to post to.
+     * @param string	$subject	The subject of the article.
+     * @param string	$body	The body of the article.
+     * @param string	$from	Sender's email address.
+     * @param mixed	$additional	(optional) Additional header fields to send.
+     *
+     * @return mixed <br>
+     *  - (string)	Server response
+     *  - (object)	Pear_Error on failure
+     * @access public
+     */
+    function post($groups, $subject, $body, $from, $additional = null)
+    {
+    	return $this->cmdPost($groups, $subject, $body, $from, $additional);
+    }
+
+    // }}}
+    // {{{ getDate()
+
+    /**
+     * Get the server's internal date
+     *
+     * <b>Non-standard!</b><br>
+     * This method uses non-standard commands, which is not part
+     * of the original RFC977, but has been formalized in RFC2890.
+     *
+     * <b>Usage example:</b>
+     * {@example docs/examples/inline/getDate.php}
+     *
+     * @param int	$format	(optional) Determines the format of returned date:
+     *                           - 0: return string
+     *                           - 1: return integer/timestamp
+     *                           - 2: return an array('y'=>year, 'm'=>month,'d'=>day)
+     *
+     * @return mixed <br>
+     *  - (mixed)	
+     *  - (object)	Pear_Error on failure
+     * @access public
+     */
+    function getDate($format = 1)
+    {
+        $date = $this->cmdDate();
+        if (PEAR::isError($date)) {
+    	    return $date;
+    	}
+
+    	switch ($format) {
+    	    case 0:
+    	        return $date;
+    	        break;
+    	    case 1:
+    		return strtotime(substr($date, 0, 8).' '.substr($date, 8, 2).':'.substr($date, 10, 2).':'.substr($date, 12, 2));
+    	        break;
+    	    case 2:
+    	        return array('y' => substr($date, 0, 4),
+    	                     'm' => substr($date, 4, 2),
+    	                     'd' => substr($date, 6, 2));
+    	        break;
+    	    default:
+		error();
+    	}
+    }
+
+    // }}}
+    // {{{ getNewGroups()
+
+    /**
+     * Get new groups since a date.
+     *
+     * Returns a list of groups created on the server since the specified date
+     * and time.
+     *
+     * <b>Usage example:</b>
+     * {@example docs/examples/inline/getNewGroups.php}
+     *
+     * @param mixed	$time	
+     * @param string	$distributions	(optional) 
+     *
+     * @return mixed <br>
+     *  - (array)	
+     *  - (object)	Pear_Error on failure
+     * @access public
+     */
+    function getNewGroups($time, $distributions = null)
+    {
+    	switch (true) {
+    	    case is_integer($time):
+    	    	break;
+    	    case is_string($time):
+    	    	$time = (int) strtotime($time);
+    	    	break;
+    	    default:
+    	    	trigger_error('$time must be either a string or an integer!', E_USER_ERROR);
+    	}
+
+    	return $this->cmdNewgroups($time, $distributions);
+    }
+
+    // }}}
+    // {{{ getNewArticles()
+
+    /**
+     * Get new articles since a date.
+     *
+     * Returns a list of message-ids of new articles (since the specified date
+     * and time) in the groups whose names match the wildmat
+     *
+     * <b>Usage example:</b>
+     * {@example docs/examples/inline/getNewArticles.php}
+     *
+     * @param mixed	$time	
+     * @param string	$groups	(optional) 
+     * @param string	$distributions	(optional) 
+     *
+     * @return mixed <br>
+     *  - (array)	
+     *  - (object)	Pear_Error on failure
+     * @access public
+     * @since 1.3.0
+     */
+    function getNewArticles($time, $groups = '*', $distribution = null)
+    {
+    	switch (true) {
+    	    case is_integer($time):
+    	    	break;
+    	    case is_string($time):
+    	    	$time = (int) strtotime($time);
+    	    	break;
+    	    default:
+    	    	trigger_error('$time must be either a string or an integer!', E_USER_ERROR);
+    	}
+
+    	return $this->cmdNewnews($time, $groups, $distribution);
     }
 
     // }}}
@@ -614,6 +1060,108 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     }
 
     // }}}
+    // {{{ getHeaderField()
+
+    /**
+     * Fetch content of a header field from message(s).
+     *
+     * Retreives the content of specific header field from a number of messages.
+     *
+     * <b>Non-standard!</b><br>
+     * This method uses non-standard commands, which is not part
+     * of the original RFC977, but has been formalized in RFC2890.
+     *
+     * <b>Usage example:</b>
+     * {@example docs/examples/inline/getHeaderField.php}
+     *
+     * @param string	$field	The name of the header field to retreive
+     * @param mixed	$range	(optional)
+     *                            '<message number>'
+     *                            '<message number>-<message number>'
+     *                            '<message number>-'
+     *                            '<message-id>'
+     *
+     * @return mixed <br>
+     *  - (array)	Nested array of 
+     *  - (object)	Pear_Error on failure
+     * @access public
+     * @see Net_NNTP_Client::getOverview()
+     * @see Net_NNTP_Client::getReferences()
+     */
+    function getHeaderField($field, $range = null)
+    {
+    	$fields = $this->cmdXHdr($field, $range);
+    	if (PEAR::isError($fields)) {
+    	    return $fields;
+    	}
+
+    	//
+    	switch (true) {
+
+    	    // Expect one article
+    	    case is_null($range);
+    	    case is_int($range);
+            case is_string($range) && ctype_digit($range):
+    	    case is_string($range) && substr($range, 0, 1) == '<' && substr($range, -1, 1) == '>':
+
+    	        if (count($fields) == 0) {
+    	    	    return false;
+    	    	} else {
+    	    	    return reset($fields);
+    	    	}
+    	    	break;
+
+    	    // Expect multiple articles
+    	    default:
+    	    	return $fields;
+    	}
+    }
+
+    // }}}
+
+
+
+
+
+
+
+    // {{{ getGroupArticles()
+
+    /**
+     *
+     *
+     * <b>Non-standard!</b><br>
+     * This method uses non-standard commands, which is not part
+     * of the original RFC977, but has been formalized in RFC2890.
+     *
+     * <b>Usage example:</b>
+     * {@example docs/examples/inline/getGroupArticles.php}
+     *
+     * @param mixed	$range	(optional) Experimental!
+     *
+     * @return mixed <br>
+     *  - (array)	
+     *  - (object)	Pear_Error on failure
+     * @access public
+     * @since 1.3.0
+     */
+    function getGroupArticles($range = null)
+    {
+        $summary = $this->cmdListgroup();
+    	if (PEAR::isError($summary)) {
+    	    return $summary;
+    	}
+
+    	// Update summary cache if group was also 'selected'
+    	if ($summary['group'] !== null) {
+    	    $this->_selectedGroupSummary($summary);
+    	}
+	
+    	//
+    	return $summary['articles'];
+    }
+
+    // }}}
     // {{{ getReferences()
 
     /**
@@ -704,641 +1252,11 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     }
 
     // }}}
-    // {{{ getReferencesOverview()
 
-    /**
-     * Deprecated alias for getReferences()
-     *
-     * @deprecated
-     * @ignore
-     */
-    function getReferencesOverview($first, $last)
-    {
-	trigger_error('You are using deprecated API v1.0 in Net_NNTP_Client: getReferencesOverview() !', E_USER_NOTICE);
-    	return $this->getReferences($first . '-' . $last);
-    }
 
-    // }}}
-    // {{{ getHeaderField()
 
-    /**
-     * Fetch content of a header field from message(s).
-     *
-     * Retreives the content of specific header field from a number of messages.
-     *
-     * <b>Non-standard!</b><br>
-     * This method uses non-standard commands, which is not part
-     * of the original RFC977, but has been formalized in RFC2890.
-     *
-     * <b>Usage example:</b>
-     * {@example docs/examples/inline/getHeaderField.php}
-     *
-     * @param string	$field	The name of the header field to retreive
-     * @param mixed	$range	(optional)
-     *                            '<message number>'
-     *                            '<message number>-<message number>'
-     *                            '<message number>-'
-     *                            '<message-id>'
-     *
-     * @return mixed <br>
-     *  - (array)	Nested array of 
-     *  - (object)	Pear_Error on failure
-     * @access public
-     * @see Net_NNTP_Client::getOverview()
-     * @see Net_NNTP_Client::getReferences()
-     */
-    function getHeaderField($field, $range = null)
-    {
-    	$fields = $this->cmdXHdr($field, $range);
-    	if (PEAR::isError($fields)) {
-    	    return $fields;
-    	}
 
-    	//
-    	switch (true) {
 
-    	    // Expect one article
-    	    case is_null($range);
-    	    case is_int($range);
-            case is_string($range) && ctype_digit($range):
-    	    case is_string($range) && substr($range, 0, 1) == '<' && substr($range, -1, 1) == '>':
-
-    	        if (count($fields) == 0) {
-    	    	    return false;
-    	    	} else {
-    	    	    return reset($fields);
-    	    	}
-    	    	break;
-
-    	    // Expect multiple articles
-    	    default:
-    	    	return $fields;
-    	}
-    }
-
-    // }}}
-    // {{{ post()
-
-    /**
-     * Post an article to a number of groups.
-     *
-     * (Among the aditional headers you might think of adding could be:
-     * "NNTP-Posting-Host: <ip-of-author>", which should contain the IP-address
-     * of the author of the post, so the message can be traced back to him.
-     * Or "Organization: <org>" which contain the name of the organization
-     * the post originates from)
-     *
-     * <b>Usage example:</b>
-     * {@example docs/examples/inline/post.php}
-     *
-     * @param string	$groups	The groups to post to.
-     * @param string	$subject	The subject of the article.
-     * @param string	$body	The body of the article.
-     * @param string	$from	Sender's email address.
-     * @param mixed	$additional	(optional) Additional header fields to send.
-     *
-     * @return mixed <br>
-     *  - (string)	Server response
-     *  - (object)	Pear_Error on failure
-     * @access public
-     */
-    function post($groups, $subject, $body, $from, $additional = null)
-    {
-    	return $this->cmdPost($groups, $subject, $body, $from, $additional);
-    }
-
-    // }}}
-    // {{{ selectArticle()
-
-    /**
-     * Selects an article by article message-number.
-     *
-     * xxx
-     *
-     * <b>Usage example:</b>
-     * {@example docs/examples/inline/selectArticle.php}
-     *
-     * @param mixed	$article	The message-number (on the server) of
-     *                                  the article to select as current article.
-     * @param int	$_ret	(optional) Experimental
-     *
-     * @return mixed <br>
-     *  - (integer)	Article number
-     *  - (bool)	False if article doesn't exists
-     *  - (object)	Pear_Error on failure
-     * @access public
-     * @see Net_NNTP_Client::selectNextArticle()
-     * @see Net_NNTP_Client::selectPreviousArticle()
-     */
-    function selectArticle($article = null, $_ret = 0)
-    {
-        $response = $this->cmdStat($article);
-
-    	if (PEAR::isError($response)) {
-    	    return $response;
-	}
-
-    	switch ($ret) {
-    	    case -1:
-    	    	return array('Number' => (int) $response[0], 'Message-ID' =>  (string) $response[1]);
-    	    	break;
-    	    case 0:
-    	        return (int) $response[0];
-    	    	break;
-    	    case 1:
-    	        return (string) $response[1];
-    	    	break;
-    	    default:
-		error(); // ...
-	}
-    }
-
-    // }}}
-    // {{{ selectNextArticle()
-
-    /**
-     * Select the next article.
-     *
-     * Select the next article in current group.
-     *
-     * <b>Usage example:</b>
-     * {@example docs/examples/inline/selectNextArticle.php}
-     *
-     * @param int	$_ret	(optional) Experimental
-     *
-     * @return mixed <br>
-     *  - (integer)	Article number, if $ret=0 (default)
-     *  - (string)	Message-id, if $ret=1
-     *  - (array)	Both article number and message-id, if $ret=-1
-     *  - (bool)	False if no further articles exist
-     *  - (object)	Pear_Error on unexpected failure
-     * @access public
-     * @see Net_NNTP_Client::selectArticle()
-     * @see Net_NNTP_Client::selectPreviousArticle()
-     */
-    function selectNextArticle($_ret = 0)
-    {
-        $response = $this->cmdNext();
-
-    	if (PEAR::isError($response)) {
-    	    return $response;
-	}
-
-    	switch ($_ret) {
-    	    case -1:
-    	    	return array('Number' => (int) $response[0], 'Message-ID' =>  (string) $response[1]);
-    	    	break;
-    	    case 0:
-    	        return (int) $response[0];
-    	    	break;
-    	    case 1:
-    	        return (string) $response[1];
-    	    	break;
-    	    default:
-		error(); // ...
-	}
-    }
-
-    // }}}
-    // {{{ selectPreviousArticle()
-
-    /**
-     * Select the previous article.
-     *
-     * Select the previous article in current group.
-     *
-     * <b>Usage example:</b>
-     * {@example docs/examples/inline/selectPreviousArticle.php}
-     *
-     * @param int	$_ret	(optional) Experimental
-     *
-     * @return mixed <br>
-     *  - (integer)	Article number, if $ret=0 (default)
-     *  - (string)	Message-id, if $ret=1
-     *  - (array)	Both article number and message-id, if $ret=-1
-     *  - (bool)	False if no prevoius article exists
-     *  - (object)	Pear_Error on failure
-     * @access public
-     * @see Net_NNTP_Client::selectArticle()
-     * @see Net_NNTP_Client::selectNextArticle()
-     */
-    function selectPreviousArticle($_ret = 0)
-    {
-        $response = $this->cmdLast();
-
-    	if (PEAR::isError($response)) {
-    	    return false;
-    	}
-
-    	switch ($_ret) {
-    	    case -1:
-    	    	return array('Number' => (int) $response[0], 'Message-ID' =>  (string) $response[1]);
-    	    	break;
-    	    case 0:
-    	        return (int) $response[0];
-    	    	break;
-    	    case 1:
-    	        return (string) $response[1];
-    	    	break;
-    	    default:
-		error(); // ...
-	}
-    }
-
-    // }}}
-    // {{{ getArticle()
-
-    /**
-     * Fetch article into transfer object.
-     *
-     * Select an article based on the arguments, and return the entire
-     * article (raw data).
-     *
-     * <b>Usage example:</b>
-     * {@example docs/examples/inline/getArticle.php}
-     *
-     * @param mixed	$article	(optional) Either the message-id or the
-     *                                  message-number on the server of the
-     *                                  article to fetch.
-     * @param bool	$implode	(optional) When true the result array
-     *                                  is imploded to a string, defaults to
-     *                                  false.
-     *
-     * @return mixed <br>
-     *  - (array)	Complete article (when $implode is false)
-     *  - (string)	Complete article (when $implode is true)
-     *  - (object)	Pear_Error on failure
-     * @access public
-     * @see Net_NNTP_Client::getHeader()
-     * @see Net_NNTP_Client::getBody()
-     */
-    function getArticle($article = null, $implode = false)
-    {
-    	// v1.1.x API
-    	if (is_string($implode)) {
-    	    trigger_error('You are using deprecated API v1.1 in Net_NNTP_Client: getHeader() !', E_USER_NOTICE);
-		     
-    	    $class = $implode;
-    	    $implode = false;
-
-    	    if (!class_exists($class)) {
-    	        return $this->throwError("Class '$class' does not exist!");
-	    }
-    	}
-
-        $data = $this->cmdArticle($article);
-        if (PEAR::isError($data)) {
-    	    return $data;
-    	}
-
-    	if ($implode == true) {
-    	    $data = implode("\r\n", $data);
-    	}
-
-    	// v1.1.x API
-    	if (isset($class)) {
-    	    return $obj = new $class($data);
-    	}
-
-    	//
-    	return $data;
-    }
-
-    // }}}
-    // {{{ getArticleRaw()
-
-    /**
-     * Deprecated alias for getArticle()
-     *
-     * @deprecated
-     * @ignore
-     */
-    function getArticleRaw($article, $implode = false)
-    {
-    	trigger_error('You are using deprecated API v1.0 in Net_NNTP_Client: getArticleRaw() !', E_USER_NOTICE);
-    	return $this->getArticle($article, $implode);
-    }
-
-    // }}}
-    // {{{ getHeader()
-
-    /**
-     * Fetch article header.
-     *
-     * Select an article based on the arguments, and return the article
-     * header (raw data).
-     *
-     * <b>Usage example:</b>
-     * {@example docs/examples/inline/getHeader.php}
-     *
-     * @param mixed	$article	(optional) Either message-id or message
-     *                                  number of the article to fetch.
-     * @param bool	$implode	(optional) When true the result array
-     *                                  is imploded to a string, defaults to
-     *                                  false.
-     *
-     * @return mixed <br>
-     *  - (bool)	False if article does not exist
-     *  - (array)	Header fields (when $implode is false)
-     *  - (string)	Header fields (when $implode is true)
-     *  - (object)	Pear_Error on failure
-     * @access public
-     * @see Net_NNTP_Client::getArticle()
-     * @see Net_NNTP_Client::getBody()
-     */
-    function getHeader($article = null, $implode = false)
-    {
-    	// v1.1.x API
-    	if (is_string($implode)) {
-    	    trigger_error('You are using deprecated API v1.1 in Net_NNTP_Client: getHeader() !', E_USER_NOTICE);
-		     
-    	    $class = $implode;
-    	    $implode = false;
-
-    	    if (!class_exists($class)) {
-    	        return $this->throwError("Class '$class' does not exist!");
-	    }
-    	}
-
-        $data = $this->cmdHead($article);
-        if (PEAR::isError($data)) {
-    	    return $data;
-    	}
-
-    	if ($implode == true) {
-    	    $data = implode("\r\n", $data);
-    	}
-
-    	// v1.1.x API
-    	if (isset($class)) {
-    	    return $obj = new $class($data);
-    	}
-
-    	//
-    	return $data;
-    }
-
-    // }}}
-    // {{{ getHeaderRaw()
-
-    /**
-     * Deprecated alias for getHeader()
-     *
-     * @deprecated
-     * @ignore
-     */
-    function getHeaderRaw($article = null, $implode = false)
-    {
-    	trigger_error('You are using deprecated API v1.0 in Net_NNTP_Client: getHeaderRaw() !', E_USER_NOTICE);
-    	return $this->getHeader($article, $implode);
-    }
-
-    // }}}
-    // {{{ getBody()
-
-    /**
-     * Fetch article body.
-     *
-     * Select an article based on the arguments, and return the article
-     * body (raw data).
-     *
-     * <b>Usage example:</b>
-     * {@example docs/examples/inline/getBody.php}
-     *
-     * @param mixed	$article	(optional) Either the message-id or the
-     *                                  message-number on the server of the
-     *                                  article to fetch.
-     * @param bool	$implode	(optional) When true the result array
-     *                                  is imploded to a string, defaults to
-     *                                  false.
-     *
-     * @return mixed <br>
-     *  - (array)	Message body (when $implode is false)
-     *  - (string)	Message body (when $implode is true)
-     *  - (object)	Pear_Error on failure
-     * @access public
-     * @see Net_NNTP_Client::getHeader()
-     * @see Net_NNTP_Client::getArticle()
-     */
-    function getBody($article = null, $implode = false)
-    {
-    	// v1.1.x API
-    	if (is_string($implode)) {
-    	    trigger_error('You are using deprecated API v1.1 in Net_NNTP_Client: getHeader() !', E_USER_NOTICE);
-		     
-    	    $class = $implode;
-    	    $implode = false;
-
-    	    if (!class_exists($class)) {
-    	        return $this->throwError("Class '$class' does not exist!");
-	    }
-    	}
-
-        $data = $this->cmdBody($article);
-        if (PEAR::isError($data)) {
-    	    return $data;
-    	}
-
-    	if ($implode == true) {
-    	    $data = implode("\r\n", $data);
-    	}
-
-    	// v1.1.x API
-    	if (isset($class)) {
-    	    return $obj = new $class($data);
-    	}
-
-    	//
-    	return $data;
-    }
-
-    // }}}
-    // {{{ getBodyRaw()
-
-    /**
-     * Deprecated alias for getBody()
-     *
-     * @deprecated
-     * @ignore
-     */
-    function getBodyRaw($article = null, $implode = false)
-    {
-    	trigger_error('You are using deprecated API v1.0 in Net_NNTP_Client: getBodyRaw() !', E_USER_NOTICE);
-        return $this->getBody($article, $implode);
-    }
-
-    // }}}
-    // {{{ getGroupArticles()
-
-    /**
-     *
-     *
-     * <b>Non-standard!</b><br>
-     * This method uses non-standard commands, which is not part
-     * of the original RFC977, but has been formalized in RFC2890.
-     *
-     * <b>Usage example:</b>
-     * {@example docs/examples/inline/getGroupArticles.php}
-     *
-     * @param mixed	$range	(optional) Experimental!
-     *
-     * @return mixed <br>
-     *  - (array)	
-     *  - (object)	Pear_Error on failure
-     * @access public
-     * @since 1.3.0
-     */
-    function getGroupArticles($range = null)
-    {
-        $summary = $this->cmdListgroup();
-    	if (PEAR::isError($summary)) {
-    	    return $summary;
-    	}
-
-    	// Update summary cache if group was also 'selected'
-    	if ($summary['group'] !== null) {
-    	    $this->_selectedGroupSummary($summary);
-    	}
-	
-    	//
-    	return $summary['articles'];
-    }
-
-    // }}}
-    // {{{ getNewGroups()
-
-    /**
-     * Get new groups since a date.
-     *
-     * Returns a list of groups created on the server since the specified date
-     * and time.
-     *
-     * <b>Usage example:</b>
-     * {@example docs/examples/inline/getNewGroups.php}
-     *
-     * @param mixed	$time	
-     * @param string	$distributions	(optional) 
-     *
-     * @return mixed <br>
-     *  - (array)	
-     *  - (object)	Pear_Error on failure
-     * @access public
-     */
-    function getNewGroups($time, $distributions = null)
-    {
-    	switch (true) {
-    	    case is_integer($time):
-    	    	break;
-    	    case is_string($time):
-    	    	$time = (int) strtotime($time);
-    	    	break;
-    	    default:
-    	    	trigger_error('$time must be either a string or an integer!', E_USER_ERROR);
-    	}
-
-    	return $this->cmdNewgroups($time, $distributions);
-    }
-
-    // }}}
-    // {{{ getNewArticles()
-
-    /**
-     * Get new articles since a date.
-     *
-     * Returns a list of message-ids of new articles (since the specified date
-     * and time) in the groups whose names match the wildmat
-     *
-     * <b>Usage example:</b>
-     * {@example docs/examples/inline/getNewArticles.php}
-     *
-     * @param mixed	$time	
-     * @param string	$groups	(optional) 
-     * @param string	$distributions	(optional) 
-     *
-     * @return mixed <br>
-     *  - (array)	
-     *  - (object)	Pear_Error on failure
-     * @access public
-     * @since 1.3.0
-     */
-    function getNewArticles($time, $groups = '*', $distribution = null)
-    {
-    	switch (true) {
-    	    case is_integer($time):
-    	    	break;
-    	    case is_string($time):
-    	    	$time = (int) strtotime($time);
-    	    	break;
-    	    default:
-    	    	trigger_error('$time must be either a string or an integer!', E_USER_ERROR);
-    	}
-
-    	return $this->cmdNewnews($time, $groups, $distribution);
-    }
-
-    // }}}
-    // {{{ getNewNews()
-
-    /**
-     * Deprecated alias for getNewArticles()
-     *
-     * @deprecated
-     * @ignore
-     */
-    function getNewNews($time, $groups = '*', $distribution = null)
-    {
-    	trigger_error('You are using deprecated API v1.1 in Net_NNTP_Client: getNewNews() !', E_USER_NOTICE);
-    	return $this->getNewArticles($time, $groups, $distribution);
-    }
-
-    // }}}
-    // {{{ getDate()
-
-    /**
-     * Get the server's internal date
-     *
-     * <b>Non-standard!</b><br>
-     * This method uses non-standard commands, which is not part
-     * of the original RFC977, but has been formalized in RFC2890.
-     *
-     * <b>Usage example:</b>
-     * {@example docs/examples/inline/getDate.php}
-     *
-     * @param int	$format	(optional) Determines the format of returned date:
-     *                           - 0: return string
-     *                           - 1: return integer/timestamp
-     *                           - 2: return an array('y'=>year, 'm'=>month,'d'=>day)
-     *
-     * @return mixed <br>
-     *  - (mixed)	
-     *  - (object)	Pear_Error on failure
-     * @access public
-     */
-    function getDate($format = 1)
-    {
-        $date = $this->cmdDate();
-        if (PEAR::isError($date)) {
-    	    return $date;
-    	}
-
-    	switch ($format) {
-    	    case 0:
-    	        return $date;
-    	        break;
-    	    case 1:
-    		return strtotime(substr($date, 0, 8).' '.substr($date, 8, 2).':'.substr($date, 10, 2).':'.substr($date, 12, 2));
-    	        break;
-    	    case 2:
-    	        return array('y' => substr($date, 0, 4),
-    	                     'm' => substr($date, 4, 2),
-    	                     'd' => substr($date, 6, 2));
-    	        break;
-    	    default:
-		error();
-    	}
-    }
-
-    // }}}
     // {{{ count()
 
     /**
@@ -1435,6 +1353,108 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     }
 
     // }}}
+
+
+
+
+
+
+
+    // {{{ isConnected()
+
+    /**
+     * Test whether a connection is currently open or closed.
+     *
+     * @return bool	True if connected, otherwise false
+     * @access public
+     * @see Net_NNTP_Client::connect()
+     * @see Net_NNTP_Client::quit()
+     * @deprecated	since v1.3.0 due to use of protected method: Net_NNTP_Protocol_Client::isConnected()
+     * @ignore
+     */
+    function isConnected()
+    {
+	trigger_error('You are using deprecated API v1.0 in Net_NNTP_Client: isConnected() !', E_USER_NOTICE);
+        return parent::_isConnected();
+    }
+
+    // }}}
+    // {{{ getArticleRaw()
+
+    /**
+     * Deprecated alias for getArticle()
+     *
+     * @deprecated
+     * @ignore
+     */
+    function getArticleRaw($article, $implode = false)
+    {
+    	trigger_error('You are using deprecated API v1.0 in Net_NNTP_Client: getArticleRaw() !', E_USER_NOTICE);
+    	return $this->getArticle($article, $implode);
+    }
+
+    // }}}
+    // {{{ getHeaderRaw()
+
+    /**
+     * Deprecated alias for getHeader()
+     *
+     * @deprecated
+     * @ignore
+     */
+    function getHeaderRaw($article = null, $implode = false)
+    {
+    	trigger_error('You are using deprecated API v1.0 in Net_NNTP_Client: getHeaderRaw() !', E_USER_NOTICE);
+    	return $this->getHeader($article, $implode);
+    }
+
+    // }}}
+    // {{{ getBodyRaw()
+
+    /**
+     * Deprecated alias for getBody()
+     *
+     * @deprecated
+     * @ignore
+     */
+    function getBodyRaw($article = null, $implode = false)
+    {
+    	trigger_error('You are using deprecated API v1.0 in Net_NNTP_Client: getBodyRaw() !', E_USER_NOTICE);
+        return $this->getBody($article, $implode);
+    }
+
+    // }}}
+    // {{{ getNewNews()
+
+    /**
+     * Deprecated alias for getNewArticles()
+     *
+     * @deprecated
+     * @ignore
+     */
+    function getNewNews($time, $groups = '*', $distribution = null)
+    {
+    	trigger_error('You are using deprecated API v1.1 in Net_NNTP_Client: getNewNews() !', E_USER_NOTICE);
+    	return $this->getNewArticles($time, $groups, $distribution);
+    }
+
+    // }}}
+    // {{{ getReferencesOverview()
+
+    /**
+     * Deprecated alias for getReferences()
+     *
+     * @deprecated
+     * @ignore
+     */
+    function getReferencesOverview($first, $last)
+    {
+	trigger_error('You are using deprecated API v1.0 in Net_NNTP_Client: getReferencesOverview() !', E_USER_NOTICE);
+    	return $this->getReferences($first . '-' . $last);
+    }
+
+    // }}}
+
 }
 
 // }}}
