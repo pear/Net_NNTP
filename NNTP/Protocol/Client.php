@@ -82,6 +82,7 @@ require_once 'Net/NNTP/Protocol/Responsecode.php';
  * Default host
  *
  * @access     public
+ * @ignore
  */
 define('NET_NNTP_PROTOCOL_CLIENT_DEFAULT_HOST', 'localhost');
 
@@ -89,6 +90,7 @@ define('NET_NNTP_PROTOCOL_CLIENT_DEFAULT_HOST', 'localhost');
  * Default port
  *
  * @access     public
+ * @ignore
  */
 define('NET_NNTP_PROTOCOL_CLIENT_DEFAULT_PORT', '119');
 

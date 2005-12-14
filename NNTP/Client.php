@@ -167,6 +167,9 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     /**
      * Disconnect from server.
      *
+     * @return mixed <br>
+     *  - (bool)	
+     *  - (object)	Pear_Error on failure
      * @access public
      * @see Net_NNTP_Client::connect()
      */

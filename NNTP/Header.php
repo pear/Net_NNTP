@@ -72,7 +72,9 @@
 
 trigger_error('Experimental class Net_NNTP_Header has been deprecated, and will be removed from the Net_NNTP package!', E_USER_NOTICE);
 
-
+/**
+ *
+ */
 require_once 'PEAR.php';
 
 
@@ -102,6 +104,7 @@ define('NET_NNTP_HEADER_GET_DEFAULT', NET_NNTP_HEADER_GET_ENCODE | NET_NNTP_HEAD
  * @access     public
  * @see        Net_NNTP_Message
  * @since      Class available since Release 0.10.0
+ * @ignore
  */
 class Net_NNTP_Header
 {

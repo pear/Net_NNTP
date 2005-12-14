@@ -69,7 +69,14 @@
  * @deprecated File deprecated in Release 1.3.0
  */
 
+/**
+ *
+ */
 require_once 'PEAR.php';
+
+/**
+ *
+ */
 require_once 'Net/NNTP/Header.php';
 
 
@@ -89,6 +96,7 @@ trigger_error('Experimental class Net_NNTP_Message has been deprecated, and will
  * @access     public
  * @see        Net_NNTP_Header
  * @since      Class available since Release 0.10.0
+ * @ignore
  */
 class Net_NNTP_Message
 {
