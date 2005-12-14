@@ -68,8 +68,8 @@
  * @since      File available since release 1.3.0
  */
 
-$title = 'PEAR::Net_NNTP Demo';
-$subtitle = 'Demo newsgroup reader powered by <a href="http://pear.php.net/">PEAR</a>::<a href="http://pear.php.net/package/Net_NNTP/">Net_NNTP</a>';
+$title = 'Net_NNTP Demo';
+$subtitle = 'powered by <a href="http://pear.php.net/">PEAR</a>::<a href="http://pear.php.net/package/Net_NNTP/">Net_NNTP</a> @package_version@ (@package_state@)';
 
 $host = 'news.php.net';
 $encryption = null;
