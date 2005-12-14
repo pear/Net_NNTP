@@ -6,6 +6,7 @@
  * 
  * PHP versions 4 and 5
  *
+ * <pre>
  * +-----------------------------------------------------------------------+
  * |                                                                       |
  * | W3C® SOFTWARE NOTICE AND LICENSE                                      |
@@ -54,6 +55,7 @@
  * | remain with copyright holders.                                        |
  * |                                                                       |
  * +-----------------------------------------------------------------------+
+ * </pre>
  *
  * @category   Net
  * @package    Net_NNTP
@@ -66,194 +68,359 @@
  * @since      File available since release 1.3.0
  */
 
-?>
-<html>
+/**
+ *
+ */
+require_once 'config.inc.php';
 
-<head>
-    <title>PEAR::Net_NNTP Demo</title>
-</head>
+/**
+ *
+ */
+require_once 'common.inc.php';
 
-<body>
-<?php
 
-$loglevel = isset($_GET['loglevel']) && !empty($_GET['loglevel']) ? $_GET['loglevel'] : PEAR_LOG_NOTICE;
+/* Validate input */
 
-//
-require_once "Log.php";
-
-//
-$logger = &Log::factory('display', '', 'Net_NNTP Demo',
-                        array('linebreak' => "<br>\r\n",
-                              'error_prepend' => '',
-                              'error_append' => ''
-                             ),
-			$loglevel);
-
-// Register common input
-$transport = isset($_GET['encryption']) && !empty($_GET['encryption']) ? $_GET['encryption'] : null;
-$host = isset($_GET['host']) && !empty($_GET['host']) ? $_GET['host'] : null;
-$port = isset($_GET['port']) && !empty($_GET['port']) ? $_GET['port'] : null;
-
-// Register local input
-$group = isset($_GET['group']) && !empty($_GET['group']) ? $_GET['group'] : null;
-$from = isset($_GET['from']) && !empty($_GET['from']) ? $_GET['from'] : null;
-$next = isset($_GET['next']) && !empty($_GET['next']) ? true : false;
-
-// Validate local input
+// $group must be set
 if (empty($group)) {
-    die('<font color="cc0000">No newsgroup choosed!</font>');
+    error('No newsgroup choosen!');
 }
 
-//
-require_once "Net/NNTP/Client.php";
 
-//
-$nntp = new Net_NNTP_Client();
-$nntp->setLogger($logger);
+/* Prepare breadcrumbs */
+
+$breadcrumbs = array();
+$breadcrumbs['Frontpage'] = './index.php?' . query();
+$breadcrumbs['groups @ ' . ($host == null ? 'localhost' : $host)] = './groups.php?' . query();
+$breadcrumbs['group: ' . $group] = null;
+
 
 // Connect
-$posting = $nntp->connect($host, $transport, $port);
+$posting = $nntp->connect($host, $encryption, $port);
 if (PEAR::isError($posting)) {
-    die('<b><font color="#cc0000">' . $posting->getMessage() . '</font></b>');    
+    error('Unable to connect to NNTP server: ' . $posting->getMessage());
 }
 
 // Select group
-$currentgroup = $nntp->selectGroup($group);
-if (PEAR::isError($currentgroup)) {
-    die('<b><font color="cc0000">' . $currentgroup->getMessage() . '</font></b>');
-}
-
-if ($from) {
-    // select last article
-    $article = $nntp->selectArticle($from);
-    if (PEAR::isError($article)) {
-        die('<b><font color="#cc0000">' . $article->getMessage() . '</font></b>');
-    }
-
-    if ($next) {
-        $article = $nntp->selectNextArticle();
-    } else {
-        $article = $nntp->selectPreviousArticle();
-    }
-    if (PEAR::isError($article)) {
-        die('<b><font color="#cc0000">' . $article->getMessage() . '</font></b>');
-    }
-} else {
-    // select last article
-    $article = $nntp->selectArticle($nntp->last());
-    if (PEAR::isError($article)) {
-        die('<b><font color="#cc0000">' . $article->getMessage() . '</font></b>');
-    }
+$summary = $nntp->selectGroup($group);
+if (PEAR::isError($summary)) {
+    error($summary->getMessage());
 }
 
 //
-$i = 0;
-$articles = array();
+if (!$useRange) {
 
-// Loop until break inside
-while (true) {
-
-    // Break if no more articles
-    if ($article === false) {
-    	break;
+    // Select article
+    switch ($article) {
+    case '':
+    case 'last':
+         $article = $nntp->last();
+         break;
+    case 'first':
+         $article = $nntp->first();
+         break;
+    }
+    $dummy = $nntp->selectArticle($article);
+    if (PEAR::isError($dummy)) {
+        error($dummy->getMessage());
     }
 
-    // Fetch overview for currently selected article
-    $overview = $nntp->getOverview();
-    if (PEAR::isError($overview)) {
-        die('<font color="#cc0000">' . $overview->getMessage() . '</font><br>');
+
+    // Select next/previous article
+    switch ($action) {
+    case 'next':
+        $dummy = $nntp->selectNextArticle();
+         break;
+    case 'previous':
+        $dummy = $nntp->selectPreviousArticle();
+         break;
     }
+    if (PEAR::isError($dummy)) {
+        error($dummy->getMessage());
+    }
+
 
     //
-    $articles[] = $overview;
+    $i = 0;
+    $articles = array();
 
-    // Break if max article reached
-    if (++$i >= 10) {
+    // Loop until break inside
+    while (true) {
+
+        // Break if no more articles
+        if ($article === false) {
+    	    break;
+        }
+
+        // Fetch overview for currently selected article
+        $overview = $nntp->getOverview();
+        if (PEAR::isError($overview)) {
+            error($overview->getMessage());
+        }
+
+        //
+        $articles[] = $overview;
+
+        // Break if max article reached
+        if (++$i >= $max) {
+            break;
+        }
+
+        // Select next/previous article
+        if ($action == 'next') {
+            $article = $nntp->selectNextArticle();
+        } else {
+            $article = $nntp->selectPreviousArticle();
+        }
+        if (PEAR::isError($article)) {
+            error($article->getMessage());
+        }
+
+    }
+
+} else {
+
+    // Fetch overview for currently selected article
+    switch ($action) {
+    case '':
+    case 'last':
+         $range = ($nntp->last() - $max + 1) .'-'. $nntp->last();
+         break;
+    case 'previous':
+         $range = ($article - $max) .'-'. ($article - 1);
+         break;
+    case 'next':
+         $range = ($article + 1) .'-'. ($article + $max);
+         break;
+    case 'first':
+         $range = $nntp->first() .'-'. ($nntp->first() + $max - 1);
+         break;
+    default:
+        error('bad input!');
+    }
+    $articles = $nntp->getOverview($range);
+    if (PEAR::isError($articles)) {
+        error($articles->getMessage());
+    }
+}
+
+
+// Disconnect
+$nntp->disconnect();
+
+
+//
+if (!$useRange) {
+    if ($action != 'next') {
+        $articles = array_reverse($articles);
+    }
+}
+
+
+/**
+ *
+ */
+function nav()
+{ 
+    //
+    extract($GLOBALS);
+
+    // get the first and the last article number from returned articles
+    $first = reset($articles);
+    $last = end($articles);
+
+    // Start table
+    echo '<table width="100%" border="0" cellpadding="2" cellspacing="3">';
+    echo '<tr bgcolor="#cccccc">';
+
+    // Previous # link
+    echo '<td align="center" valign="middle">';
+    if ($first['Number'] > $nntp->first()) {
+        echo '<a href="group.php?', query('group='.urlencode($group) . '&article='.$first['Number'] . '&action=previous'), '">&laquo; Previous</a> ';
+    } else {
+        echo '&nbsp;';
+    }
+    echo '</td>';
+
+    // Group info
+    echo '<td align="center" valign="middle">';
+    echo $group, ' (', $first['Number'], '-', $last['Number'], ' of ', $summary['last'], ' ; ', $summary['count'], ' on server)';
+    echo '</td>';
+
+    // Next # link
+    echo '<td align="center" valign="middle">';
+    if ($last['Number'] < $nntp->last()) {
+        echo '<a href="group.php?', query('group='.urlencode($group) . '&article='.$last['Number'] . '&action=next'), '">Next &raquo;</a> ';
+    } else {
+        echo '&nbsp;';
+    }
+    echo '</td>';
+
+    // End table
+    echo '</tr>';
+    echo '</table>';
+}
+
+/**
+ *
+ */
+function articles()
+{
+    // 
+    extract($GLOBALS);
+
+    // 
+    switch ($format) {
+
+    case '';
+    case 'html';
+        echo '<table width="100%" border="0" cellpadding="3" cellspacing="4">', "\r\n";
+        echo '<tr bgcolor="#cccccc"><th>#</th><th>Subject</th><th>Author</th><th>Date</th></tr>', "\r\n";
+    	break;
+
+    case 'rss';
+        header('Content-type: text/xml');
+        echo '<?xml version="1.0" encoding="utf-8" ?>', "\r\n";
+        echo '<rss version="0.93">', "\r\n";
+        echo ' <channel>', "\r\n";
+        echo '  <title>', $host, ': ', $group, '</title>', "\r\n";
+        echo '  <link>http://', $_SERVER['SERVER_NAME'], dirname($_SERVER['SCRIPT_NAME']), '/' , htmlspecialchars(query('group='.$group)), '</link>', "\r\n";
+        echo '  <description></description>', "\r\n";
+    	break;
+
+    case 'rdf';
+    	header('Content-type: text/xml');
+    	echo '<?xml version="1.0" encoding="utf-8"?>', "\r\n";
+    	echo '<rdf:RDF', "\r\n";
+    	echo '        xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"', "\r\n";
+    	echo '        xmlns="http://my.netscape.com/rdf/simple/0.9/">', "\r\n";
+    	echo ' <channel>', "\r\n";
+    	echo '  <title>', $_SERVER['HTTP_HOST'], ' : ', $group, '</title>', "\r\n";
+        echo '  <link>http://', $_SERVER['SERVER_NAME'], dirname($_SERVER['SCRIPT_NAME']), '/' , htmlspecialchars(query('group='.$group)), '</link>', "\r\n";
+    	echo '  <description>', $group, 'Newsgroup at ', $host, '</description>', "\r\n";
+    	echo '  <language>en-US</language>', "\r\n";
+    	echo ' </channel>', "\r\n";
     	break;
     }
 
-    // Select previous article
-    if ($next) {
-        $article = $nntp->selectNextArticle();
-    } else {
-        $article = $nntp->selectPreviousArticle();
-    }
-    if (PEAR::isError($article)) {
-        die('<font color="cc0000">' . $article->getMessage() . '</font>');
+    // Loop through articles
+    $i == 0;
+    foreach ($articles as $overview) {
+
+    	// 
+    	$number = $overview['Number'];
+        $subject = $overview['Subject'];
+        $from = $overview['From'];
+        $date = $overview['Date'];
+
+    	// 
+        $link = 'article.php?' . query('group='.urlencode($group) . '&article='.urlencode($number));
+
+        // Decode subject and from header fields, if mime-extension is loaded...
+        if (function_exists('imap_mime_header_decode')) {
+
+    	    // Decode $subject
+    	    $decoded = imap_mime_header_decode($subject);
+    	    $subject = '';
+    	    foreach ($decoded as $element) {
+    	        $subject .= $element->text;
+    	    }
+
+    	    // Decode $from
+    	    $decoded = imap_mime_header_decode($from);
+    	    $from = '';
+    	    foreach ($decoded as $element) {
+    	    	$from .= $element->text;
+    	    }
+	}
+
+    	// Format...
+        $date = strftime('%c', strtotime($date));
+
+    	// Output
+        switch ($format) {
+
+	case '';
+	case 'html';
+    	    echo ' <tr class="article ', ($i++ % 2 ? 'even' : 'odd'), '">', "\r\n";
+            echo '  <td><a href="', $link, '">', $number, '</a></td>', "\r\n";
+            echo '  <td><a href="', $link, '">', $subject, '</a></td>', "\r\n";
+            echo '  <td>', $from, '</td>', "\r\n";
+            echo '  <td>', str_replace(' ', '&nbsp;', $date), '</td>', "\r\n";
+            echo ' </tr>', "\r\n";
+            break;
+
+	case 'rss';
+            echo '  <item>', "\r\n";
+            echo '   <link>http://', $_SERVER['SERVER_NAME'], dirname($_SERVER['SCRIPT_NAME']), '/' . htmlspecialchars($link), '</link>', "\r\n";
+            echo '   <title>', htmlspecialchars($subject), '</title>', "\r\n";
+            echo '   <description>', '</description>', "\r\n";
+            echo '   <pubDate>', $date, '</pubDate>', "\r\n";
+            echo '  </item>', "\r\n";
+            break;
+
+        case 'rdf':
+    	    echo ' <item>', "\r\n";
+    	    echo '  <title>', htmlspecialchars($subject), '</title>', "\r\n";
+            echo '  <link>http://', $_SERVER['SERVER_NAME'], dirname($_SERVER['SCRIPT_NAME']), '/' . htmlspecialchars($link), '</link>', "\r\n";
+    	    echo '  <description>', '</description>', "\r\n";
+    	    echo '  <pubDate>', $date822, '</pubDate>', "\r\n";
+    	    echo ' </item>', "\r\n";
+    	    break;
+        }
     }
 
+    // 
+    switch ($format) {
+    case '';
+    case 'html';
+        echo '</table>', "\r\n";
+    	break;
+    case 'rss';
+        echo ' </channel>', "\r\n";
+        echo '</rss>', "\r\n";
+    	break;
+    case 'rdf';
+        echo '</rdf:RDF>', "\r\n";
+    	break;
+    }
 }
 
-// Disconnect
-$nntp->quit();
+
+/**********/
+/* Output */
+/**********/
+
+if ($format == 'html') {
+    /**
+     * Output header
+     */
+    include 'header.inc.php';
+
+    //
+    $logger->dump();
+
+    //
+    nav();
+}
 
 //
-if (!$next) {
-    $articles = array_reverse($articles);
-}
-
-// get the first and the last article number from returned articles
-$first = reset($articles);
-$last = end($articles);
-
-// Output
-echo '<h1>Avaible articles in <i>', $group, ' @ ', $host, '</i>:</h1>';
-echo $messageCount ;
-echo '<hr>';
-echo '<h2>Article ', $first['Number'], '-', $last['Number'], ' out of ', $currentgroup['last'], ' messages (', $currentgroup['count'], ' on server) :</h2>';
-
-// Previous/Next # links
-if ($first['Number'] > $nntp->first()) {
-    echo '<a href="group.php?', "host=$host&port=$port&group=", urlencode($group), '&from=', $first['Number'], "&loglevel=$loglevel", '">Previous 10</a> ';
-}
-if ($last['Number'] < $nntp->last()) {
-    echo '<a href="group.php?', "host=$host&port=$port&group=", urlencode($group), '&from=', $last['Number'], '&next=true', "&loglevel=$loglevel", '">Next 10</a> ';
-}
-
-echo '<table border="0" cellpadding="2" cellspacing="3">';
-echo '<tr bgcolor="#cccccc"><th>#</th><th>Subject</th><th>Author</th><th>Date</th></tr>';
-foreach ($articles as $overview) {
-
-
-    $number = $overview['Number'];
-    $subject = $overview['Subject'];
-    $from = $overview['From'];
-    $date = $overview['Date'];
-
-    $link = 'article.php?' . "host=$host&port=$port&group=" . urlencode($group) . '&msgnum=' . urlencode($number) . "&loglevel=$loglevel";
-
-    // Decode subject and from header fields, if mime-extension is loaded...
-    if (function_exists('imap_mime_header_decode')) {
-    	$decoded = imap_mime_header_decode($subject);
-	$subject = '';
-    	foreach ($decoded as $element) {
-    	    $subject .= $element->text;
-    	}
-
-    	$decoded = imap_mime_header_decode($from);
-	$from = '';
-    	foreach ($decoded as $element) {
-    	    $from .= $element->text;
-    	}
-    }
-
-    echo '<tr>';
-    echo '<td><a href="', $link, '">', $number, '</a></td>';
-    echo '<td>';
-    echo '<a href="', $link, '"><b>', $subject, '</b></a><br>';
-    echo '</td>';
-    echo '<td>', $from, '</td>';
-    echo '<td>', str_replace(" ", "&nbsp;", strftime("%c", strtotime($date))), '</td>';
-
-    echo '</tr>';
-}
-
-echo '</table>';
-if (count($articles) <= 1) {
+if (count($articles) < 1) {
     echo 'No articles...';
+} else {
+    articles();
+}
+
+//
+if ($format == 'html') {
+    //
+    nav();
+
+
+    /**
+     * Output footer
+     */
+    include 'footer.inc.php';
 }
 
 ?>
-</body>
-
-</html>

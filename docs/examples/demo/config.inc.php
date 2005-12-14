@@ -68,110 +68,22 @@
  * @since      File available since release 1.3.0
  */
 
-/**
- *
- */
-require_once 'config.inc.php';
+$title = 'PEAR::Net_NNTP Demo';
+$subtitle = 'Demo newsgroup reader powered by <a href="http://pear.php.net/">PEAR</a>::<a href="http://pear.php.net/package/Net_NNTP/">Net_NNTP</a>';
 
-/**
- * 
- */
-require_once 'common.inc.php';
+$host = 'news.php.net';
+$encryption = null;
+$port = null;
+$wildmat = null;
+$loglevel = 5;  // PEAR_LOG_NOTICE = 5 ; PEAR_LOG_INFO = 6 ; PEAR_LOG_DEBUG = 7
 
+$frontpage = true;
+$allowoverwrite = true;
 
-/* Prepare breadcrumbs */
+$useRange = false;
+$max = 10;
 
-$breadcrumbs = array();
-$breadcrumbs['Frontpage'] = './index.php?' . query();
-$breadcrumbs['Groups @ ' . ($host == null ? 'localhost' : $host)] = null;
+$timeout = null;
 
-
-// Connect
-$posting = $nntp->connect($host, $encryption, $port);
-if (PEAR::isError($posting)) {
-    error('Unable to connect to NNTP server: ' . $posting->getMessage());
-}
-
-// Fetch list of groups
-$groups = $nntp->getGroups($wildmat);
-if (PEAR::isError($groups)) {
-    error('Fetching list of groups failed: ' . $groups->getMessage());
-}
-
-// Fetch known (to the server) group descriptions
-$descriptions = $nntp->getDescriptions($wildmat);
-if (PEAR::isError($descriptions)) {
-    $logger->notice('Fetching group descriptions failes: ' . $descriptions->getMessage());
-
-    //
-    $descriptions = array();
-}
-
-// Close connection
-$nntp->disconnect();
-
-
-/**
- *
- */
-function groups()
-{
-    //
-    extract($GLOBALS);
-	
-    //
-    echo '<table border="0" cellpadding="3" cellspacing="4">', "\r\n";
-    echo '<tr><th>Group</th><th>Articles</th><th>Description</th><th>Posting</th></tr>', "\r\n";
-
-    // Loop through groups
-    $i = 0;
-    foreach ($groups as $group) {
-
-        $link = 'group.php?' . query('group='.urlencode($group['group']));
-
-        $messageCount = $group['last'] - $group['first'] + 1;
-
-        $description = empty($descriptions[$group['group']]) ? '' : $descriptions[$group['group']];
-
-	switch ($group['posting']) {
-        case 'y': $posting = 'yes'; break;
-        case 'n': $posting = 'no'; break;
-        case 'm': $posting = 'moderated'; break;
-        default: $posting = 'unknown';
-	}
-
-	echo ' <tr class="group ', ($i++ % 2 ? 'even' : 'odd'), ' posting-', $posting, '">', "\r\n";
-	echo '  <td align="left" class="name"><a href="', $link, '">', $group['group'], '</a></td>', "\r\n";
-	echo '  <td align="center" class="count">', $messageCount, '</td>', "\r\n";
-	echo '  <td align="left" class="description">', $description, '</td>', "\r\n";
-	echo '  <td align="center" class="posting">', $posting, '</td>', "\r\n";
-	echo ' </tr>', "\r\n";
-    }
-
-    //
-    echo '</table>', "\r\n";
-}
-
-
-/**********/
-/* Output */
-/**********/
-
-/**
- * Output header
- */
-include 'header.inc.php';
-
-
-//
-$logger->dump();
-
-// 
-groups();
-
-/**
- * Output footer
- */
-include 'footer.inc.php';
 
 ?>

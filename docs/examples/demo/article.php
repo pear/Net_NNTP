@@ -6,6 +6,7 @@
  * 
  * PHP versions 4 and 5
  *
+ * <pre>
  * +-----------------------------------------------------------------------+
  * |                                                                       |
  * | W3C® SOFTWARE NOTICE AND LICENSE                                      |
@@ -54,6 +55,7 @@
  * | remain with copyright holders.                                        |
  * |                                                                       |
  * +-----------------------------------------------------------------------+
+ * </pre>
  *
  * @category   Net
  * @package    Net_NNTP
@@ -66,151 +68,319 @@
  * @since      File available since release 1.3.0
  */
 
-?>
-<html>
 
-<head>
-    <title>PEAR::Net_NNTP Demo</title>
-</head>
+/**
+ *
+ */
+require_once 'config.inc.php';
 
-<body>
-<?php
+/**
+ *
+ */
+require_once 'common.inc.php';
 
-$loglevel = isset($_GET['loglevel']) && !empty($_GET['loglevel']) ? $_GET['loglevel'] : PEAR_LOG_NOTICE;
 
-//
-require_once "Log.php";
+/* Validate input */
+/*
 
-//
-$logger = &Log::factory('display', '', 'Net_NNTP Demo',
-                        array('linebreak' => "<br>\r\n",
-                              'error_prepend' => '',
-                              'error_append' => ''
-                             ),
-			$loglevel);
-
-// Register common input
-$transport = isset($_GET['encryption']) && !empty($_GET['encryption']) ? $_GET['encryption'] : null;
-$host = isset($_GET['host']) && !empty($_GET['host']) ? $_GET['host'] : null;
-$port = isset($_GET['port']) && !empty($_GET['port']) ? $_GET['port'] : null;
-
-// Register local input
-$group = isset($_GET['group']) && !empty($_GET['group']) ? $_GET['group'] : null;
-$messageNum = isset($_GET['msgnum']) && !empty($_GET['msgnum'])? $_GET['msgnum'] : null;
-$messageID = isset($_GET['msgid']) && !empty($_GET['msgid']) ? $_GET['msgid'] : null;
-
-// Validate local input
-if (is_null($group) and is_null($messageID)) {
-    die('<b><font color="#cc0000">Error: Nither group nor message-id provided!</font></b>');
+// Must have either $messageNum or $messageID
+if (is_null($messageNum) and is_null($messageID)) {
+    error('Error: Nither message number nor message-id provided!');
 }
 
-if (!is_null($group) and is_null($messageNum)) {
-    die('<b><font color="#cc0000">Error: Group needs message number!</font></b>');
+// Only $messageNum OR $messageID
+if (!is_null($messageNum) and !is_null($messageId)) {
+    error('Error: Both message-id _AND_ message number provided!');
 }
 
-if (!is_null($messageID) and !is_null($messageNum)) {
-    die('<b><font color="#cc0000">Error: Both message-id AND message number provided!</font></b>');
+// $messageNum requires $group
+if (is_null($messageNum) and !is_null($group)) {
+    error('Error: Message number requires group!');
+}
+*/
+
+//
+$messageID  = $group === null ? $article : null;
+#$article    = $group !== null ? $article : null;
+
+/* Prepare breadcrumbs */
+
+$breadcrumbs = array();
+$breadcrumbs['Frontpage'] =  './index.php?' . query();
+$breadcrumbs['groups @ '  . ($host == null ? 'localhost' : $host)] = './groups.php?' . query();
+if ($messageID !== null) {
+    $breadcrumbs['Article: '.htmlentities($messageID)]   = null;
+} else {
+    $breadcrumbs['group: '.$group] =  './group.php?' . query("group=$group&from=$from&next=$next");
+    $breadcrumbs['Article: #'.$article] = null;
 }
 
-//
-require_once 'Net/NNTP/Client.php';
-
-//
-$nntp = new Net_NNTP_Client();
-$nntp->setLogger($logger);
 
 // Connect
-$posting = $nntp->connect($host, $transport, $port);
+$posting = $nntp->connect($host, $encryption, $port);
 if (PEAR::isError($posting)) {
-    echo '<font color="#cc0000">No connection to newsserver: ', $posting->getMessage(), '</font>';
+    error('Unable to connect to NNTP server: ' . $posting->getMessage());
 }
 
-// If asked for a article in a group, select group, then article
-if ($group !== null && $messageNum !== null) {
-    $currentgroup = $nntp->selectGroup($group);
-    if (PEAR::isError($currentgroup)) {
-        die('<b><font color="cc0000">' . $currentgroup->getMessage() . '</font></b>');
+// If asked for a article in a group, select group then article
+if ($messageID === null) {
+
+    // Select group
+    $summary = $nntp->selectGroup($group);
+    if (PEAR::isError($summary)) {
+        error($summary->getMessage());
     }
 
-    $currentmessage = $nntp->selectArticle($messageNum);
-    if (PEAR::isError($currentmessage)) {
-        die('<b><font color="cc0000">' . $currentmessage->getMessage() . '</font></b>');
+    // Select article
+    $article = $nntp->selectArticle($article);
+    if (PEAR::isError($article)) {
+        error($article->getMessage());
+    }
+
+    if ($article === false) {
+        error('The article is not avalible on the server!');
+    }
+
+    // Fetch overview
+    $overview = $nntp->getOverview();
+    if (PEAR::isError($overview)) {
+        $logger->warning('Error fetching overview (Server response: ' . $overview->getMessage() . ')');
+
+    	// 
+        $overview = false;
+    }
+
+    // Fetch 'Newsgroups' header field
+    $groups = $nntp->getHeaderField('Newsgroups');
+    if (PEAR::isError($groups)) {
+        $logger->warning('Error fetching \'Newsgroups\' header field (Server response: ' . $groups->getMessage() . ')');
+
+   	// 
+        $groups = false;
     }
 }
 
 
-// Fetch 'Subject' header field
-$subject = $nntp->getHeaderField('Subject', $messageID);
-if (PEAR::isError($subject)) {
-    $logger->warning('Error: Error fetching \'Subject\' header field (Server response: ' . $subject->getMessage() . ')');
-    $subject = null;
+// Fetch header
+$header = $nntp->getHeader($messageID);
+if (PEAR::isError($header)) {
+    error('Error fetching header (Server response: ', $header->getMessage(), ')');
 }
-
-// Fetch 'From' header field
-$from = $nntp->getHeaderField('From', $messageID);
-if (PEAR::isError($from)) {
-    $logger->warning('Error: Error fetching \'From\' header field (Server response: ' . $from->getMessage() . ')');
-    $from = null;
+if ($header === false) {
+    error('The article is not avalible on the server!');
 }
-
-// Fetch 'From' header field
-$groups = $nntp->getHeaderField('Newsgroups', $messageID);
-if (PEAR::isError($groups)) {
-    $logger->warning('Error: Error fetching \'Newsgroups\' header field (Server response: ' . $groups->getMessage() . ')');
-    $groups = null;
-}
-// Fetch list of references
-$references = $nntp->getReferences($messageID);
-if (PEAR::isError($references)) {
-    $logger->warning('Error: Error fetching \'References\' header field (Server response: ' . $references->getMessage() . ')');
-    $references = array();
-}
-
-// Fetch Raw header and body
-$header = $nntp->getHeader($messageID, true);
-$body = $nntp->getBody($messageID, true);
 
 
 
-if (empty($subject)) {
-    $logger->info('Empty \'Subject\' header.');
-    $subject = '[unknown]';
+// Fetch body
+$body = $nntp->getBody($messageID);
+if (PEAR::isError($body)) {
+    error('Error fetching body (Server response: ', $body->getMessage(), ')');
 }
-if (empty($from)) {
-    $logger->info('Empty \'From\' header.');
-    $from = '[unknown]';
-}
-if (empty($groups)) {
-    $logger->info('Empty \'Newsgroups\' header.');
-    $groups = '[unknown]';
-}
-
 
 
 // Close connection
-$nntp->quit();
+$nntp->disconnect();
 
-// Output
-echo '<h1>Subject: ', $subject , '</h1>';
-echo 'by: ', $from , '<br>';
-echo 'in: ', $groups, '<br>';
-echo '<hr>';
-echo '<b>References:</b>';
-if (!PEAR::isError($references)) {
-    foreach ($references as $reference) {
-	echo ' <a href="article.php?', "host=$host&port=$port&msgid=$reference&loglevel=$loglevel", '">#', ++$i, '</a>';
+
+
+/* ... */
+
+/**
+ *
+ */
+function x($header, $fieldname, $index = 0)
+{
+    //
+    $fieldname = strtolower($fieldname);
+
+    //
+    for ($i = 0, $j = 0 ; $i < count($header) ; $i++) {
+
+    	//
+    	$line = $header[$i];
+	
+    	//
+    	@list($tag, $value) = explode(": ", $line, 2);
+    	if (strtolower($tag) != $fieldname) {
+    	    continue;
+    	}
+
+    	// Skip if $index not reached
+    	if ($j++ < $index) {
+    	    continue;
+	}
+
+    	// Append folded lines...
+	while (($next = $header[++$i]) && ($next[0] == ' ' || $next[0] == "\t")) {
+	    $value .= ' ' . ltrim($next, " \t");
+	}
+
+	// Set $group
+	return $value;
     }
 }
-echo '<hr>';
-echo '<h2>Header</h2>';
-echo '<pre>';
-echo preg_replace("/\r\n(\t| )+/", ' ', $header);
-echo '</pre>';
-echo '<hr>';
-echo '<h2>Body</h2>';
-echo '<form><textarea wrap="off" cols="79", rows="25">', $body, '</textarea></form>';
+
+
+//
+if (!empty($overview)) {
+    $subject    = $overview['Subject'];
+    $from       = $overview['From'];
+    $date       = $overview['Date'];
+    $references = $overview['References'];
+
+} else {
+    $subject    = x($header, 'Subject');
+    $from       = x($header, 'From');
+    $date       = x($header, 'Date');
+    $references = x($header, 'References');
+
+    if (empty($references)) {
+        $references = x($header, 'In-reply-to');
+    }
+}
+
+
+//
+if (empty($groups)) {
+    $logger->info('Received an empty \'Newsgroups\' header field - parsing header as backup...');
+    $groups = x($header, 'Newsgroups');
+}
+
+
+//
+$references = empty($references) ? null : split("[ \t]", $references);
+
+
+
+
+/**
+ *
+ */
+function outputHead()
+{
+    //
+    extract($GLOBALS);
+
+    echo '<table id="article-head" border="0" cellpadding="2" cellspacing="2" width="100%">' . "\r\n";
+
+    // Subject
+    echo ' <tr>' . "\r\n";
+    echo '  <td class="label">Subject:</td>' . "\r\n";
+    echo '  <td class="value" colspan="3"><b>' . htmlspecialchars($subject) . '</b></td>', "\r\n";
+    echo ' </tr>', "\r\n";
+    // From
+    echo ' <tr>', "\r\n";
+    echo '  <td class="label">From:</td>' . "\r\n";
+    echo '  <td class="value">' . htmlspecialchars($from) . '</td>', "\r\n";
+    // Date
+    echo '  <td class="label">Date:</td>' . "\r\n";
+    echo '  <td class="value">' . htmlspecialchars($date) . '</td>', "\r\n";
+    echo ' </tr>', "\r\n";
+    echo ' <tr>', "\r\n";
+
+    // References
+    echo '  <td class="label">References:</td>' . "\r\n";
+    echo '  <td class="value">';
+    switch (true) {
+    case is_array($references):
+        foreach ($references as $reference) {
+    	echo '   <a href="article.php?', query('article='.urlencode($reference)), '">#', ++$i, '</a>', "\r\n";
+        }
+        break;
+    case is_string($references) && !empty($references):
+        echo '   <a href="article.php?', query('article='.urlencode($reference)), '">#', ++$i, '</a>', "\r\n";
+        break;
+    }
+    echo '  </td>', "\r\n";
+
+
+    // Groups
+    echo '  <td class="label">Groups:</td>' . "\r\n";
+    echo '  <td class="value">', "\r\n";
+    foreach (split(',', $groups) as $group) {
+        echo '<a href="./group.php?'. query('group='.urlencode($group)), '">', $group, '</a> ';
+    }
+    echo '  </td>', "\r\n";
+    echo ' </tr>', "\r\n";
+
+    //
+    echo '</table>', "\r\n";
+}
+
+/**
+ *
+ */
+function outputHeader()
+{
+    //
+    extract($GLOBALS);
+
+    echo '<blockquote id="article-header">', "\r\n";
+    echo ' <pre>', "\r\n";
+    echo preg_replace("/\r\n(\t| )+/", ' ', implode("\r\n", $header));
+    echo ' </pre>', "\r\n";
+    echo '</blockquote>', "\r\n";
+}
+
+/**
+ *
+ */
+function outputBody()
+{
+    //
+    extract($GLOBALS);
+
+    echo '<blockquote id="article-body">', "\r\n";
+    echo ' <pre>', "\r\n";
+    foreach ($body as $line) {
+
+        /* Code from news.php.net begins here */ 
+    
+        // this is some amazingly simplistic code to color quotes/signatures
+        // differently, and turn links into real links. it actually appears
+        // to work fairly well, but could easily be made more sophistimicated.
+        $line = htmlentities($line, ENT_NOQUOTES, 'utf-8');
+        $line = preg_replace("/((mailto|http|ftp|nntp|news):.+?)(&gt;|\\s|\\)|\\.\\s|$)/", "<a href=\"\\1\">\\1</a>\\3", $line);
+        if (!$insig && $line == "-- \r\n") {
+        	echo '<span class="signature">';
+        	$insig = 1;
+        }
+        if ($insig && $line == "\r\n") {
+        	echo '</span>';
+        	$insig = 0;
+        }
+        if (!$insig && substr($line, 0, 4) == '&gt;') {
+        	echo '<span class="quote">', $line, '</span>';
+        } else {
+        	echo $line;
+        }
+        /* Code from news.php.net ends here */ 
+
+        echo "\r\n";
+    }
+    echo ' </pre>', "\r\n";
+    echo '</blockquote>', "\r\n";
+}
+
+
+/**********/
+/* Output */
+/**********/
+
+/**
+ * Output header
+ */
+include 'header.inc.php';
+
+
+$logger->dump();
+outputHead();
+outputBody();
+
+/**
+ * Output footer
+ */
+include 'footer.inc.php';
 
 ?>
-</body>
-
-</html>

@@ -6,6 +6,7 @@
  * 
  * PHP versions 4 and 5
  *
+ * <pre>
  * +-----------------------------------------------------------------------+
  * |                                                                       |
  * | W3C® SOFTWARE NOTICE AND LICENSE                                      |
@@ -54,6 +55,7 @@
  * | remain with copyright holders.                                        |
  * |                                                                       |
  * +-----------------------------------------------------------------------+
+ * </pre>
  *
  * @category   Net
  * @package    Net_NNTP
@@ -66,30 +68,45 @@
  * @since      File available since release 1.3.0
  */
 
+/**
+ *
+ */
+require_once 'config.inc.php';
+
+// Forward to groups.php if $frontpage not allowed
+if (!$frontpage) {
+    include 'groups.php';
+    die();
+}
+
+/**
+ *
+ */
+require_once 'common.inc.php';
+
+/**
+ * Output header
+ */
+include 'header.inc.php';
+
 ?>
-<html>
-
-<head>
-    <title>PEAR::Net_NNTP Demo</title>
-</head>
-
-<body>
-<h1>PEAR::Net_NNTP demo</h1><hr>
 
 <form action="groups.php" method="GET">
-<table border="0" cellspacing="2" cellpadding="2">
-<tr><td>Host:</td><td><input type="text" name="host" value="news.php.net"></td><td>(If empty, use default 'localhost')</td></tr>
-<tr><td>Port:</td><td><input type="text" name="port" value=""></td><td>(If empty, use default: '119' on non-encrypted connections, and '563' on encrypted connections)</td></tr>
-<tr><td>Windmat:</td><td><input type="text" name="wildmat" value=""></td><td>(Group wildmat)</td></tr>
-<tr><td colspan="3"><hr></td></tr>
-<tr><td valign="top">Encryption:</td><td><input type="radio" name="encryption" value="" checked="checked">none<br><input type="radio" name="encryption" value="tls">TLS<br><input type="radio" name="encryption" value="ssl">SSL</td><td>(Requires a running NNTPS server)</td></tr>
-<tr><td colspan="3"><hr></td></tr>
-<tr><td valign="top">Loglevel:</td><td><input type="radio" name="loglevel" value="4" checked="checked">warning<br><input type="radio" name="loglevel" value="5" checked="checked">notice<br><input type="radio" name="loglevel" value="6">info<br><input type="radio" name="loglevel" value="7">debug</td><td>(Application logging level)</td></tr>
-<tr><td colspan="3"><hr></td></tr>
-<tr><td></td><td><input type="submit" value="View newsgroups"></td></tr>
+<table border="0" cellspacing="0" cellpadding="3" id="xxx">
+<tr><td valign="top"><b>Host:</b></td><td><input type="text" name="host" value="<?php echo $host==null ? 'news.php.net' : $host; ?>"></td><td>(Defaults to 'localhost' when empty)</td></tr>
+<tr><td valign="top"><b>Port:</b></td><td><input type="text" name="port" value="<?php echo $port; ?>"></td><td>(Defaults to '119' on non-encrypted connections, and '563' on encrypted connections when empty)</td></tr>
+<tr><td valign="top"><b>Windmat:</b></td><td><input type="text" name="wildmat" value="<?php echo $wildmat; ?>"></td><td>(Group wildmat)</td></tr>
+<tr><td valign="top"><b>Encryption:</b></td><td><input type="radio" name="encryption" value="" checked="checked">none<br><input type="radio" name="encryption" value="tls">TLS<br><input type="radio" name="encryption" value="ssl">SSL</td><td valign="top">(Requires a NNTPS server)</td></tr>
+<tr><td valign="top"><b>Loglevel:</b></td><td><input type="radio" name="loglevel" value="4" checked="checked">warning<br><input type="radio" name="loglevel" value="5" checked="checked">notice<br><input type="radio" name="loglevel" value="6">info<br><input type="radio" name="loglevel" value="7">debug</td><td valign="top">(Application logging level)</td></tr>
+<tr><td></td><td colspan="2"><input type="submit" value="View newsgroups"></td></tr>
 </table>
 </form>
 
-</body>
+<?php
 
-</html>
+/**
+ * Output footer
+ */
+include 'footer.inc.php';
+
+?>
