@@ -23,11 +23,11 @@ The protocol implementation does not parse the actual article data, but at the c
   <active>yes</active>
  </lead>
 
- <date>2005-12-14</date>
+ <date>2005-12-23</date>
  <time>00:00:00</time>
  <version>
-  <release>1.3.0</release>
-  <api>0.8.0</api>
+  <release>1.3.1</release>
+  <api>0.8.1</api>
  </version>
  <stability>
   <release>alpha</release>
@@ -37,50 +37,14 @@ The protocol implementation does not parse the actual article data, but at the c
  <license uri="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">W3C</license>
 
  <notes>
-+ WARNING!
-  - Serious backward compatibility break with v1.2.x (alpha) releases!!! The experimental classes Net_NNTP_Header and Net_NNTP_Message has been droped, since such features does not belong in this package! For now loading either class results in a notice/warning, but later on both classes will be removed! Previously unimplementet NNTP commands now allow access to article headers...
-  - Some backward compatibility break with v1.1.x (beta) releases!!!
-
 + Changes in Net_NNTP_Client:
-  - fixed: connect(), now returns false when posting is prohibited (like cmdModeReader()).
-  - fixed: getGroupArticles(), now updates internal group summary cache.
-  - added: getHeaderField().
-  - added: getGroupArticles().
-  - modified: connect(), added $encryption parameter to support ssl/tls connections, and $timeout parameter. 
-  - modified: selectGroup(), added (experimental) parameter to allow fetching of article numbers at once.
-  - modified: getOverview(), added two (experimental) parameters (rewritten to preserve backward compatible with v1.0).
-  - modified and rewritten: getGroups(), addition of optional $wildmat parameter.
-  - modified and rewritten: getDescriptions(), addition of optional $wildmat parameter.
-  - modified and rewritten: getOverview(), $first and $last parameters changed into $range.
-  - renamed: quit() into disconnect(), (temporarily) preserving backward compatible with v1.0.
-  - renamed: getArticleRaw() into getArticle(), (temporarily) preserving backward compatible with v1.1.
-  - renamed: getHeaderRaw() into getHeader(), (temporarily) preserving backward compatible with v1.1.
-  - renamed: getBodyRaw() into getBody(), (temporarily) preserving backward compatible with v1.1.
-  - renamed and rewritten: getReferencesOverview() into getReferences().
-  - removed: connectAuthenticated() (as in MAINT_1_0 and MAINT_1_2).
-  - removed: isConnected() removed due to use of private members in Net_Socket! 
-  - misc: all internal PEAR::throwError() changed to $this->throwError().
-  - misc: major phpdoc rewrite.
-  - misc: removal of code related to not yet implemented alternative authentication methods.
+  - added: mail() as a replacement for experimental post() using identical parameters as PHP's mail() function, (temporarily) preserving backward compatibility with experimental method in v1.0.
+  - modified and rewritten: post(), reduced to having only one parameter, (temporarily) preserving backward compatibility with experimental method in v1.0.
 
 + Changes in Net_NNTP_Protocol_Client:
-  - added: cmdXHdr().
-  - added: cmdCapabilities().
-  - added: cmdHelp().
-  - added: cmdListActive().
-  - added: cmdXPat().
-  - modified connect(), added $encryption parameter to support ssl/tls connections. 
-  - modified: cmdNext(), now returns array by default.
-  - modified and rewritten: cmdXOver(), first parameter now optional.
-  - renamed: isConnected() into _isConnected(), due to use of private members in Net_Socket. 
-  - misc: support for logging via the Log package (debugging rewritten to use logger).
-  - misc: use of status response code constants in Net_NNTP_Protocol_Responsecode.
-  - misc: extends PEAR (as in v1.0.x).
-  - misc: all internal PEAR::throwError() changed to $this->throwError().
-
-+ Examples replaced by fully functional newsgroup reader demo.
-
-+ License upgraded to newer edition of 'W3C SOFTWARE NOTICE AND LICENSE'
+  - added: _sendArticle()
+  - modified and rewritten: cmdPost() split into cmdPost() and cmdPost2() + now sends data via _sendArticle()
+  - modified and rewritten: cmdIhave() split into cmdIhave() and cmdIhave2() + now sends data via _sendArticle()
  </notes>
 
  <contents>
@@ -186,6 +150,64 @@ The protocol implementation does not parse the actual article data, but at the c
  <phprelease />
 
  <changelog>
+
+  <release>
+   <version>
+    <release>1.3.1</release>
+    <api>0.8.0</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <date>2005-12-14</date>
+   <license>W3C</license>
+   <notes>+ WARNING!
+  - Serious backward compatibility break with v1.2.x (alpha) releases!!! The experimental classes Net_NNTP_Header and Net_NNTP_Message has been droped, since such features does not belong in this package! For now loading either class results in a notice/warning, but later on both classes will be removed! Previously unimplementet NNTP commands now allow access to article headers...
+  - Some backward compatibility break with v1.1.x (beta) releases!!!
+
++ Changes in Net_NNTP_Client:
+  - fixed: connect(), now returns false when posting is prohibited (like cmdModeReader()).
+  - fixed: getGroupArticles(), now updates internal group summary cache.
+  - added: getHeaderField().
+  - added: getGroupArticles().
+  - modified: connect(), added $encryption parameter to support ssl/tls connections, and $timeout parameter. 
+  - modified: selectGroup(), added (experimental) parameter to allow fetching of article numbers at once.
+  - modified: getOverview(), added two (experimental) parameters (rewritten to preserve backward compatible with v1.0).
+  - modified and rewritten: getGroups(), addition of optional $wildmat parameter.
+  - modified and rewritten: getDescriptions(), addition of optional $wildmat parameter.
+  - modified and rewritten: getOverview(), $first and $last parameters changed into $range.
+  - renamed: quit() into disconnect(), (temporarily) preserving backward compatible with v1.0.
+  - renamed: getArticleRaw() into getArticle(), (temporarily) preserving backward compatible with v1.1.
+  - renamed: getHeaderRaw() into getHeader(), (temporarily) preserving backward compatible with v1.1.
+  - renamed: getBodyRaw() into getBody(), (temporarily) preserving backward compatible with v1.1.
+  - renamed and rewritten: getReferencesOverview() into getReferences().
+  - removed: connectAuthenticated() (as in MAINT_1_0 and MAINT_1_2).
+  - removed: isConnected() removed due to use of private members in Net_Socket! 
+  - misc: all internal PEAR::throwError() changed to $this->throwError().
+  - misc: major phpdoc rewrite.
+  - misc: removal of code related to not yet implemented alternative authentication methods.
+
++ Changes in Net_NNTP_Protocol_Client:
+  - added: cmdXHdr().
+  - added: cmdCapabilities().
+  - added: cmdHelp().
+  - added: cmdListActive().
+  - added: cmdXPat().
+  - modified connect(), added $encryption parameter to support ssl/tls connections. 
+  - modified: cmdNext(), now returns array by default.
+  - modified and rewritten: cmdXOver(), first parameter now optional.
+  - renamed: isConnected() into _isConnected(), due to use of private members in Net_Socket. 
+  - misc: support for logging via the Log package (debugging rewritten to use logger).
+  - misc: use of status response code constants in Net_NNTP_Protocol_Responsecode.
+  - misc: extends PEAR (as in v1.0.x).
+  - misc: all internal PEAR::throwError() changed to $this->throwError().
+
++ Examples replaced by fully functional newsgroup reader demo.
+
++ License upgraded to newer edition of 'W3C SOFTWARE NOTICE AND LICENSE'
+   </notes>
+  </release>
 
   <release>
    <version>
