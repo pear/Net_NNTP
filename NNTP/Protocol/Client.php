@@ -356,7 +356,85 @@ class Net_NNTP_Protocol_Client extends PEAR
     }
 
     // }}}
-    // {{{ __currentStatusResponse()
+    // {{{ _sendText()
+
+    /**
+     *
+     *
+     * @access private
+     */
+    function _sendArticle($article)
+    {
+    	/* data should be in the format specified by RFC850 */
+	    
+    	switch (true) {
+    	case is_string($article):
+    	    //
+    	    $this->_socket->write($article);
+    	    $this->_socket->write("\r\n.\r\n");
+
+    	    //
+    	    if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
+    	        foreach (explode("\r\n", $article) as $line) {
+    		    $this->_logger->debug('D: ' . $line);
+    	        }
+    	    	$this->_logger->debug('D: .');
+    	    }
+	    break;
+
+    	case is_array($article):
+    	    //
+    	    $header = reset($article);
+    	    $body = next($article);
+
+/* Experimental...
+    	    // If header is an array, implode it.
+    	    if (is_array($header)) {
+    	        $header = implode("\r\n", $header) . "\r\n";
+    	    }
+*/
+
+    	    // Send header (including separation line)
+    	    $this->_socket->write($header);
+    	    $this->_socket->write("\r\n");
+
+    	    //
+    	    if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
+    	        foreach (explode("\r\n", $header) as $line) {
+    	    	    $this->_logger->debug('D: ' . $line);
+    	    	}
+    	    }
+
+
+/* Experimental...
+    	    // If body is an array, implode it.
+    	    if (is_array($body)) {
+    	        $header = implode("\r\n", $body) . "\r\n";
+    	    }
+*/
+
+    	    // Send body
+    	    $this->_socket->write($body);
+    	    $this->_socket->write("\r\n.\r\n");
+
+    	    //
+    	    if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
+    	        foreach (explode("\r\n", $body) as $line) {
+    	    	    $this->_logger->debug('D: ' . $line);
+    	    	}
+    	        $this->_logger->debug('D: .');
+    	    }
+	    break;
+
+	default:
+    	    return $this->throwError('Ups...', null, null);
+    	}
+
+	return true;
+    }
+
+    // }}}
+    // {{{ _currentStatusResponse()
 
     /**
      *
@@ -1000,28 +1078,11 @@ class Net_NNTP_Protocol_Client extends PEAR
     /**
      * Post an article to a newsgroup.
      *
-     * Among the aditional headers you might think of adding could be:
-     * "NNTP-Posting-Host: <ip-of-author>", which should contain the IP-adress
-     * of the author of the post, so the message can be traced back to him.
-     * "Organization: <org>" which contain the name of the organization
-     * the post originates from.
-     *
-     * @param string $newsgroup The newsgroup to post to.
-     * @param string $subject The subject of the post.
-     * @param string $body The body of the post itself.
-     * @param string $from Name + email-adress of sender.
-     * @param optional mixed $headers Aditional headers to send.
-     *
      * @return mixed (bool) true on success or (object) pear_error on failure
      * @access protected
      */
-    function cmdPost($newsgroup, $subject, $body, $from, $headers = null)
+    function cmdPost()
     {
-	// Only accept $headers is null, array or string
-    	if (!is_null($headers) && !is_array($headers) && !is_string($headers)) {
-    	    return $this->throwError('Ups', null, 0);
-	}
-
         // tell the newsserver we want to post an article
     	$response = $this->_sendCommand('POST');
     	if (PEAR::isError($response)) {
@@ -1030,7 +1091,7 @@ class Net_NNTP_Protocol_Client extends PEAR
 
     	switch ($response) {
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_POSTING_SEND: // 340, RFC977: 'send article to be posted. End with <CR-LF>.<CR-LF>'
-    	    	// continue...
+    	    	return true;
     	    	break;
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_POSTING_PROHIBITED: // 440, RFC977: 'posting not allowed'
     	    	return $this->throwError('Posting not allowed', $response, $this->_currentStatusResponse());
@@ -1039,41 +1100,25 @@ class Net_NNTP_Protocol_Client extends PEAR
     	    	return $this->_handleUnexpectedResponse($response);
     	}
 
+    }
+
+    // }}}
+    // {{{ cmdPost2()
+
+    /**
+     * Post an article to a newsgroup.
+     *
+     * @param mixed $article (string/array)
+     *
+     * @return mixed (bool) true on success or (object) pear_error on failure
+     * @access protected
+     */
+    function cmdPost2($article)
+    {
     	/* should be presented in the format specified by RFC850 */
-	    
-    	// Send standard headers and x-poster header
-        $this->_socket->write("Newsgroups: $newsgroup\r\n");
-        $this->_socket->write("Subject: $subject\r\n");
-        $this->_socket->write("From: $from\r\n");
-        $this->_socket->write("X-poster: PEAR::Net_NNTP v@package_version@ (@package_state@)\r\n");
 
-    	// Send additional headers, if any
-    	switch (true) {
-    	    case is_null($headers):
-		break;
-    	    case is_array($headers):
-    		foreach ($headers as $header=>$value) {
-    	    	    switch (true) {
-    	    		case is_string($header):
-    	    	    	    echo $this->_socket->write("$header: $value\r\n");
-		    	    break;
-    	    		case is_int($header) && strpos($value, ':', 1):
-    	    	    	    echo $this->_socket->write("$value\r\n");
-    	    	    	    break;
-    	    		default:
-    	    	    	    // Ignore header...
-    	    	    }
-		}
-    	    	break;
-    	    case is_string($headers):
-    	    	$this->_socket->write("$headers\r\n");
-    	    	break;
-	}
-
-    	// Send body
-        $this->_socket->write("\r\n");
-        $this->_socket->write($body);
-        $this->_socket->write("\r\n.\r\n");
+    	//
+    	$this->_sendArticle($article);
 
     	// Retrive server's response.
     	$response = $this->_getStatusResponse();
@@ -1100,12 +1145,11 @@ class Net_NNTP_Protocol_Client extends PEAR
      *
      *
      * @param string $id
-     * @param mixed $message (string/array)
      *
      * @return mixed (bool) true on success or (object) pear_error on failure
      * @access protected
      */
-    function cmdIhave($id, $message)
+    function cmdIhave($id)
     {
         // tell the newsserver we want to post an article
     	$response = $this->_sendCommand('IHAVE ' . $id);
@@ -1115,7 +1159,7 @@ class Net_NNTP_Protocol_Client extends PEAR
 
     	switch ($response) {
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_TRANSFER_SEND: // 335
-    	    	// continue...
+    	    	true;
     	    	break;
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_TRANSFER_UNWANTED: // 435
     	    	return $this->throwError('Article not wanted', $response, $this->_currentStatusResponse());
@@ -1126,13 +1170,26 @@ class Net_NNTP_Protocol_Client extends PEAR
     	    default:
     	    	return $this->_handleUnexpectedResponse($response);
     	}
+    }
 
+    // }}}
+    // {{{ cmdIhave2()
+
+    /**
+     *
+     *
+     * @param mixed $article (string/array)
+     *
+     * @return mixed (bool) true on success or (object) pear_error on failure
+     * @access protected
+     */
+    function cmdIhave2($article)
+    {
     	/* should be presented in the format specified by RFC850 */
-	    
-    	// Send standard headers and x-poster header
-        $this->_socket->write($message);
-        $this->_socket->write("\r\n.\r\n");
 
+    	//
+    	$this->_sendArticle($article);
+	    
     	// Retrive server's response.
     	$response = $this->_getStatusResponse();
     	if (PEAR::isError($response)) {
@@ -1276,7 +1333,6 @@ class Net_NNTP_Protocol_Client extends PEAR
     	if (is_array()) {
     	    $newsgroups = implode(',', $newsgroups);
     	}
-	
 
         if (is_null($distribution)) {
     	    $command = 'NEWNEWS ' . $newsgroups . ' ' . $date . ' GMT';

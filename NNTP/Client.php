@@ -607,31 +607,98 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     // {{{ post()
 
     /**
-     * Post an article to a number of groups.
-     *
-     * (Among the aditional headers you might think of adding could be:
-     * "NNTP-Posting-Host: <ip-of-author>", which should contain the IP-address
-     * of the author of the post, so the message can be traced back to him.
-     * Or "Organization: <org>" which contain the name of the organization
-     * the post originates from)
+     * Post a raw article to a number of groups.
      *
      * <b>Usage example:</b>
      * {@example docs/examples/phpdoc/post.php}
      *
+     * @param mixed	$article	<br>
+     *  - (string) Complete article in a ready to send format (lines terminated by LFCR etc.)
+     *  - (array) First key is the article header, second key is article body - any further keys are ignored !!!
+     *  - (mixed) Something 'callable' (which must return otherwise acceptable data as replacement)
+     *
+     * @return mixed <br>
+     *  - (string)	Server response
+     *  - (object)	Pear_Error on failure
+     * @access public
+     * @ignore
+     */
+    function post($article)
+    {
+    	// API v1.0
+    	if (func_num_args() >= 4) {
+
+    	    // 
+    	    trigger_error('You are using deprecated API v1.0 in Net_NNTP_Client: post() !', E_USER_NOTICE);
+
+    	    //
+    	    $groups = func_get_arg(0);
+    	    $subject = func_get_arg(1);
+    	    $body = func_get_arg(2);
+    	    $from = func_get_arg(3);
+    	    $additional = func_get_arg(4);
+
+    	    return $this->mail($groups, $subject, $body, "From: $from\r\n" . $additional);
+    	}
+
+    	// Only accept $article if array or string
+    	if (!is_array($article) && !is_string($article)) {
+    	    return $this->throwError('Ups', null, 0);
+    	}
+
+    	// 
+    	$post = $this->cmdPost();
+    	if (PEAR::isError($post)) {
+    	    return $post;
+    	}
+
+    	// 
+    	if (is_callable($article)) {
+    	    $article = call_user_func($article);
+    	}
+
+    	// 
+    	return $this->cmdPost2($article);
+    }
+
+    // }}}
+    // {{{ mail()
+
+    /**
+     * Post an article to a number of groups - using same parameters as PHP's mail() function.
+     *
+     * Among the aditional headers you might think of adding could be:
+     * "From: <author-email-address>", which should contain the e-mail address
+     * of the author of the article.
+     * Or "Organization: <org>" which contain the name of the organization
+     * the post originates from.
+     * Or "NNTP-Posting-Host: <ip-of-author>", which should contain the IP-address
+     * of the author of the post, so the message can be traced back to him.
+     *
+     * <b>Usage example:</b>
+     * {@example docs/examples/phpdoc/mail.php}
+     *
      * @param string	$groups	The groups to post to.
      * @param string	$subject	The subject of the article.
      * @param string	$body	The body of the article.
-     * @param string	$from	Sender's email address.
-     * @param mixed	$additional	(optional) Additional header fields to send.
+     * @param string	$additional	(optional) Additional header fields to send.
      *
      * @return mixed <br>
      *  - (string)	Server response
      *  - (object)	Pear_Error on failure
      * @access public
      */
-    function post($groups, $subject, $body, $from, $additional = null)
+    function mail($groups, $subject, $body, $additional = null)
     {
-    	return $this->cmdPost($groups, $subject, $body, $from, $additional);
+        //
+        $header  = "Newsgroups: $groups\r\n";
+        $header .= "Subject: $subject\r\n";
+        $header .= "X-poster: PEAR::Net_NNTP v@package_version@ (@package_state@)\r\n";
+    	if ($additional !== null) {
+    	    $header .= $additional;
+    	}
+
+    	return $this->cmdPost(array($header, $body));
     }
 
     // }}}
