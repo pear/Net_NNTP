@@ -1282,7 +1282,7 @@ class Net_NNTP_Protocol_Client extends PEAR
      */
     function cmdNewgroups($time, $distributions = null)
     {
-	$date = date('ymd His', $time);
+	$date = gmdate('ymd His', $time);
 
         if (is_null($distributions)) {
     	    $command = 'NEWGROUPS ' . $date . ' GMT';
@@ -1328,7 +1328,7 @@ class Net_NNTP_Protocol_Client extends PEAR
      */
     function cmdNewnews($time, $newsgroups, $distribution = null)
     {
-        $date = date('ymd His', $time);
+        $date = gmdate('ymd His', $time);
 
     	if (is_array()) {
     	    $newsgroups = implode(',', $newsgroups);
