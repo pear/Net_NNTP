@@ -760,7 +760,9 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * <b>Usage example:</b>
      * {@example docs/examples/phpdoc/getNewGroups.php}
      *
-     * @param mixed	$time	
+     * @param mixed	$time	<br>
+     *  - (integer)	A timestamp
+     *  - (string)	Somthing parseable by strtotime() like '-1 week'
      * @param string	$distributions	(optional) 
      *
      * @return mixed <br>
@@ -774,10 +776,13 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	    case is_integer($time):
     	    	break;
     	    case is_string($time):
-    	    	$time = (int) strtotime($time);
+    	    	$time = strtotime($time);
+    	    	if ($time === false || ($time === -1 && version_compare(php_version(), '5.1.0', '<'))) {
+    	    	    return $this->throwError('$time could not be converted into a timestamp!', null, 0);
+    	    	}
     	    	break;
     	    default:
-    	    	trigger_error('$time must be either a string or an integer!', E_USER_ERROR);
+    	    	trigger_error('$time must be either a string or an integer/timestamp!', E_USER_ERROR);
     	}
 
     	return $this->cmdNewgroups($time, $distributions);
@@ -795,7 +800,9 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * <b>Usage example:</b>
      * {@example docs/examples/phpdoc/getNewArticles.php}
      *
-     * @param mixed	$time	
+     * @param mixed	$time	<br>
+     *  - (integer)	A timestamp
+     *  - (string)	Somthing parseable by strtotime() like '-1 week'
      * @param string	$groups	(optional) 
      * @param string	$distributions	(optional) 
      *
@@ -811,10 +818,13 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	    case is_integer($time):
     	    	break;
     	    case is_string($time):
-    	    	$time = (int) strtotime($time);
+    	    	$time = strtotime($time);
+    	    	if ($time === false || ($time === -1 && version_compare(php_version(), '5.1.0', '<'))) {
+    	    	    return $this->throwError('$time could not be converted into a timestamp!', null, 0);
+		}
     	    	break;
     	    default:
-    	    	trigger_error('$time must be either a string or an integer!', E_USER_ERROR);
+    	    	trigger_error('$time must be either a string or an integer/timestamp!', E_USER_ERROR);
     	}
 
     	return $this->cmdNewnews($time, $groups, $distribution);
