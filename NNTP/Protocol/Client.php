@@ -1297,17 +1297,26 @@ class Net_NNTP_Protocol_Client extends PEAR
 
     	switch ($response) {
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_NEW_GROUPS_FOLLOW: // 231, REF977: 'list of new newsgroups follows'
-    	    	$groups = array();
-    	        foreach($this->_getTextResponse() as $line) {
-    	    	    $arr = explode(' ', $line);
-    	    	    $groups[$arr[0]] = array('group'   => $arr[0],
-    	    	                             'last'    => (int) $arr[1],
-    	    	                             'first'   => (int) $arr[2],
-    	    	                             'posting' => $arr[3]);
-
+    	    	$data = $this->_getTextResponse();
+    	    	if (PEAR::isError($data)) {
+    	    	    return $data;
     	    	}
-    	    	return $groups;
-    	    	break;
+
+    	    	$groups = array();
+    	    	foreach($data as $line) {
+    	    	    $arr = explode(' ', trim($line));
+
+    	    	    $group = array('group'   => $arr[0],
+    	    	                   'last'    => (int) $arr[1],
+    	    	                   'first'   => (int) $arr[2],
+    	    	                   'posting' => $arr[3]);
+
+    	    	    $groups[$group['group']] = $group;
+    	    	}
+    	        return $groups;
+
+
+
     	    default:
     	    	return $this->_handleUnexpectedResponse($response);
     	}
@@ -1330,7 +1339,7 @@ class Net_NNTP_Protocol_Client extends PEAR
     {
         $date = gmdate('ymd His', $time);
 
-    	if (is_array()) {
+    	if (is_array($newsgroups)) {
     	    $newsgroups = implode(',', $newsgroups);
     	}
 
