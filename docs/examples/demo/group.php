@@ -334,8 +334,8 @@ function articles()
     	    }
 	}
 
-    	// Format...
-        $date = strftime('%c', strtotime($date));
+    	// Format... (removes comments etc.)
+    	//$date = strftime('%c', strtotime(preg_replace('/\([^\)]*\)/', '', $date)));
 
     	// Output
         switch ($format) {
