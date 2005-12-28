@@ -23,14 +23,14 @@ The protocol implementation does not parse the actual article data, but at the c
   <active>yes</active>
  </lead>
 
- <date>2005-12-23</date>
+ <date>2005-12-28</date>
  <time>00:00:00</time>
  <version>
-  <release>1.3.1</release>
+  <release>1.3.2</release>
   <api>0.8.1</api>
  </version>
  <stability>
-  <release>alpha</release>
+  <release>beta</release>
   <api>alpha</api>
  </stability>
 
@@ -38,13 +38,10 @@ The protocol implementation does not parse the actual article data, but at the c
 
  <notes>
 + Changes in Net_NNTP_Client:
-  - added: mail() as a replacement for experimental post() using identical parameters as PHP's mail() function, (temporarily) preserving backward compatibility with experimental method in v1.0.
-  - modified and rewritten: post(), reduced to having only one parameter, (temporarily) preserving backward compatibility with experimental method in v1.0.
+  - getNewArticles() and getNewGroups() now validates that any strtotime() convertions was successfull.
 
 + Changes in Net_NNTP_Protocol_Client:
-  - added: _sendArticle()
-  - modified and rewritten: cmdPost() split into cmdPost() and cmdPost2() + now sends data via _sendArticle()
-  - modified and rewritten: cmdIhave() split into cmdIhave() and cmdIhave2() + now sends data via _sendArticle()
+  - fix bug #6334: cmdNewNews() and cmdNewGroups() no longer localize the timestamp depending on timezones.
  </notes>
 
  <contents>
@@ -150,6 +147,28 @@ The protocol implementation does not parse the actual article data, but at the c
  <phprelease />
 
  <changelog>
+
+  <release>
+   <version>
+    <release>1.3.1</release>
+    <api>0.8.1</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <date>2005-12-23</date>
+   <license>W3C</license>
+   <notes>+ Changes in Net_NNTP_Client:
+  - added: mail() as a replacement for experimental post() using identical parameters as PHP's mail() function, (temporarily) preserving backward compatibility with experimental method in v1.0.
+  - modified and rewritten: post(), reduced to having only one parameter, (temporarily) preserving backward compatibility with experimental method in v1.0.
+
++ Changes in Net_NNTP_Protocol_Client:
+  - added: _sendArticle()
+  - modified and rewritten: cmdPost() split into cmdPost() and cmdPost2() + now sends data via _sendArticle()
+  - modified and rewritten: cmdIhave() split into cmdIhave() and cmdIhave2() + now sends data via _sendArticle()
+   </notes>
+  </release>
 
   <release>
    <version>
