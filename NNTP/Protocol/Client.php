@@ -291,9 +291,7 @@ class Net_NNTP_Protocol_Client extends PEAR
         $line = '';
 
     	//
-    	if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
-    	    $debug = true;
-    	}
+    	$debug = $this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG);
 
         // Continue until connection is lost
         while(!$this->_socket->eof()) {
@@ -1500,8 +1498,13 @@ class Net_NNTP_Protocol_Client extends PEAR
     	    	$groups = array();
 
     	        foreach($data as $line) {
-    	            preg_match("/^(.*?)\s(.*?$)/", trim($line), $matches);
-    	            $groups[$matches[1]] = (string) $matches[2];
+    	            if (preg_match("/^(\S+)\s+(.*)$/", ltrim($line), $matches)) {
+    	    	        $groups[$matches[1]] = (string) $matches[2];
+    	    	    } else {
+    	    	        if ($this->_logger) {
+    	    	            $this->_logger->warning("Recieved non-standard line: '$line'");
+    	    	        }
+    	    	    }
     	        }
 
     	        return $groups;
