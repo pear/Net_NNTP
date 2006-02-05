@@ -69,6 +69,11 @@
  */
 
 
+//
+require_once 'Log.php';
+
+
+//
 $bodyID = $noext = preg_replace('/(.+)\..*$/', '$1', basename($_SERVER['PHP_SELF']));
 
 
