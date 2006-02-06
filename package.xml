@@ -23,8 +23,8 @@ The protocol implementation does not parse the actual article data, but at the c
   <active>yes</active>
  </lead>
 
- <date>2006-02-01</date>
- <time>00:00:00</time>
+ <date>2006-02-06</date>
+ <time>10:00:00</time>
  <version>
   <release>1.3.3</release>
   <api>0.8.1</api>
@@ -38,7 +38,7 @@ The protocol implementation does not parse the actual article data, but at the c
 
  <notes>
 + Changes in Net_NNTP_Protocol_Client:
-  - fix bug #6618: typo in regexp in cmdListNewsgroups()
+  - fix bug #6618: notices in cmdListNewsgroups()
  </notes>
 
  <contents>
