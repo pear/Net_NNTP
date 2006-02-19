@@ -646,18 +646,18 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	    return $this->throwError('Ups', null, 0);
     	}
 
-    	// 
+    	// Check if server will receive an article
     	$post = $this->cmdPost();
     	if (PEAR::isError($post)) {
     	    return $post;
     	}
 
-    	// 
+    	// Get article data from callback function
     	if (is_callable($article)) {
     	    $article = call_user_func($article);
     	}
 
-    	// 
+    	// Actually send the article
     	return $this->cmdPost2($article);
     }
 
@@ -690,15 +690,23 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      */
     function mail($groups, $subject, $body, $additional = null)
     {
-        //
+    	// Check if server will receive an article
+    	$post = $this->cmdPost();
+        if (PEAR::isError($post)) {
+    	    return $post;
+    	}
+
+        // Construct header
         $header  = "Newsgroups: $groups\r\n";
         $header .= "Subject: $subject\r\n";
         $header .= "X-poster: PEAR::Net_NNTP v@package_version@ (@package_state@)\r\n";
     	if ($additional !== null) {
     	    $header .= $additional;
     	}
+        $header .= "\r\n";
 
-    	return $this->cmdPost(array($header, $body));
+    	// Actually send the article
+    	return $this->cmdPost2(array($header, $body));
     }
 
     // }}}
