@@ -70,7 +70,7 @@
  */
 
 
-trigger_error('Experimental class Net_NNTP_Header has been deprecated, and will be removed from the Net_NNTP package!', E_USER_NOTICE);
+trigger_error('Experimental class Net_NNTP_Header has been deprecated, and will be removed from the Net_NNTP package!', E_USER_WARNING);
 
 /**
  *

@@ -80,7 +80,7 @@ require_once 'PEAR.php';
 require_once 'Net/NNTP/Header.php';
 
 
-trigger_error('Experimental class Net_NNTP_Message has been deprecated, and will be removed from the Net_NNTP package!', E_USER_NOTICE);
+trigger_error('Experimental class Net_NNTP_Message has been deprecated, and will be removed from the Net_NNTP package!', E_USER_WARNING);
 
 
 // {{{ Net_NNTP_Message
