@@ -1029,7 +1029,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	    // Already cached?
     	    if (is_null($this->_overviewFormatCache)) {
     	    	// Fetch overview format
-    	        $format = $this->getOverviewFormat($forceNames, true);
+    	        $format = $this->getOverviewFormat($_forceNames, true);
     	        if (PEAR::isError($format)){
     	            return $format;
     	        }
