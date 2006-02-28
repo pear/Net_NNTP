@@ -467,7 +467,13 @@ class Net_NNTP_Protocol_Client extends PEAR
     	    $text = $this->_currentStatusResponse();
 	}
 
-    	return $this->throwError('Unexpected response', $code, $text);
+    	switch ($code) {
+    	    case NET_NNTP_PROTOCOL_RESPONSECODE_NOT_PERMITTED: // 502, 'access restriction or permission denied' / service permanently unavailable
+    	    	return $this->throwError('Command not permitted / Access restriction / Permission denied', $code, $text);
+    	    	break;
+    	    default:
+    	    	return $this->throwError("Unexpected response: '$text'", $code, $text);
+    	}
     }
 
     // }}}
