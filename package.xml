@@ -23,10 +23,10 @@ The protocol implementation does not parse the actual article data, but at the c
   <active>yes</active>
  </lead>
 
- <date>2006-02-06</date>
- <time>10:00:00</time>
+ <date>2006-03-01</date>
+ <time>12:00:00</time>
  <version>
-  <release>1.3.3</release>
+  <release>1.3.4</release>
   <api>0.8.1</api>
  </version>
  <stability>
@@ -36,9 +36,10 @@ The protocol implementation does not parse the actual article data, but at the c
 
  <license uri="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">W3C</license>
 
- <notes>
-+ Changes in Net_NNTP_Protocol_Client:
-  - fix bug #6618: notices in cmdListNewsgroups()
+ <notes>+ Changes in Net_NNTP_Client:
+  - fix bug #6833: mail() does not work
+  - fix bug #6845: notices in getOverview()
++ Loading deprecated classes Net_NNTP_Message and Net_NNTP_Header now triggers warnings !
  </notes>
 
  <contents>
@@ -144,6 +145,22 @@ The protocol implementation does not parse the actual article data, but at the c
  <phprelease />
 
  <changelog>
+
+  <release>
+   <version>
+    <release>1.3.3</release>
+    <api>0.8.1</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>alpha</api>
+   </stability>
+   <date>2006-02-06</date>
+   <license>W3C</license>
+   <notes>+ Changes in Net_NNTP_Protocol_Client:
+  - fix bug #6618: notices in cmdListNewsgroups()
+   </notes>
+  </release>
 
   <release>
    <version>
