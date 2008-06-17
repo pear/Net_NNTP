@@ -13,8 +13,8 @@
 <table id="page-header" width="100%" border="0" cellspacing="0" cellpadding="0">
  <tr class="header">
   <td align="left" valign="middle"><a href="./index.php"><img src="http://pear.php.net/gifs/pearsmall.gif" border="0" style="margin: 5px;" width="104" height="50" alt="PEAR" /></a></td>
-  <td align="left" valign="middle"><h1><?php echo $title; ?></h1></td>
-  <td align="right" valign="bottom"><?php echo $subtitle; ?></td>
+  <td align="left" valign="middle"><h1>Net_NNTP Demo</h1></td>
+  <td align="right" valign="bottom">powered by <a href="http://pear.php.net/">PEAR</a>::<a href="http://pear.php.net/package/Net_NNTP/">Net_NNTP</a> v<?php echo Net_NNTP_Client::getPackageVersion(); ?></td>
  </tr>
  <tr class="subheader">
   <td colspan="3"><img src="" width="1" height="1" alt="" /></td>
