@@ -71,7 +71,7 @@
 $host = 'news.php.net';
 $encryption = null;
 $port = null;
-$wildmat = null;
+$wildmat = 'php.pear*';
 $loglevel = 5;  // PEAR_LOG_NOTICE = 5 ; PEAR_LOG_INFO = 6 ; PEAR_LOG_DEBUG = 7
 
 $frontpage = true;
