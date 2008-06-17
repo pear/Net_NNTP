@@ -49,18 +49,6 @@ The protocol implementation does not parse the actual article data, but at the c
      <tasks:replace from="@api_version@" to="api-version" type="package-info" />
      <tasks:replace from="@api_state@" to="api-state" type="package-info" />
     </file>
-    <file name="Header.php" role="php">
-     <tasks:replace from="@package_version@" to="version" type="package-info" />
-     <tasks:replace from="@package_state@" to="state" type="package-info" />
-     <tasks:replace from="@api_version@" to="api-version" type="package-info" />
-     <tasks:replace from="@api_state@" to="api-state" type="package-info" />
-    </file>
-    <file name="Message.php" role="php">
-     <tasks:replace from="@package_version@" to="version" type="package-info" />
-     <tasks:replace from="@package_state@" to="state" type="package-info" />
-     <tasks:replace from="@api_version@" to="api-version" type="package-info" />
-     <tasks:replace from="@api_state@" to="api-state" type="package-info" />
-    </file>
     <dir name="Protocol">
      <file name="Client.php" role="php">
       <tasks:replace from="@package_version@" to="version" type="package-info" />
