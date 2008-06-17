@@ -79,12 +79,12 @@ $bodyID = $noext = preg_replace('/(.+)\..*$/', '$1', basename($_SERVER['PHP_SELF
 
 // Register connection input parameters
 if ($allowoverwrite) {
-    $encryption = isset($_GET['encryption']) && !empty($_GET['encryption']) ? $_GET['encryption'] : null;
-    $host = isset($_GET['host']) && !empty($_GET['host']) ? $_GET['host'] : null;
-    $port = isset($_GET['port']) && !empty($_GET['port']) ? $_GET['port'] : null;
+    $encryption = isset($_GET['encryption']) && !empty($_GET['encryption']) ? $_GET['encryption'] : $encryption;
+    $host = isset($_GET['host']) && !empty($_GET['host']) ? $_GET['host'] : $host;
+    $port = isset($_GET['port']) && !empty($_GET['port']) ? $_GET['port'] : $port;
 
-    $wildmat = isset($_GET['wildmat']) && !empty($_GET['wildmat']) ? $_GET['wildmat'] : null;
-    $loglevel = isset($_GET['loglevel']) && !empty($_GET['loglevel']) ? $_GET['loglevel'] : PEAR_LOG_NOTICE;
+    $wildmat = isset($_GET['wildmat']) && !empty($_GET['wildmat']) ? $_GET['wildmat'] : $wildmat;
+    $loglevel = isset($_GET['loglevel']) && !empty($_GET['loglevel']) ? $_GET['loglevel'] : $loglevel;
 }
 
 
