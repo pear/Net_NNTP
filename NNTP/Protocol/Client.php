@@ -172,6 +172,30 @@ class Net_NNTP_Protocol_Client extends PEAR
     }
 
     // }}}
+    // {{{ getPackageVersion()
+
+    /**
+     *
+     *
+     * @access public
+     */
+    function getPackageVersion() {
+	return '@package_version@';
+    }
+
+    // }}}
+    // {{{ getApiVersion()
+
+    /**
+     *
+     *
+     * @access public
+     */
+    function getApiVersion() {
+	return '@api_version@';
+    }
+
+    // }}}
     // {{{ setLogger()
 
     /**
