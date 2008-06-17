@@ -37,6 +37,7 @@ The protocol implementation does not parse the actual article data, but at the c
  <license uri="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">W3C</license>
 
  <notes>
+   Finally released as stable - after two years as release candidate...
  </notes>
 
  <contents>
