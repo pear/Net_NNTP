@@ -26,18 +26,17 @@ The protocol implementation does not parse the actual article data, but at the c
  <date>2008-06-17</date>
  <time>12:00:00</time>
  <version>
-  <release>1.4.0</release>
+  <release>2.0.0a1</release>
   <api>0.8.1</api>
  </version>
  <stability>
-  <release>stable</release>
+  <release>alpha</release>
   <api>alpha</api>
  </stability>
 
  <license uri="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">W3C</license>
 
- <notes>
-   Finally released as stable - after two years as release candidate...
+ <notes>+ Use PHP's streams instead of Net_NNTP (to allow compressed data)
  </notes>
 
  <contents>
@@ -103,7 +102,7 @@ The protocol implementation does not parse the actual article data, but at the c
  <dependencies>
   <required>
    <php>
-    <min>4.2.0</min>
+    <min>5.0.0</min>
    </php>
    <pearinstaller>
     <min>1.4.5</min>
@@ -112,11 +111,6 @@ The protocol implementation does not parse the actual article data, but at the c
     <name>PEAR</name>
     <channel>pear.php.net</channel>
     <min>1.4.0</min>
-   </package>
-   <package>
-    <name>Net_Socket</name>
-    <channel>pear.php.net</channel>
-    <min>1.0.6</min>
    </package>
   </required>
   <optional>
@@ -131,6 +125,23 @@ The protocol implementation does not parse the actual article data, but at the c
  <phprelease />
 
  <changelog>
+
+  <release>
+   <date>2008-06-17</date>
+   <time>12:00:00</time>
+   <version>
+    <release>1.4.0</release>
+    <api>0.8.1</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>alpha</api>
+   </stability>
+   <license>W3C</license>
+   <notes>
+     Finally released as stable - after two years as release candidate...
+   </notes>
+  </release>
 
   <release>
    <version>
