@@ -71,7 +71,6 @@
  *
  */
 require_once 'PEAR.php';
-require_once 'Net/Socket.php';
 //require_once 'Net/NNTP/Error.php';
 require_once 'Net/NNTP/Protocol/Responsecode.php';
 
@@ -166,9 +165,6 @@ class Net_NNTP_Protocol_Client extends PEAR
     	//
 //    	parent::PEAR('Net_NNTP_Error');
     	parent::PEAR();
-
-    	//
-    	$this->_socket = new Net_Socket();
     }
 
     // }}}
@@ -242,19 +238,17 @@ class Net_NNTP_Protocol_Client extends PEAR
             return $this->throwError('Failed writing to socket! (Command to long - max 510 chars)');
         }
 
-/* Handled internally in Net_Socket
     	// Check if connected
     	if (!$this->_isConnected()) {
-            return $this->_socket->throwError('Failed to write to socket! (connection lost!)');
+            return $this->throwError('Failed to write to socket! (connection lost!)');
         }
-*/
 
     	// Send the command
-    	$R = $this->_socket->writeLine($cmd);
-        if ( PEAR::isError($R) ) {
-            return $R;
+    	$R = @fwrite($this->_socket, $cmd . "\r\n");
+        if ($R === false) {
+            return $this->throwError('Failed to write to socket!');
         }
-	
+
     	//
     	if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
     	    $this->_logger->debug('C: ' . $cmd);
@@ -276,9 +270,9 @@ class Net_NNTP_Protocol_Client extends PEAR
     function _getStatusResponse()
     {
     	// Retrieve a line (terminated by "\r\n") from the server.
-    	$response = $this->_socket->gets(256);
-        if (PEAR::isError($response) ) {
-    	    return $response;
+    	$response = @fgets($this->_socket, 256);
+        if ($response === false) {
+            return $this->throwError('Failed to read from socket...!');
         }
 
     	//
@@ -318,13 +312,16 @@ class Net_NNTP_Protocol_Client extends PEAR
     	$debug = $this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG);
 
         // Continue until connection is lost
-        while(!$this->_socket->eof()) {
+        while (!feof($this->_socket)) {
 
             // Retrieve and append up to 1024 characters from the server.
-            $line .= $this->_socket->gets(1024); 
-            if (PEAR::isError($line) ) {
-    	    	return $line;
+            $recieved = @fgets($this->_socket, 1024); 
+
+            if ($recieved === false) {
+                return $this->throwError('Failed to read line from socket.', null);
     	    }
+
+            $line .= $recieved;
 	    
             // Continue if the line is not terminated by CRLF
             if (substr($line, -2) != "\r\n" || strlen($line) < 2) {
@@ -392,8 +389,8 @@ class Net_NNTP_Protocol_Client extends PEAR
     	switch (true) {
     	case is_string($article):
     	    //
-    	    $this->_socket->write($article);
-    	    $this->_socket->write("\r\n.\r\n");
+    	    @fwrite($this->_socket, $article);
+    	    @fwrite($this->_socket, "\r\n.\r\n");
 
     	    //
     	    if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
@@ -417,8 +414,8 @@ class Net_NNTP_Protocol_Client extends PEAR
 */
 
     	    // Send header (including separation line)
-    	    $this->_socket->write($header);
-    	    $this->_socket->write("\r\n");
+    	    @fwrite($this->_socket, $header);
+    	    @fwrite($this->_socket, "\r\n");
 
     	    //
     	    if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
@@ -436,8 +433,8 @@ class Net_NNTP_Protocol_Client extends PEAR
 */
 
     	    // Send body
-    	    $this->_socket->write($body);
-    	    $this->_socket->write("\r\n.\r\n");
+    	    @fwrite($this->_socket, $body);
+    	    @fwrite($this->_socket, "\r\n.\r\n");
 
     	    //
     	    if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
@@ -558,13 +555,15 @@ class Net_NNTP_Protocol_Client extends PEAR
     	}
 
     	// Open Connection
-    	$R = @$this->_socket->connect($transport . '://' . $host, $port, false, $timeout);
-    	if (PEAR::isError($R)) {
+    	$R = stream_socket_client($transport . '://' . $host . ':' . $port, $errno, $errstr, $timeout);
+    	if ($R === false) {
     	    if ($this->_logger) {
     	        $this->_logger->notice("Connection to $transport://$host:$port failed.");
     	    }
     	    return $R;
     	}
+
+    	$this->_socket = $R;
 
     	//
     	if ($this->_logger) {
@@ -709,7 +708,7 @@ class Net_NNTP_Protocol_Client extends PEAR
     	    case 205: // RFC977: 'closing connection - goodbye!'
     	    	// If socket is still open, close it.
     	    	if ($this->_isConnected()) {
-    	    	    $this->_socket->disconnect();
+    	    	    fclose($this->_socket);
     	    	}
 
     	    	if ($this->_logger) {
@@ -2043,7 +2042,7 @@ class Net_NNTP_Protocol_Client extends PEAR
      */
     function _isConnected()
     {
-    	return (is_resource($this->_socket->fp) && (!$this->_socket->eof()));
+        return (is_resource($this->_socket) && (!feof($this->_socket)));
     }
 
     // }}}
