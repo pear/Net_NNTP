@@ -724,6 +724,56 @@ class Net_NNTP_Protocol_Client extends PEAR
 
     // }}}
 
+/* */
+
+    // {{{ _cmdStartTLS()
+
+    /**
+     *
+     *
+     * @return mixed (bool) on success or (object) pear_error on failure
+     * @access protected
+     */
+    function _cmdStartTLS()
+    {
+        $response = $this->_sendCommand('STARTTLS');
+        if (PEAR::isError($response)) {
+            return $response;
+        }
+
+    	switch ($response) {
+    	    case 382: // RFC4642: 'continue with TLS negotiation'
+    	    	$encrypted = stream_socket_enable_crypto($this->_socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
+    	    	switch (true) {
+    	    	    case $encrypted === true:
+    	    	    	if ($this->_logger) {
+    	    	    	    $this->_logger->info('TLS encryption started.');
+    	    	    	}
+    	    	    	return true;
+    	    	    	break;
+    	    	    case $encrypted === true:
+    	    	    	if ($this->_logger) {
+    	    	    	    $this->_logger->info('TLS encryption failed.');
+    	    	    	}
+    	    	    	return $this->throwError('Could not initiate TLS negotiation', $response, $this->_currentStatusResponse());
+    	    	    	break;
+    	    	    case is_int($encrypted):
+    	    	    	return $this->throwError('', $response, $this->_currentStatusResponse());
+    	    	    	break;
+    	    	    default:
+    	    	    	return $this->throwError('Internal error - unknown response from stream_socket_enable_crypto()', $response, $this->_currentStatusResponse());
+    	    	}
+    	    	break;
+    	    case 580: // RFC4642: 'can not initiate TLS negotiation'
+    	    	return $this->throwError('', $response, $this->_currentStatusResponse());
+    	    	break;
+    	    default:
+    	    	return $this->_handleUnexpectedResponse($response);
+    	}
+    }
+
+    // }}}
+
 /* Article posting and retrieval */
 
     /* Group and article selection */
