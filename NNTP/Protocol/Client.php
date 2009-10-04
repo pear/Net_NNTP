@@ -735,7 +735,7 @@ class Net_NNTP_Protocol_Client extends PEAR
 
 /* */
 
-    // {{{ _cmdStartTLS()
+    // {{{ cmdStartTLS()
 
     /**
      *
@@ -743,7 +743,7 @@ class Net_NNTP_Protocol_Client extends PEAR
      * @return mixed (bool) on success or (object) pear_error on failure
      * @access protected
      */
-    function _cmdStartTLS()
+    function cmdStartTLS()
     {
         $response = $this->_sendCommand('STARTTLS');
         if (PEAR::isError($response)) {

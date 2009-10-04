@@ -93,7 +93,7 @@ if (PEAR::isError($posting)) {
 
 // Start TLS encryption
 if ($starttls) {
-    $R = $nntp->_cmdStartTLS();
+    $R = $nntp->cmdStartTLS();
     if (PEAR::isError($R)) {
         error('Unable to connect to NNTP server: ' . $R->getMessage());
     }
