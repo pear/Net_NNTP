@@ -370,8 +370,12 @@ class Net_NNTP_Protocol_Client extends PEAR
             $line = '';
         }
 
+    	if ($this->_logger) {
+    	    $this->_logger->warning('Broke out of reception loop! This souldn\'t happen unless connection has been lost?');
+    	}
+
     	//
-    	return $this->throwError('Data stream not terminated with period', null);
+    	return $this->throwError('End of stream! Connection lost?', null);
     }
 
     // }}}
