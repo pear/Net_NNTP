@@ -36,7 +36,10 @@ The protocol implementation does not parse the actual article data, but at the c
 
  <license uri="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">W3C</license>
 
- <notes>+ Use PHP's streams instead of Net_NNTP (to allow compressed data)
+ <notes>+ Added support for STARTTLS encryption
++ Use PHP's streams instead of Net_NNTP (to allow easy TLS encryption and future on demand data compressed)
++ Improved logging with notices for most commands
++ Added warning about feof() defect in PHP 5.2.11 (bug #49706)
  </notes>
 
  <contents>
