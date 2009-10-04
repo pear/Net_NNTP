@@ -799,6 +799,10 @@ class Net_NNTP_Protocol_Client extends PEAR
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_GROUP_SELECTED: // 211, RFC977: 'n f l s group selected'
     	    	$response_arr = split(' ', trim($this->_currentStatusResponse()));
 
+    	    	if ($this->_logger) {
+    	    	    $this->_logger->info('Group selected: '.$response_arr[3]);
+    	    	}
+
     	    	return array('group' => $response_arr[3],
     	                     'first' => (int) $response_arr[1],
     	    	             'last'  => (int) $response_arr[2],
@@ -897,6 +901,11 @@ class Net_NNTP_Protocol_Client extends PEAR
     	switch ($response) {
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_ARTICLE_SELECTED: // 223, RFC977: 'n a article retrieved - request text separately (n = article number, a = unique article id)'
     	    	$response_arr = split(' ', trim($this->_currentStatusResponse()));
+
+    	    	if ($this->_logger) {
+    	    	    $this->_logger->info('Selected previous article: ' . $response_arr[0] .' - '. $response_arr[1]);
+    	    	}
+
     	    	return array((int) $response_arr[0], (string) $response_arr[1]);
     	    	break;
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_NO_GROUP_SELECTED: // 412, RFC977: 'no newsgroup selected'
@@ -933,6 +942,11 @@ class Net_NNTP_Protocol_Client extends PEAR
     	switch ($response) {
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_ARTICLE_SELECTED: // 223, RFC977: 'n a article retrieved - request text separately (n = article number, a = unique article id)'
     	    	$response_arr = split(' ', trim($this->_currentStatusResponse()));
+
+    	    	if ($this->_logger) {
+    	    	    $this->_logger->info('Selected previous article: ' . $response_arr[0] .' - '. $response_arr[1]);
+    	    	}
+
     	    	return array((int) $response_arr[0], (string) $response_arr[1]);
     	    	break;
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_NO_GROUP_SELECTED: // 412, RFC977: 'no newsgroup selected'
@@ -983,6 +997,10 @@ class Net_NNTP_Protocol_Client extends PEAR
     	    	if (PEAR::isError($data)) {
     	    	    return $data;
     	    	}
+    	    	
+    	    	if ($this->_logger) {
+    	    	    $this->_logger->info(($article == null ? 'Fetched current article' : 'Fetched article: '.$article));
+    	    	}
     	    	return $data;
     	    	break;
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_NO_GROUP_SELECTED: // 412, RFC977: 'no newsgroup has been selected'
@@ -1032,7 +1050,12 @@ class Net_NNTP_Protocol_Client extends PEAR
     	    	$data = $this->_getTextResponse();
     	    	if (PEAR::isError($data)) {
     	    	    return $data;
-	    	}
+    	    	}
+    	    	
+    	    	if ($this->_logger) {
+    	    	    $this->_logger->info(($article == null ? 'Fetched current article header' : 'Fetched article header for article: '.$article));
+    	    	}
+    	    	
     	        return $data;
     	    	break;
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_NO_GROUP_SELECTED: // 412, RFC977: 'no newsgroup has been selected'
@@ -1083,6 +1106,11 @@ class Net_NNTP_Protocol_Client extends PEAR
     	    	if (PEAR::isError($data)) {
     	    	    return $data;
     	    	}
+    	    	
+    	    	if ($this->_logger) {
+    	    	    $this->_logger->info(($article == null ? 'Fetched current article body' : 'Fetched article body for article: '.$article));
+    	    	}
+    	    	
     	        return $data;
     	    	break;
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_NO_GROUP_SELECTED: // 412, RFC977: 'no newsgroup has been selected'
@@ -1130,6 +1158,11 @@ class Net_NNTP_Protocol_Client extends PEAR
     	switch ($response) {
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_ARTICLE_SELECTED: // 223, RFC977: 'n <a> article retrieved - request text separately' (actually not documented, but copied from the ARTICLE command)
     	    	$response_arr = split(' ', trim($this->_currentStatusResponse()));
+
+    	    	if ($this->_logger) {
+    	    	    $this->_logger->info('Selected article: ' . $response_arr[0].' - '.$response_arr[1]);
+    	    	}
+
     	    	return array((int) $response_arr[0], (string) $response_arr[1]);
     	    	break;
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_NO_GROUP_SELECTED: // 412, RFC977: 'no newsgroup has been selected' (actually not documented, but copied from the ARTICLE command)
@@ -1536,6 +1569,11 @@ class Net_NNTP_Protocol_Client extends PEAR
 
     	    	    $groups[$group['group']] = $group;
     	    	}
+    	    	
+    	    	if ($this->_logger) {
+    	    	    $this->_logger->info('Fetched list of available groups');
+    	    	}
+    	    	
     	        return $groups;
     	    	break;
     	    default:
@@ -1584,6 +1622,10 @@ class Net_NNTP_Protocol_Client extends PEAR
     	    	            $this->_logger->warning("Recieved non-standard line: '$line'");
     	    	        }
     	    	    }
+    	        }
+
+    	        if ($this->_logger) {
+    	            $this->_logger->info('Fetched group descriptions');
     	        }
 
     	        return $groups;
@@ -1636,6 +1678,10 @@ class Net_NNTP_Protocol_Client extends PEAR
     	        foreach ($data as $key => $value) {
     	            $data[$key] = explode("\t", trim($value));
     	        }
+
+    	    	if ($this->_logger) {
+    	    	    $this->_logger->info('Fetched overview ' . ($range == null ? 'for current article' : 'for range: '.$range));
+    	    	}
 
     	    	return $data;
     	    	break;
@@ -1699,6 +1745,10 @@ class Net_NNTP_Protocol_Client extends PEAR
     	            $data[$key] = explode("\t", trim($value));
     	        }
 
+    	    	if ($this->_logger) {
+    	    	    $this->_logger->info('Fetched overview ' . ($range == null ? 'for current article' : 'for range: '.$range));
+    	    	}
+
     	    	return $data;
     	    	break;
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_NO_GROUP_SELECTED: // 412, RFC2980: 'No news group current selected'
@@ -1751,7 +1801,10 @@ class Net_NNTP_Protocol_Client extends PEAR
     	    		$format[substr($line, 0, -1)] = false;
     	            }
     	        }
-
+    	
+    	        if ($this->_logger) {
+    	            $this->_logger->info('Fetched overview format');
+    	        }
     	        return $format;
     	    	break;
     	    case 503: // RFC2980: 'program error, function not performed'
@@ -2024,6 +2077,9 @@ class Net_NNTP_Protocol_Client extends PEAR
 
         switch ($response) {
     	    case 281: // RFC2980: 'Authentication accepted'
+    	    	if ($this->_logger) {
+    	    	    $this->_logger->info("Authenticated (as user '$user')");
+    	    	}
 
 	    	// TODO: Set some variable before return
 
