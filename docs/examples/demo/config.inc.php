@@ -68,19 +68,22 @@
  * @since      File available since release 1.3.0
  */
 
-$host = 'news.php.net';
-$encryption = null;
-$port = null;
-$wildmat = 'php.pear*';
-$loglevel = 5;  // PEAR_LOG_NOTICE = 5 ; PEAR_LOG_INFO = 6 ; PEAR_LOG_DEBUG = 7
-
 $frontpage = true;
+
+$loglevel = 5;  // PEAR_LOG_NOTICE = 5 ; PEAR_LOG_INFO = 6 ; PEAR_LOG_DEBUG = 7
 $allowoverwrite = true;
 
-$useRange = false;
-$max = 10;
-
+$host = 'news.php.net';
+$port = null;
 $timeout = null;
 
+$encryption = null;
+
+$user = null;
+$pass = null;
+
+$wildmat = 'php.pear*';
+$useRange = false;
+$max = 10;
 
 ?>

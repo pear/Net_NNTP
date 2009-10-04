@@ -96,7 +96,12 @@ include 'header.inc.php';
 <tr><td valign="top"><b>Host:</b></td><td><input type="text" name="host" value="<?php echo $host==null ? 'news.php.net' : $host; ?>"></td><td>(Defaults to 'localhost' when empty)</td></tr>
 <tr><td valign="top"><b>Port:</b></td><td><input type="text" name="port" value="<?php echo $port; ?>"></td><td>(Defaults to '119' on non-encrypted connections, and '563' on encrypted connections when empty)</td></tr>
 <tr><td valign="top"><b>Windmat:</b></td><td><input type="text" name="wildmat" value="<?php echo $wildmat; ?>"></td><td>(Group wildmat)</td></tr>
-<tr><td valign="top"><b>Encryption:</b></td><td><input type="radio" name="encryption" value="" checked="checked">none<br><input type="radio" name="encryption" value="tls">TLS<br><input type="radio" name="encryption" value="ssl">SSL</td><td valign="top">(Requires a NNTPS server)</td></tr>
+<tr><td valign="top"><b>Username:</b></td><td><input type="text" name="user" value="<?php echo $user; ?>"></td><td>(Only used if both username and password is entered)</td></tr>
+<tr><td valign="top"><b>Password:</b></td><td><input type="password" name="pass" value="<?php echo $pass; ?>"></td><td>(Only used if both username and password is entered)</td></tr>
+<tr><td valign="top" rowspan="4"><b>Encryption:</b></td><td colspan="2"><input type="radio" name="encryption" value="" checked="checked">none</td></tr>
+<tr><td style="border-top: 0px"><input type="radio" name="encryption" value="starttls">startTLS</td><td valign="top" style="border-top: 0px">(Starts encryption on an initially unencrypted connection)</td></tr>
+<tr><td style="border-top: 0px"><input type="radio" name="encryption" value="tls">TLS</td><td valign="top" style="border-top: 0px">(Requires a NNTPS server)</td></tr>
+<tr><td style="border-top: 0px"><input type="radio" name="encryption" value="ssl">SSL</td><td valign="top" style="border-top: 0px">(Requires a NNTPS server)</td></tr>
 <tr><td valign="top"><b>Loglevel:</b></td><td><input type="radio" name="loglevel" value="4" checked="checked">warning<br><input type="radio" name="loglevel" value="5" checked="checked">notice<br><input type="radio" name="loglevel" value="6">info<br><input type="radio" name="loglevel" value="7">debug</td><td valign="top">(Application logging level)</td></tr>
 <tr><td></td><td colspan="2"><input type="submit" value="View newsgroups"></td></tr>
 </table>

@@ -122,6 +122,23 @@ if (PEAR::isError($posting)) {
     error('Unable to connect to NNTP server: ' . $posting->getMessage());
 }
 
+
+// Start TLS encryption
+if ($starttls) {
+    $R = $nntp->_cmdStartTLS();
+    if (PEAR::isError($R)) {
+        error('Unable to connect to NNTP server: ' . $R->getMessage());
+    }
+}
+
+// Authenticate
+if (!is_null($user) && !is_null($pass)) {
+    $authenticated = $nntp->authenticate($user, $pass);
+    if (PEAR::isError($authenticated)) {
+        error('Unable to authenticate: ' . $authenticated->getMessage());
+    }
+}
+
 // If asked for a article in a group, select group then article
 if ($messageID === null) {
 

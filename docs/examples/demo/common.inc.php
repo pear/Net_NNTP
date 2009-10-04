@@ -79,12 +79,17 @@ $bodyID = $noext = preg_replace('/(.+)\..*$/', '$1', basename($_SERVER['PHP_SELF
 
 // Register connection input parameters
 if ($allowoverwrite) {
-    $encryption = isset($_GET['encryption']) && !empty($_GET['encryption']) ? $_GET['encryption'] : $encryption;
+    $loglevel = isset($_GET['loglevel']) && !empty($_GET['loglevel']) ? $_GET['loglevel'] : $loglevel;
+
     $host = isset($_GET['host']) && !empty($_GET['host']) ? $_GET['host'] : $host;
     $port = isset($_GET['port']) && !empty($_GET['port']) ? $_GET['port'] : $port;
 
+    $encryption = isset($_GET['encryption']) && !empty($_GET['encryption']) ? $_GET['encryption'] : $encryption;
+
+    $user = isset($_GET['user']) && !empty($_GET['user']) ? $_GET['user'] : $user;
+    $pass = isset($_GET['pass']) && !empty($_GET['pass']) ? $_GET['pass'] : $pass;
+
     $wildmat = isset($_GET['wildmat']) && !empty($_GET['wildmat']) ? $_GET['wildmat'] : $wildmat;
-    $loglevel = isset($_GET['loglevel']) && !empty($_GET['loglevel']) ? $_GET['loglevel'] : $loglevel;
 }
 
 
@@ -94,6 +99,16 @@ $action = isset($_GET['action']) && !empty($_GET['action']) ? strtolower($_GET['
 $article = isset($_GET['article']) && !empty($_GET['article'])? $_GET['article'] : null;
 
 $format = isset($_GET['format']) && !empty($_GET['format'])? $_GET['format'] : 'html';
+
+
+/********************/
+/*                  */
+/********************/
+
+$starttls = ($encryption == 'starttls');
+if ($starttls) {
+    $encryption = null;
+}
 
 
 /********************/
@@ -272,6 +287,8 @@ function query($query = null)
     $full = 'host=' . urlencode($host) . 
             '&encryption=' . urlencode($encryption) . 
             '&port=' . urlencode($port) . 
+            '&user=' . urlencode($user) . 
+            '&pass=' . urlencode($pass) . 
             '&wildmat=' . urlencode($wildmat) . 
             '&loglevel=' . urlencode($loglevel);
 
