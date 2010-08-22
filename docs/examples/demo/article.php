@@ -266,7 +266,7 @@ if (empty($groups)) {
 
 
 //
-$references = empty($references) ? null : split("[ \t]", $references);
+$references = empty($references) ? null : preg_split("/[ \t]/", $references);
 
 
 
@@ -315,7 +315,7 @@ function outputHead()
     // Groups
     echo '  <td class="label">Groups:</td>' . "\r\n";
     echo '  <td class="value">', "\r\n";
-    foreach (split(',', $groups) as $group) {
+    foreach (explode(',', $groups) as $group) {
         echo '<a href="./group.php?'. query('group='.urlencode($group)), '">', $group, '</a> ';
     }
     echo '  </td>', "\r\n";
