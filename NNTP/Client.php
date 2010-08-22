@@ -1346,7 +1346,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * {@example docs/examples/phpdoc/count.php}
      *
      * @return mixed <br>
-     *  - (integer)	the number of article in group
+     *  - (string)	the number of article in group
      *  - (object)	Pear_Error on failure
      * @access public
      * @see Net_NNTP_Client::group()
@@ -1370,7 +1370,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * {@example docs/examples/phpdoc/last.php}
      *
      * @return mixed <br>
-     *  - (integer)	the last article's number
+     *  - (string)	the last article's number
      *  - (object)	Pear_Error on failure
      * @access public
      * @see Net_NNTP_Client::first()
@@ -1394,7 +1394,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * {@example docs/examples/phpdoc/first.php}
      *
      * @return mixed <br>
-     *  - (integer)	the first article's number
+     *  - (string)	the first article's number
      *  - (object)	Pear_Error on failure
      * @access public
      * @see Net_NNTP_Client::last()

@@ -23,11 +23,11 @@ The protocol implementation does not parse the actual article data, but at the c
   <active>yes</active>
  </lead>
 
- <date>2009-10-04</date>
+ <date>2010-08-22</date>
  <time>12:00:00</time>
  <version>
-  <release>1.5.0a1</release>
-  <api>0.8.1</api>
+  <release>1.5.0a2</release>
+  <api>0.9.0</api>
  </version>
  <stability>
   <release>alpha</release>
@@ -40,6 +40,8 @@ The protocol implementation does not parse the actual article data, but at the c
 + Use PHP's streams instead of Net_NNTP (to allow easy TLS encryption and future on demand data compressed)
 + Improved logging with notices for most commands
 + Added warning about feof() defect in PHP 5.2.11 (bug #49706)
+- Fix usage of deprecated split() (bug #17417 and #17783)
+- Fix for large groups on 32 bit systems: Article numbers are no longer cast into integers, but passed on directly from the server as strings (bug #17689). This _could_ possibly have implications and should considered a possible backward compatibility breakage, but is thought to be acceptable, since PHP is expected to cast into integers/floats as needed...
  </notes>
 
  <contents>
@@ -128,6 +130,26 @@ The protocol implementation does not parse the actual article data, but at the c
  <phprelease />
 
  <changelog>
+
+  <release>
+   <date>2009-10-04</date>
+   <time>12:00:00</time>
+   <version>
+    <release>1.5.0a1</release>
+    <api>0.8.1</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <license>W3C</license>
+   <notes>
++ Added support for STARTTLS encryption
++ Use PHP's streams instead of Net_NNTP (to allow easy TLS encryption and future on demand data compressed)
++ Improved logging with notices for most commands
++ Added warning about feof() defect in PHP 5.2.11 (bug #49706)
+   </notes>
+  </release>
 
   <release>
    <date>2008-06-17</date>

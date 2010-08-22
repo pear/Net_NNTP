@@ -813,9 +813,9 @@ class Net_NNTP_Protocol_Client extends PEAR
     	    	}
 
     	    	return array('group' => $response_arr[3],
-    	                     'first' => (int) $response_arr[1],
-    	    	             'last'  => (int) $response_arr[2],
-    	                     'count' => (int) $response_arr[0]);
+    	                     'first' => $response_arr[1],
+    	    	             'last'  => $response_arr[2],
+    	                     'count' => $response_arr[0]);
     	    	break;
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_NO_SUCH_GROUP: // 411, RFC977: 'no such news group'
     	    	return $this->throwError('No such news group', $response, $this->_currentStatusResponse());
@@ -865,7 +865,7 @@ class Net_NNTP_Protocol_Client extends PEAR
     	        $response_arr = explode(' ', trim($this->_currentStatusResponse()), 4);
 
 		// If server does not return group summary in status response, return null'ed array
-    	    	if (!is_int($response_arr[0]) || !is_int($response_arr[1]) || !is_int($response_arr[2]) || is_empty($response_arr[3])) {
+    	    	if (!is_numeric($response_arr[0]) || !is_numeric($response_arr[1]) || !is_numeric($response_arr[2]) || empty($response_arr[3])) {
     	    	    return array('group'    => null,
     	        	         'first'    => null,
     	    	    	         'last'     => null,
@@ -874,9 +874,9 @@ class Net_NNTP_Protocol_Client extends PEAR
 		}
 
     	    	return array('group'    => $response_arr[3],
-    	                     'first'    => (int) $response_arr[1],
-    	    	             'last'     => (int) $response_arr[2],
-    	    	             'count'    => (int) $response_arr[0],
+    	                     'first'    => $response_arr[1],
+    	    	             'last'     => $response_arr[2],
+    	    	             'count'    => $response_arr[0],
     	    	             'articles' => $articles);
     	    	break;
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_NO_GROUP_SELECTED: // 412, RFC2980: 'Not currently in newsgroup'
@@ -915,7 +915,7 @@ class Net_NNTP_Protocol_Client extends PEAR
     	    	    $this->_logger->info('Selected previous article: ' . $response_arr[0] .' - '. $response_arr[1]);
     	    	}
 
-    	    	return array((int) $response_arr[0], (string) $response_arr[1]);
+    	    	return array($response_arr[0], (string) $response_arr[1]);
     	    	break;
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_NO_GROUP_SELECTED: // 412, RFC977: 'no newsgroup selected'
     	    	return $this->throwError('No newsgroup has been selected', $response, $this->_currentStatusResponse());
@@ -956,7 +956,7 @@ class Net_NNTP_Protocol_Client extends PEAR
     	    	    $this->_logger->info('Selected previous article: ' . $response_arr[0] .' - '. $response_arr[1]);
     	    	}
 
-    	    	return array((int) $response_arr[0], (string) $response_arr[1]);
+    	    	return array($response_arr[0], (string) $response_arr[1]);
     	    	break;
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_NO_GROUP_SELECTED: // 412, RFC977: 'no newsgroup selected'
     	    	return $this->throwError('No newsgroup has been selected', $response, $this->_currentStatusResponse());
@@ -1172,7 +1172,7 @@ class Net_NNTP_Protocol_Client extends PEAR
     	    	    $this->_logger->info('Selected article: ' . $response_arr[0].' - '.$response_arr[1]);
     	    	}
 
-    	    	return array((int) $response_arr[0], (string) $response_arr[1]);
+    	    	return array($response_arr[0], (string) $response_arr[1]);
     	    	break;
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_NO_GROUP_SELECTED: // 412, RFC977: 'no newsgroup has been selected' (actually not documented, but copied from the ARTICLE command)
     	    	return $this->throwError('No newsgroup has been selected', $response, $this->_currentStatusResponse());
@@ -1426,8 +1426,8 @@ class Net_NNTP_Protocol_Client extends PEAR
     	    	    $arr = explode(' ', trim($line));
 
     	    	    $group = array('group'   => $arr[0],
-    	    	                   'last'    => (int) $arr[1],
-    	    	                   'first'   => (int) $arr[2],
+    	    	                   'last'    => $arr[1],
+    	    	                   'first'   => $arr[2],
     	    	                   'posting' => $arr[3]);
 
     	    	    $groups[$group['group']] = $group;
@@ -1523,8 +1523,8 @@ class Net_NNTP_Protocol_Client extends PEAR
     	    	    $arr = explode(' ', trim($line));
 
     	    	    $group = array('group'   => $arr[0],
-    	    	                   'last'    => (int) $arr[1],
-    	    	                   'first'   => (int) $arr[2],
+    	    	                   'last'    => $arr[1],
+    	    	                   'first'   => $arr[2],
     	    	                   'posting' => $arr[3]);
 
     	    	    $groups[$group['group']] = $group;
@@ -1572,8 +1572,8 @@ class Net_NNTP_Protocol_Client extends PEAR
     	    	    $arr = explode(' ', trim($line));
 
     	    	    $group = array('group'   => $arr[0],
-    	    	                   'last'    => (int) $arr[1],
-    	    	                   'first'   => (int) $arr[2],
+    	    	                   'last'    => $arr[1],
+    	    	                   'first'   => $arr[2],
     	    	                   'posting' => $arr[3]);
 
     	    	    $groups[$group['group']] = $group;
