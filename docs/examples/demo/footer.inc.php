@@ -3,11 +3,11 @@
  <hr />
 
  <div class="copyright">
-  Copyright &copy; 2005 by Heino H. Gehlsen. All rights reserved.
+  Copyright &copy; 2011 by Heino H. Gehlsen. All rights reserved.
  </div>
 
  <div class="">
-  (<a href="http://cvs.php.net/viewcvs.cgi/pear/Net_NNTP/docs/examples/demo/">source code</a>)
+  (<a href="http://svn.php.net/viewvc/pear/packages/Net_NNTP/trunk/docs/examples/demo/">source code</a>)
  </div>
 
 </div>
