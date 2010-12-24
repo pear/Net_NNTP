@@ -243,6 +243,23 @@ class Net_NNTP_Protocol_Client extends PEAR
             return $this->throwError('Failed writing to socket! (Command to long - max 510 chars)');
         }
 
+/***************************************************************************************/
+/* Credit: Thanks to Brendan Coles <bcoles@gmail.com> (http://itsecuritysolutions.org) */
+/*         for pointing out possibility to inject pipelined NNTP commands into pretty  */
+/*         much any Net_NNTP command-sending function with user input, by appending    */
+/*         a new line character followed by the injection.                             */
+/***************************************************************************************/
+        // Prevent new line (and possible future) characters in the NNTP commands
+        // Net_NNTP does not support pipelined commands. Inserting a new line charecter
+        // allows sending multiple commands and thereby making the communication between
+        // NET_NNTP and the server out of sync...
+        if (preg_match_all('/\r?\n/', $cmd, $matches, PREG_PATTERN_ORDER)) {
+            foreach ($matches[0] as $key => $match) {
+                $this->_logger->debug("Illegal character in command: ". htmlentities(str_replace(array("\r","\n"), array("'Carriage Return'", "'New Line'"), $match)));
+            }
+            return $this->throwError("Illegal character(s) in NNTP command!");
+        }
+
     	// Check if connected
     	if (!$this->_isConnected()) {
             return $this->throwError('Failed to write to socket! (connection lost!)');
