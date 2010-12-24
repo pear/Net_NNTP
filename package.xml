@@ -23,10 +23,10 @@ The protocol implementation does not parse the actual article data, but at the c
   <active>yes</active>
  </lead>
 
- <date>2010-08-22</date>
+ <date>2010-12-24</date>
  <time>12:00:00</time>
  <version>
-  <release>1.5.0a2</release>
+  <release>1.5.0b1</release>
   <api>0.9.0</api>
  </version>
  <stability>
@@ -36,7 +36,9 @@ The protocol implementation does not parse the actual article data, but at the c
 
  <license uri="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">W3C</license>
 
- <notes>+ Added support for STARTTLS encryption
+ <notes>- Fix NNTP injection vulnerability (bug #???, reported by Brendan Coles, itsecuritysolutions.org)
+- Fix XXS vulnerability in demo (bug #???, reported by Brendan Coles, itsecuritysolutions.org)
++ Added support for STARTTLS encryption
 + Use PHP's streams instead of Net_NNTP (to allow easy TLS encryption and future on demand data compressed)
 + Improved logging with notices for most commands
 + Added warning about feof() defect in PHP 5.2.11 (bug #49706)
