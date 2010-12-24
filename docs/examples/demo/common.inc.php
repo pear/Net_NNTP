@@ -252,6 +252,48 @@ $article = isset($_GET['article']) && !empty($_GET['article'])? $_GET['article']
 $format = isset($_GET['format']) && !empty($_GET['format'])? $_GET['format'] : 'html';
 
 
+/**********************/
+/* Validate url input */
+/**********************/
+
+/***************************************************************************************/
+/* Credit: Thanks to Brendan Coles <bcoles@gmail.com> (http://itsecuritysolutions.org) */
+/*         for pointing out the need of url input validation to prevent cross-site     */
+/*         scripting (XXS).                                                             */
+/***************************************************************************************/
+
+// Allow user to disable input validation
+if ($validateInput) {
+
+    // Validate $host
+    if (!empty($host)) {
+        if (!preg_match($hostValidationRegExp, $host, $matches)) {
+            error("Error: Invalid host '".htmlentities($host)."' !");
+        } else {
+            // For debug logging
+        }
+    }
+
+    // Validate $article
+    if (!empty($article)) {
+        if (!preg_match($articleValidationRegExp, $article, $matches)) {
+            error("Error: Invalid article '".htmlentities($article)."' !");
+        } else {
+            // For debug logging
+        }
+    }
+
+    // Validate $group
+    if (!empty($group)) {
+        if (!preg_match($groupValidationRegExp, $group, $matches)) {
+            error("Error: Invalid group '".htmlentities($group)."' !");
+        } else {
+            // For debug logging
+        }
+    }
+}
+
+
 /********************/
 /*                  */
 /********************/

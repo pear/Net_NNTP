@@ -86,4 +86,9 @@ $wildmat = 'php.pear*';
 $useRange = false;
 $max = 10;
 
+$validateInput = true;
+$hostValidationRegExp    = '/^([^<>]+)$/';
+$articleValidationRegExp = '/^([0-9]+|<[^<]+>)$/';
+$groupValidationRegExp   = '/^([^<>]+)$/';
+
 ?>
