@@ -69,9 +69,6 @@
  */
 
 
-//
-require_once 'Log.php';
-
 /*****************/
 /* Setup logging */
 /*****************/
@@ -198,6 +195,10 @@ class Logger extends Log
 
 }
 					       
+// Register connection input parameters
+if ($allowOverwrite) {
+    $loglevel = isset($_GET['loglevel']) && !empty($_GET['loglevel']) ? $_GET['loglevel'] : $loglevel;
+}
 
 //
 $logger = new Logger(null, null, null, $loglevel);
@@ -221,77 +222,98 @@ $nntp->setLogger($logger);
 
 
 
-/********************/
-/*                  */
-/********************/
+/***************************************************************************************/
+/* Credit: Thanks to Brendan Coles <bcoles@gmail.com> (http://itsecuritysolutions.org) */
+/*         for pointing out the need of url input validation to prevent cross-site     */
+/*         scripting (XXS). The demo was originally never intended as more than an     */
+/*         offline documentation example, but evolved and now requires security        */
+/*         considerations...                                                           */
+/***************************************************************************************/
 
 //
 $bodyID = $noext = preg_replace('/(.+)\..*$/', '$1', basename($_SERVER['PHP_SELF']));
 
-// Register connection input parameters
-if ($allowoverwrite) {
-    $loglevel = isset($_GET['loglevel']) && !empty($_GET['loglevel']) ? $_GET['loglevel'] : $loglevel;
 
-    $host = isset($_GET['host']) && !empty($_GET['host']) ? $_GET['host'] : $host;
-    $port = isset($_GET['port']) && !empty($_GET['port']) ? $_GET['port'] : $port;
+/****************************************/
+/* Register connection input parameters */
+/****************************************/
+if ($allowOverwrite) {
 
-    $encryption = isset($_GET['encryption']) && !empty($_GET['encryption']) ? $_GET['encryption'] : $encryption;
+    if (isset($_GET['host']) && !empty($_GET['host']) && !is_array($_GET['host'])) {
+        // Validate input
+        if ($validateInput && !preg_match($hostValidationRegExp, $_GET['host'], $matches)) {
+            error("Error: Invalid host '".htmlentities($_GET['host'])."' !");
+        }
+        // Actually set internal variable...
+        $host = $_GET['host'];
+    }
 
-    $user = isset($_GET['user']) && !empty($_GET['user']) ? $_GET['user'] : $user;
-    $pass = isset($_GET['pass']) && !empty($_GET['pass']) ? $_GET['pass'] : $pass;
-
-    $wildmat = isset($_GET['wildmat']) && !empty($_GET['wildmat']) ? $_GET['wildmat'] : $wildmat;
-}
-
-
-// Register other input parameters
-$group   = isset($_GET['group']) && !empty($_GET['group']) ? $_GET['group'] : null;
-$action = isset($_GET['action']) && !empty($_GET['action']) ? strtolower($_GET['action']) : null;
-$article = isset($_GET['article']) && !empty($_GET['article'])? $_GET['article'] : null;
-
-$format = isset($_GET['format']) && !empty($_GET['format'])? $_GET['format'] : 'html';
-
-
-/**********************/
-/* Validate url input */
-/**********************/
-
-/***************************************************************************************/
-/* Credit: Thanks to Brendan Coles <bcoles@gmail.com> (http://itsecuritysolutions.org) */
-/*         for pointing out the need of url input validation to prevent cross-site     */
-/*         scripting (XXS).                                                             */
-/***************************************************************************************/
-
-// Allow user to disable input validation
-if ($validateInput) {
-
-    // Validate $host
-    if (!empty($host)) {
-        if (!preg_match($hostValidationRegExp, $host, $matches)) {
-            error("Error: Invalid host '".htmlentities($host)."' !");
-        } else {
-            // For debug logging
+    if ($allowPortOverwrite) {
+        if (isset($_GET['port']) && !empty($_GET['port']) && !is_array($_GET['port'])) {
+            // TODO: add validation...
+            $port = $_GET['port'];
         }
     }
 
-    // Validate $article
-    if (!empty($article)) {
-        if (!preg_match($articleValidationRegExp, $article, $matches)) {
-            error("Error: Invalid article '".htmlentities($article)."' !");
-        } else {
-            // For debug logging
-        }
+    if (isset($_GET['encryption']) && !empty($_GET['encryption']) && !is_array($_GET['encryption'])) {
+        // TODO: add validation...
+        $encryption = $_GET['encryption'];
     }
 
-    // Validate $group
-    if (!empty($group)) {
-        if (!preg_match($groupValidationRegExp, $group, $matches)) {
-            error("Error: Invalid group '".htmlentities($group)."' !");
-        } else {
-            // For debug logging
-        }
+    if (isset($_GET['user']) && !empty($_GET['user']) && !is_array($_GET['user'])) {
+        // TODO: add validation...
+        $user = $_GET['user'];
+    }
+
+    if (isset($_GET['pass']) && !empty($_GET['pass']) && !is_array($_GET['pass'])) {
+        // TODO: add validation...
+        $pass = $_GET['pass'];
+    }
+
+    // Not really a connection parameter, but it still here ;-)
+    if (isset($_GET['wildmat']) && !empty($_GET['wildmat']) && !is_array($_GET['wildmat'])) {
+        // TODO: add validation...
+        $wildmat = $_GET['wildmat'];
     }
 }
+
+
+/***********************************/
+/* Register other input parameters */
+/***********************************/
+
+$group = null;
+if (isset($_GET['group']) && !empty($_GET['group']) && !is_array($_GET['group'])) {
+    // Validate input
+    if ($validateInput && !preg_match($groupValidationRegExp, $_GET['group'], $matches)) {
+        error("Error: Invalid group '".htmlentities($_GET['group'])."' !");
+    }
+    // Actually set internal variable...
+    $group = $_GET['group'];
+}
+
+$action = null;
+if (isset($_GET['action']) && !empty($_GET['action']) && !is_array($_GET['action'])) {
+    // TODO: add validation...
+    $action = strtolower($_GET['action']);
+}
+
+$article = null;
+if (isset($_GET['article']) && !empty($_GET['article']) && !is_array($_GET['article'])) {
+    // Validate input
+    if ($validateInput && !preg_match($articleValidationRegExp, $_GET['article'], $matches)) {
+        error("Error: Invalid article '".htmlentities($_GET['article'])."' !");
+    }
+    // Actually set internal variable...
+    $article = $_GET['article'];
+}
+
+$format = 'html';
+if (isset($_GET['format']) && !empty($_GET['format']) && !is_array($_GET['format'])) {
+    // TODO: add validation...
+    $format = $_GET['format'];
+}
+
 
 
 /********************/
@@ -332,7 +354,7 @@ function query($query = null)
 
     $full = 'host=' . urlencode($host) . 
             '&encryption=' . urlencode($encryption) . 
-            '&port=' . urlencode($port) . 
+            ($allowPortOverwrite ? '&port=' . urlencode($port) : '') . 
             '&user=' . urlencode($user) . 
             '&pass=' . urlencode($pass) . 
             '&wildmat=' . urlencode($wildmat) . 

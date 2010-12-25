@@ -94,7 +94,7 @@ include 'header.inc.php';
 <form action="groups.php" method="GET">
 <table border="0" cellspacing="0" cellpadding="3" id="xxx">
 <tr><td valign="top"><b>Host:</b></td><td><input type="text" name="host" value="<?php echo $host==null ? 'news.php.net' : $host; ?>"></td><td>(Defaults to 'localhost' when empty)</td></tr>
-<tr><td valign="top"><b>Port:</b></td><td><input type="text" name="port" value="<?php echo $port; ?>"></td><td>(Defaults to '119' on non-encrypted connections, and '563' on encrypted connections when empty)</td></tr>
+<tr><td valign="top"><b>Port:</b></td><td><input type="text" name="port" value="<?php echo $port; ?>"<?php echo ($allowPortOverwrite ? 'x' : ' DISABLED'); ?>></td><td>(Defaults to '119' on non-encrypted connections, and '563' on encrypted connections when empty)</td></tr>
 <tr><td valign="top"><b>Windmat:</b></td><td><input type="text" name="wildmat" value="<?php echo $wildmat; ?>"></td><td>(Group wildmat)</td></tr>
 <tr><td valign="top"><b>Username:</b></td><td><input type="text" name="user" value="<?php echo $user; ?>"></td><td>(Only used if both username and password is entered)</td></tr>
 <tr><td valign="top"><b>Password:</b></td><td><input type="password" name="pass" value="<?php echo $pass; ?>"></td><td>(Only used if both username and password is entered)</td></tr>

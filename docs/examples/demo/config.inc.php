@@ -71,7 +71,8 @@
 $frontpage = true;
 
 $loglevel = 5;  // PEAR_LOG_NOTICE = 5 ; PEAR_LOG_INFO = 6 ; PEAR_LOG_DEBUG = 7
-$allowoverwrite = true;
+$allowOverwrite = true;
+$allowPortOverwrite = false;
 
 $host = 'news.php.net';
 $port = null;
