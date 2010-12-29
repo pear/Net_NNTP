@@ -348,7 +348,7 @@ function query($query = null)
     //
     extract($GLOBALS);
 
-    if (!$allowoverwrite || !$frontpage) {
+    if (!$allowOverwrite || !$frontpage) {
 	return $query;
     }
 
