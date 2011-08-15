@@ -117,6 +117,17 @@ a:hover   {
     height : 15px;
 }
 
+#page-header tr.header a {
+    color: #66cc66;
+    text-decoration: none;
+}
+
+#page-header tr.header a:hover {
+    color: #66ff66;
+    text-decoration: underline;
+}
+
+
 #page-header tr.header h1 {
     color: #66ff66;
 }
@@ -126,9 +137,6 @@ a:hover   {
     text-decoration: none;
 }
 
-#page-header tr.header h1 a:hover {
-    text-decoration: underline;
-}
 
 
 
@@ -162,7 +170,15 @@ a:hover   {
 #page-footer .copyright {
     font-size: 75%;
     color: #999999;
-    text-align: right;
+    text-align: center;
+}
+
+#page-footer .copyright a {
+    color: #999999;
+}
+
+#page-footer .copyright a:hover {
+    color: #000000;
 }
 
 
@@ -170,7 +186,7 @@ a:hover   {
 #index #xxx td {
     border-top: 1px dashed #cccccc;
 }
-	
+
 
 
 #groups th {
