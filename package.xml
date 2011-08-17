@@ -30,7 +30,7 @@ The protocol implementation does not parse the actual article data, but at the c
   <api>0.9.0</api>
  </version>
  <stability>
-  <release>alpha</release>
+  <release>beta</release>
   <api>alpha</api>
  </stability>
 
