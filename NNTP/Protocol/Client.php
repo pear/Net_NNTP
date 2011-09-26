@@ -292,7 +292,8 @@ class Net_NNTP_Protocol_Client extends PEAR
     function _getStatusResponse()
     {
     	// Retrieve a line (terminated by "\r\n") from the server.
-    	$response = @fgets($this->_socket, 256);
+        // RFC says max is 510, but IETF says "be liberal in what you accept"...
+    	$response = @fgets($this->_socket, 4096);
         if ($response === false) {
             return $this->throwError('Failed to read from socket...!');
         }
@@ -1295,7 +1296,7 @@ class Net_NNTP_Protocol_Client extends PEAR
 
     	switch ($response) {
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_TRANSFER_SEND: // 335
-    	    	true;
+    	    	return true;
     	    	break;
     	    case NET_NNTP_PROTOCOL_RESPONSECODE_TRANSFER_UNWANTED: // 435
     	    	return $this->throwError('Article not wanted', $response, $this->_currentStatusResponse());
@@ -1482,7 +1483,7 @@ class Net_NNTP_Protocol_Client extends PEAR
         if (is_null($distribution)) {
     	    $command = 'NEWNEWS ' . $newsgroups . ' ' . $date . ' GMT';
     	} else {
-    	    if (is_array()) {
+    	    if (is_array($distribution)) {
     		$distribution = implode(',', $distribution);
     	    }
 
