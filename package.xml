@@ -23,10 +23,16 @@ The protocol implementation does not parse the actual article data, but at the c
   <active>yes</active>
  </lead>
 
- <date>2011-08-15</date>
- <time>12:00:00</time>
+ <lead>
+  <name>Jan-Pascal van Best</name>
+  <user>janpascal</user>
+  <email>janpascal@vanbest.org</email>
+  <active>yes</active>
+ </lead>
+
+ <date>2011-09-27</date>
  <version>
-  <release>1.5.0RC1</release>
+  <release>1.5.0RC2</release>
   <api>0.9.0</api>
  </version>
  <stability>
@@ -36,14 +42,15 @@ The protocol implementation does not parse the actual article data, but at the c
 
  <license uri="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">W3C</license>
 
- <notes>- Fix NNTP injection vulnerability (reported by Brendan Coles, itsecuritysolutions.org)
-- Fix XXS vulnerability in demo (reported by Brendan Coles, itsecuritysolutions.org)
+ <notes>+ Fix limited buffer for large replies from server (bug# 18875)
++ Fix NNTP injection vulnerability (reported by Brendan Coles, itsecuritysolutions.org)
++ Fix XXS vulnerability in demo (reported by Brendan Coles, itsecuritysolutions.org)
 + Added support for STARTTLS encryption
 + Use PHP's streams instead of Net_NNTP (to allow easy TLS encryption and future on demand data compressed)
 + Improved logging with notices for most commands
 + Added warning about feof() defect in PHP 5.2.11 (bug #49706)
-- Fix usage of deprecated split() (bug #17417 and #17783)
-- Fix for large groups on 32 bit systems: Article numbers are no longer cast into integers, but passed on directly from the server as strings (bug #17689). This _could_ possibly have implications and should considered a possible backward compatibility breakage, but is thought to be acceptable, since PHP is expected to cast into integers/floats as needed...
++ Fix usage of deprecated split() (bug #17417 and #17783)
++ Fix for large groups on 32 bit systems: Article numbers are no longer cast into integers, but passed on directly from the server as strings (bug #17689). This _could_ possibly have implications and should considered a possible backward compatibility breakage, but is thought to be acceptable, since PHP is expected to cast into integers/floats as needed...
  </notes>
 
  <contents>
@@ -132,6 +139,25 @@ The protocol implementation does not parse the actual article data, but at the c
  <phprelease />
 
  <changelog>
+
+ <release>
+   <date>2011-08-15</date>
+   <time>12:00:00</time>
+   <version>
+    <release>1.5.0RC1</release>
+    <api>0.9.0</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>alpha</api>
+   </stability>
+
+   <notes>+ Fix NNTP injection vulnerability (reported by Brendan Coles, itsecuritysolutions.org)
+  + Fix XXS vulnerability in demo (reported by Brendan Coles, itsecuritysolutions.org)
+  + Fix usage of deprecated split() (bug #17417 and #17783)
+  + Fix for large groups on 32 bit systems: Article numbers are no longer cast into integers, but passed on directly from the server as strings (bug #17689). This _could_ possibly have implications and should considered a possible backward compatibility breakage, but is thought to be acceptable, since PHP is expected to cast into integers/floats as needed...
+   </notes>
+  </release>
 
   <release>
    <date>2009-10-04</date>
