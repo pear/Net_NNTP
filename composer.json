@@ -25,7 +25,6 @@
     },
     "type": "library",
     "require": {
-        "pear/pear_exception": "*",
         "pear/pear": "*"
     },
     "require-dev": {
