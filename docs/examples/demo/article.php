@@ -111,7 +111,7 @@ $breadcrumbs['groups @ '  . ($host == null ? 'localhost' : $host)] = './groups.p
 if ($messageID !== null) {
     $breadcrumbs['Article: '.htmlentities($messageID)]   = null;
 } else {
-    $breadcrumbs['group: '.$group] =  './group.php?' . query("group=$group&from=$from&next=$next");
+    $breadcrumbs['group: '.$group] =  './group.php?' . @query("group=$group&from=$from&next=$next");
     $breadcrumbs['Article: #'.$article] = null;
 }
 
