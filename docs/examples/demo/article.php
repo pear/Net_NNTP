@@ -352,6 +352,8 @@ function outputBody()
     echo ' <pre>', "\r\n";
     foreach ($body as $line) {
 
+		$insig = 0;
+		
         /* Code from news.php.net begins here */ 
     
         // this is some amazingly simplistic code to color quotes/signatures
