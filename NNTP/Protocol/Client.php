@@ -803,7 +803,7 @@ class Net_NNTP_Protocol_Client extends PEAR
     	    	    	}
     	    	    	return true;
     	    	    	break;
-    	    	    case $encrypted === true:
+    	    	    case $encrypted === false:
     	    	    	if ($this->_logger) {
     	    	    	    $this->_logger->info('TLS encryption failed.');
     	    	    	}
@@ -877,7 +877,7 @@ class Net_NNTP_Protocol_Client extends PEAR
      * @param optional string $newsgroup
      * @param optional mixed $range
      *
-     * @return optional mixed (array) on success or (object) pear_error on failure
+     * @return mixed (array) on success or (object) pear_error on failure
      * @access protected
      */
     function cmdListgroup($newsgroup = null, $range = null)
