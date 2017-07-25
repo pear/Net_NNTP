@@ -827,7 +827,8 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	    	break;
     	    case is_string($time):
     	    	$time = strtotime($time);
-    	    	if ($time === false || ($time === -1 && version_compare(php_version(), '5.1.0', '<'))) {
+				if ($time === false || ($time === -1 && version_compare(phpversion(), '5.1.0', '<'))) {
+
     	    	    return $this->throwError('$time could not be converted into a timestamp!', null, 0);
 		}
     	    	break;
@@ -1234,7 +1235,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 
     	// Update summary cache if group was also 'selected'
     	if ($summary['group'] !== null) {
-    	    $this->_selectedGroupSummary($summary);
+    	    $this->_selectedGroupSummary = $summary;
     	}
 	
     	//
