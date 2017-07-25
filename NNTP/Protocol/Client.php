@@ -295,7 +295,15 @@ class Net_NNTP_Protocol_Client extends PEAR
         // RFC says max is 510, but IETF says "be liberal in what you accept"...
     	$response = @fgets($this->_socket, 4096);
         if ($response === false) {
-            return $this->throwError('Failed to read from socket...!');
+			
+			//
+			$meta = stream_get_meta_data($this->_socket);
+			if ($meta['timed_out']) {
+				return $this->throwError('Connection timed out', null);
+			}
+
+			//
+            return $this->throwError('Failed to read from socket...!', null);
         }
 
     	//
@@ -341,6 +349,14 @@ class Net_NNTP_Protocol_Client extends PEAR
             $recieved = @fgets($this->_socket, 1024);
 
             if ($recieved === false) {
+				
+				//
+				$meta = stream_get_meta_data($this->_socket);
+				if ($meta['timed_out']) {
+					return $this->throwError('Connection timed out', null);
+				}
+
+				//
                 return $this->throwError('Failed to read line from socket.', null);
     	    }
 
@@ -596,6 +612,9 @@ class Net_NNTP_Protocol_Client extends PEAR
     	if ($this->_logger) {
     	    $this->_logger->info("Connection to $transport://$host:$port has been established.");
     	}
+
+		// Set a stream timeout for each operation
+		stream_set_timeout($this->_socket, $timeout);
 
     	// Retrive the server's initial response.
     	$response = $this->_getStatusResponse();
