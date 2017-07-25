@@ -330,7 +330,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	        return (string) $response[1];
     	    	break;
     	    default:
-		error(); // ...
+				return $this->throwError("ERROR");
 	}
     }
 
@@ -376,7 +376,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	        return (string) $response[1];
     	    	break;
     	    default:
-		error(); // ...
+				return $this->throwError("ERROR");
 	}
     }
 
@@ -422,7 +422,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	        return (string) $response[1];
     	    	break;
     	    default:
-		error(); // ...
+				return $this->throwError("ERROR");
 	}
     }
 
@@ -752,7 +752,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	                     'd' => substr($date, 6, 2));
     	        break;
     	    default:
-		error();
+				return $this->throwError("ERROR");
     	}
     }
 
