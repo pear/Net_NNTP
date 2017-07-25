@@ -149,6 +149,8 @@ class Logger extends Log
     	    return;
     	}
 
+		$message = '';
+		
         foreach ($error->backtrace as $X) {
             if (substr($X['class'], 0, 4) == 'PEAR') {
     	        continue;
