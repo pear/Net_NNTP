@@ -360,10 +360,16 @@ class Net_NNTP_Protocol_Client extends PEAR
                 return $this->throwError('Failed to read line from socket.', null);
     	    }
 
+			//
             $line .= $recieved;
 
             // Continue if the line is not terminated by CRLF
             if (substr($line, -2) != "\r\n" || strlen($line) < 2) {
+				
+				// 
+                usleep(25000);
+
+                // 
                 continue;
             }
 
