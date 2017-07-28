@@ -68,7 +68,7 @@
  */
 
 // Warn about PHP bugs
-if (version_compare(PHP_VERSION, '5.2.11') === 1) {
+if (version_compare(PHP_VERSION, '5.2.11') === true) {
     trigger_error('PHP bug #16657 breaks feof() on socket streams! Connection consistency might be compromised!', E_USER_WARNING);
 }
 
@@ -165,13 +165,15 @@ class Net_NNTP_Protocol_Client extends PEAR
      *
      * @access public
      */
-    function Net_NNTP_Protocol_Client() {
-
-    	//
-//    	parent::PEAR('Net_NNTP_Error');
-    	parent::PEAR();
+    function __construct()
+	{
+    	// Call PEAR constructor
+    	parent::__construct();
     }
-
+    function Net_NNTP_Protocol_Client()
+	{
+		$this->__construct();
+	}
     // }}}
     // {{{ getPackageVersion()
 
@@ -295,7 +297,15 @@ class Net_NNTP_Protocol_Client extends PEAR
         // RFC says max is 510, but IETF says "be liberal in what you accept"...
     	$response = @fgets($this->_socket, 4096);
         if ($response === false) {
-            return $this->throwError('Failed to read from socket...!');
+			
+			//
+			$meta = stream_get_meta_data($this->_socket);
+			if ($meta['timed_out']) {
+				return $this->throwError('Connection timed out', null);
+			}
+
+			//
+            return $this->throwError('Failed to read from socket...!', null);
         }
 
     	//
@@ -341,13 +351,27 @@ class Net_NNTP_Protocol_Client extends PEAR
             $recieved = @fgets($this->_socket, 1024);
 
             if ($recieved === false) {
+				
+				//
+				$meta = stream_get_meta_data($this->_socket);
+				if ($meta['timed_out']) {
+					return $this->throwError('Connection timed out', null);
+				}
+
+				//
                 return $this->throwError('Failed to read line from socket.', null);
     	    }
 
+			//
             $line .= $recieved;
 
             // Continue if the line is not terminated by CRLF
             if (substr($line, -2) != "\r\n" || strlen($line) < 2) {
+				
+				// 
+                usleep(25000);
+
+                // 
                 continue;
             }
 
@@ -597,6 +621,9 @@ class Net_NNTP_Protocol_Client extends PEAR
     	    $this->_logger->info("Connection to $transport://$host:$port has been established.");
     	}
 
+		// Set a stream timeout for each operation
+		stream_set_timeout($this->_socket, $timeout);
+
     	// Retrive the server's initial response.
     	$response = $this->_getStatusResponse();
     	if (PEAR::isError($response)) {
@@ -778,7 +805,7 @@ class Net_NNTP_Protocol_Client extends PEAR
     	    	    	}
     	    	    	return true;
     	    	    	break;
-    	    	    case $encrypted === true:
+    	    	    case $encrypted === false:
     	    	    	if ($this->_logger) {
     	    	    	    $this->_logger->info('TLS encryption failed.');
     	    	    	}
@@ -852,7 +879,7 @@ class Net_NNTP_Protocol_Client extends PEAR
      * @param optional string $newsgroup
      * @param optional mixed $range
      *
-     * @return optional mixed (array) on success or (object) pear_error on failure
+     * @return mixed (array) on success or (object) pear_error on failure
      * @access protected
      */
     function cmdListgroup($newsgroup = null, $range = null)

@@ -111,7 +111,7 @@ $breadcrumbs['groups @ '  . ($host == null ? 'localhost' : $host)] = './groups.p
 if ($messageID !== null) {
     $breadcrumbs['Article: '.htmlentities($messageID)]   = null;
 } else {
-    $breadcrumbs['group: '.$group] =  './group.php?' . query("group=$group&from=$from&next=$next");
+    $breadcrumbs['group: '.$group] =  './group.php?' . @query("group=$group&from=$from&next=$next");
     $breadcrumbs['Article: #'.$article] = null;
 }
 
@@ -352,6 +352,8 @@ function outputBody()
     echo ' <pre>', "\r\n";
     foreach ($body as $line) {
 
+		$insig = 0;
+		
         /* Code from news.php.net begins here */ 
     
         // this is some amazingly simplistic code to color quotes/signatures

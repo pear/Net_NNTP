@@ -83,12 +83,18 @@ class Logger extends Log
 {
     var $_events = array();
 
-    function Logger($name = '', $ident = '', $conf = null,
+    function __construct($name = '', $ident = '', $conf = null,
                  $level = PEAR_LOG_NOTICE)
     {
         $this->_id = md5(microtime());
         $this->_ident = $ident;
         $this->_mask = Log::UPTO($level);
+    }
+
+    function Logger($name = '', $ident = '', $conf = null,
+                 $level = PEAR_LOG_NOTICE)
+    {
+        $this->__construct($name, $ident, $conf, $level);
     }
 
     function log($message, $priority = null)
@@ -149,6 +155,8 @@ class Logger extends Log
     	    return;
     	}
 
+		$message = '';
+		
         foreach ($error->backtrace as $X) {
             if (substr($X['class'], 0, 4) == 'PEAR') {
     	        continue;
