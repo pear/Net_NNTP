@@ -1,29 +1,25 @@
 {
+    "name": "pear/net_nntp",
+    "description": "PEAR's package for communication with NNTP/Usenet servers.",
+	"homepage": "http://pear.php.net/package/Net_NNTP",
+    "license": "W3C",
+    "type": "library",
     "authors": [
         {
             "email": "heino@gehlsen.dk",
             "name": "Heino H. Gehlsen",
             "role": "Lead"
-        },
-        {
-            "email": "janpascal@vanbest.org",
-            "name": "Jan-Pascal van Best",
-            "role": "Lead"
         }
     ],
+    "support": {
+        "issues": "http://pear.php.net/bugs/search.php?cmd=display&package_name[]=Net_NNTP",
+        "source": "https://github.com/pear/Net_NNTP"
+    },
     "autoload": {
         "classmap": [
             "./"
         ]
     },
-    "description": "More info available on: http://pear.php.net/package/Net_NNTP",
-    "license": "W3C",
-    "name": "pear/net_nntp",
-    "support": {
-        "issues": "http://pear.php.net/bugs/search.php?cmd=display&package_name[]=Net_NNTP",
-        "source": "https://github.com/pear/Net_NNTP"
-    },
-    "type": "library",
     "require": {
         "pear/pear": "*"
     },
@@ -31,6 +27,6 @@
         "phpunit/phpunit": "*"
     },
     "suggest": {
-        "pear/log": "Install optionally via your project's composer.json"
+        "pear/log": "Support logging"
     }
 }
