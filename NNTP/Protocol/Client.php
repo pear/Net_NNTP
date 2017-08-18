@@ -606,7 +606,7 @@ class Net_NNTP_Protocol_Client extends PEAR
     	}
 
     	// Open Connection
-    	$R = stream_socket_client($transport . '://' . $host . ':' . $port, $errno, $errstr, $timeout);
+    	$R = @stream_socket_client($transport . '://' . $host . ':' . $port, $errno, $errstr, $timeout);
     	if ($R === false) {
     	    if ($this->_logger) {
     	        $this->_logger->notice("Connection to $transport://$host:$port failed.");
