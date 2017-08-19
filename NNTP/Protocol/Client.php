@@ -158,12 +158,12 @@ class Net_NNTP_Protocol_Client extends PEAR
     var $_logger = null;
 
     /**
-    * Contains false on non-ssl connection and true when ssl
+    * Contains false on non-ssl connection and string when encrypted
     *
-    * @var     object
+    * @var     mixed
     * @access  private
     */
-    var $_ssl = false;
+    var $_encryption = null;
 
     // }}}
     // {{{ constructor
@@ -232,15 +232,20 @@ class Net_NNTP_Protocol_Client extends PEAR
     	trigger_error('You are using deprecated API v1.0 in Net_NNTP_Protocol_Client: setDebug() ! Debugging in now automatically handled when a logger is given.', E_USER_NOTICE);
     }
     // }}}
-    // {{{ _clearSSLErrors()
+    // {{{ _clearOpensslErrors()
 
     /**
     * Clears ssl errors from the openssl error stack
     */
-    function _clearSSLErrors()
+    function _clearOpensslErrors()
     {
-        if ($this->_ssl) {
-            while ($msg = openssl_error_string()) {};
+        if (isset($this->_encryption)) {
+            while ($message = openssl_error_string()) {
+				//
+				if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
+					$this->_logger->debug('OpenSSL: ' . $message);
+				}				
+			};
         }
     }
 
@@ -315,9 +320,9 @@ class Net_NNTP_Protocol_Client extends PEAR
     {
     	// Retrieve a line (terminated by "\r\n") from the server.
         // RFC says max is 510, but IETF says "be liberal in what you accept"...
-        $this->_clearSSLErrors();
+        $this->_clearOpensslErrors();
     	$response = @fgets($this->_socket, 4096);
-        $this->_clearSSLErrors();
+        $this->_clearOpensslErrors();
 
         if ($response === false) {
 			
@@ -371,9 +376,9 @@ class Net_NNTP_Protocol_Client extends PEAR
         while (!feof($this->_socket)) {
 
             // Retrieve and append up to 1024 characters from the server.
-            $this->_clearSSLErrors();
+            $this->_clearOpensslErrors();
             $recieved = @fgets($this->_socket, 1024);
-            $this->_clearSSLErrors();
+            $this->_clearOpensslErrors();
 
             if ($recieved === false) {
 				
@@ -620,7 +625,7 @@ class Net_NNTP_Protocol_Client extends PEAR
 	    case 'tls':
 		$transport = $encryption;
     	    	$port = is_null($port) ? 563 : $port;
-	        $this->_ssl = true;
+	        $this->_encryption = $encryption;
 		break;
 	    default:
     	    	trigger_error('$encryption parameter must be either tcp, tls or ssl.', E_USER_ERROR);
