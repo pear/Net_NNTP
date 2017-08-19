@@ -465,7 +465,7 @@ class Net_NNTP_Protocol_Client extends PEAR
     	switch (true) {
     	case is_string($article):
     	    //
-    	    @fwrite($this->_socket, $article);
+    	    @fwrite($this->_socket, preg_replace("|\n\.|", "\n.." , $article));
     	    @fwrite($this->_socket, "\r\n.\r\n");
 
     	    //
@@ -490,7 +490,7 @@ class Net_NNTP_Protocol_Client extends PEAR
 */
 
     	    // Send header (including separation line)
-    	    @fwrite($this->_socket, $header);
+    	    @fwrite($this->_socket, preg_replace("|\n\.|", "\n.." , $header));
     	    @fwrite($this->_socket, "\r\n");
 
     	    //
@@ -509,7 +509,7 @@ class Net_NNTP_Protocol_Client extends PEAR
 */
 
     	    // Send body
-    	    @fwrite($this->_socket, $body);
+    	    @fwrite($this->_socket, preg_replace("|\n\.|", "\n.." , $body));
     	    @fwrite($this->_socket, "\r\n.\r\n");
 
     	    //
