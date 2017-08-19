@@ -157,6 +157,14 @@ class Net_NNTP_Protocol_Client extends PEAR
      */
     var $_logger = null;
 
+    /**
+    * Contains false on non-ssl connection and true when ssl
+    *
+    * @var     object
+    * @access  private
+    */
+    var $_ssl = false;
+
     // }}}
     // {{{ constructor
 
@@ -222,6 +230,18 @@ class Net_NNTP_Protocol_Client extends PEAR
     function setDebug($debug = true)
     {
     	trigger_error('You are using deprecated API v1.0 in Net_NNTP_Protocol_Client: setDebug() ! Debugging in now automatically handled when a logger is given.', E_USER_NOTICE);
+    }
+    // }}}
+    // {{{ _clearSSLErrors()
+
+    /**
+    * Clears ssl errors from the openssl error stack
+    */
+    function _clearSSLErrors()
+    {
+        if ($this->_ssl) {
+            while ($msg = openssl_error_string()) {};
+        }
     }
 
     // }}}
@@ -295,7 +315,10 @@ class Net_NNTP_Protocol_Client extends PEAR
     {
     	// Retrieve a line (terminated by "\r\n") from the server.
         // RFC says max is 510, but IETF says "be liberal in what you accept"...
+        $this->_clearSSLErrors();
     	$response = @fgets($this->_socket, 4096);
+        $this->_clearSSLErrors();
+
         if ($response === false) {
 			
 			//
@@ -348,7 +371,9 @@ class Net_NNTP_Protocol_Client extends PEAR
         while (!feof($this->_socket)) {
 
             // Retrieve and append up to 1024 characters from the server.
+            $this->_clearSSLErrors();
             $recieved = @fgets($this->_socket, 1024);
+            $this->_clearSSLErrors();
 
             if ($recieved === false) {
 				
@@ -595,6 +620,7 @@ class Net_NNTP_Protocol_Client extends PEAR
 	    case 'tls':
 		$transport = $encryption;
     	    	$port = is_null($port) ? 563 : $port;
+	        $this->_ssl = true;
 		break;
 	    default:
     	    	trigger_error('$encryption parameter must be either tcp, tls or ssl.', E_USER_ERROR);
