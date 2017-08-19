@@ -32,21 +32,18 @@ The protocol implementation does not parse the actual article data, but at the c
 
  <date>2017-08-14</date>
  <version>
-  <release>1.5.1</release>
+  <release>1.5.2RC</release>
   <api>0.9.0</api>
  </version>
  <stability>
-  <release>stable</release>
+  <release>beta</release>
   <api>alpha</api>
  </stability>
 
  <license uri="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">W3C</license>
 
- <notes> - Fix a few serious typos
-+ Better handling of timeouts
-+ Add pause between each line to avoid CPU overload
-- Fix calls to nonexistent error()
-- Minor fixes in demo
+ <notes> - Fix bug #20941 (PR #2 at GitHub)
+ - Change to absolute file locations in require-once()
  </notes>
 
  <contents>
@@ -135,6 +132,26 @@ The protocol implementation does not parse the actual article data, but at the c
  <phprelease />
 
  <changelog>
+
+  <release>
+   <date>2017-08-14</date>
+   <time>12:00:00</time>
+   <version>
+    <release>1.5.1</release>
+    <api>0.9.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>alpha</api>
+   </stability>
+
+   <notes> - Fix a few serious typos
++ Better handling of timeouts
++ Add pause between each line to avoid CPU overload
+- Fix calls to nonexistent error()
+- Minor fixes in demo
+   </notes>
+  </release>
 
  <release>
    <date>2015-05-22</date>

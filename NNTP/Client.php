@@ -72,7 +72,7 @@
 /**
  *
  */
-require_once __DIR__.'/Client.php';
+require_once __DIR__.'/Protocol/Client.php';
 
 
 // {{{ Net_NNTP_Client
