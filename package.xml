@@ -71,7 +71,7 @@ The protocol implementation does not parse the actual article data, but at the c
      </file>
     </dir> <!-- /NNTP/Protocol -->
    </dir> <!-- /NNTP -->
-   <file name="LICENSE" role="doc" />
+   <file name="LICENSE.md" role="doc" />
    <dir name="docs">
     <dir name="examples">
      <dir name="demo">
