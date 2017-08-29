@@ -21,7 +21,8 @@
         ]
     },
     "require": {
-        "pear/pear": "*"
+		"php": ">=5.0",
+        "pear/pear": "^1.4.5"
     },
     "require-dev": {
         "phpunit/phpunit": "*"
