@@ -2,14 +2,14 @@
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4 foldmethod=marker: */
 
 /**
- * 
- * 
+ *
+ *
  * PHP versions 4 and 5
  *
  * <pre>
  * +-----------------------------------------------------------------------+
  * |                                                                       |
- * | W3C® SOFTWARE NOTICE AND LICENSE                                      |
+ * | W3Cï¿½ SOFTWARE NOTICE AND LICENSE                                      |
  * | http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231   |
  * |                                                                       |
  * | This work (and included software, documentation such as READMEs,      |
@@ -61,10 +61,10 @@
  * @package    Net_NNTP
  * @author     Heino H. Gehlsen <heino@gehlsen.dk>
  * @copyright  2002-2011 Heino H. Gehlsen <heino@gehlsen.dk>. All Rights Reserved.
- * @license    http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231 W3C® SOFTWARE NOTICE AND LICENSE
+ * @license    http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231 W3Cï¿½ SOFTWARE NOTICE AND LICENSE
  * @version    SVN: $Id$
  * @link       http://pear.php.net/package/Net_NNTP
- * @see        
+ * @see
  *
  * @filesource
  */
@@ -84,7 +84,7 @@ require_once __DIR__.'/Protocol/Client.php';
  *
  * @category   Net
  * @package    Net_NNTP
- * @version    package: @package_version@ (@package_state@) 
+ * @version    package: @package_version@ (@package_state@)
  * @version    api: @api_version@ (@api_state@)
  * @access     public
  * @see        Net_NNTP_Protocol_Client
@@ -99,16 +99,16 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @var array
      * @access private
      */
-    var $_selectedGroupSummary = null;
+    private $_selectedGroupSummary = null;
 
     /**
-     * 
+     *
      *
      * @var array
      * @access private
      * @since 1.3.0
      */
-    var $_overviewFormatCache = null;
+    private $_overviewFormatCache = null;
 
     // }}}
     // {{{ constructor
@@ -121,11 +121,11 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      *
      * @access public
      */
-    function __construct()
+    public function __construct()
     {
     	parent::__construct();
     }
-    function Net_NNTP_Client()
+    public function Net_NNTP_Client()
     {
     	$this->__construct();
     }
@@ -137,14 +137,14 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * Connect to a server.
      *
      * xxx
-     * 
+     *
      * <b>Usage example:</b>
      * {@example docs/examples/phpdoc/connect.php}
      *
      * @param string	$host	(optional) The hostname og IP-address of the NNTP-server to connect to, defaults to localhost.
      * @param mixed	$encryption	(optional) false|'tls'|'ssl', defaults to false.
      * @param int	$port	(optional) The port number to connect to, defaults to 119 or 563 dependng on $encryption.
-     * @param int	$timeout	(optional) 
+     * @param int	$timeout	(optional)
      *
      * @return mixed <br>
      *  - (bool)	True when posting allowed, otherwise false
@@ -153,7 +153,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @see Net_NNTP_Client::disconnect()
      * @see Net_NNTP_Client::authenticate()
      */
-    function connect($host = null, $encryption = null, $port = null, $timeout = null)
+    public function connect($host = null, $encryption = null, $port = null, $timeout = null)
     {
     	// v1.0.x API
     	if (is_int($encryption)) {
@@ -172,12 +172,12 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * Disconnect from server.
      *
      * @return mixed <br>
-     *  - (bool)	
+     *  - (bool)
      *  - (object)	Pear_Error on failure
      * @access public
      * @see Net_NNTP_Client::connect()
      */
-    function disconnect()
+    public function disconnect()
     {
         return parent::disconnect();
     }
@@ -189,12 +189,12 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * Deprecated alias for disconnect().
      *
      * @access public
-     * @deprecated 
+     * @deprecated
      * @ignore
      */
-    function quit()
+    public function quit()
     {
-        return $this->disconnect();
+    	return $this->disconnect();
     }
 
     // }}}
@@ -221,7 +221,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @access public
      * @see Net_NNTP_Client::connect()
      */
-    function authenticate($user, $pass)
+    public function authenticate($user, $pass)
     {
         // Username is a must...
         if ($user == null) {
@@ -236,12 +236,12 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 
     /**
      * Selects a group.
-     * 
-     * Moves the servers 'currently selected group' pointer to the group 
+     *
+     * Moves the servers 'currently selected group' pointer to the group
      * a new group, and returns summary information about it.
      *
      * <b>Non-standard!</b><br>
-     * When using the second parameter, 
+     * When using the second parameter,
      * This method uses non-standard commands, which is not part
      * of the original RFC977, but has been formalized in RFC2890.
      *
@@ -252,7 +252,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @param mixed	$articles	(optional) experimental! When true the article numbers is returned in 'articles'
      *
      * @return mixed <br>
-     *  - (array)	Summary about the selected group 
+     *  - (array)	Summary about the selected group
      *  - (object)	Pear_Error on failure
      * @access public
      * @see Net_NNTP_Client::getGroups()
@@ -261,7 +261,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @see Net_NNTP_Client::last()
      * @see Net_NNTP_Client::count()
      */
-    function selectGroup($group, $articles = false)
+    public function selectGroup($group, $articles = false)
     {
 	// Select group (even if $articles is set, since many servers does not select groups when the listgroup command is run)
     	$summary = $this->cmdGroup($group);
@@ -272,7 +272,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	// Store group info in the object
     	$this->_selectedGroupSummary = $summary;
 
-	// 
+	//
     	if ($articles !== false) {
     	    $summary2 = $this->cmdListgroup($group, ($articles === true ? null : $articles));
     	    if (PEAR::isError($summary2)) {
@@ -288,7 +288,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	    	$summary['articles'] = $summary2['articles'];
     	    }
     	}
-	
+
     	return $summary;
     }
 
@@ -315,7 +315,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @see Net_NNTP_Client::selectArticle()
      * @see Net_NNTP_Client::selectNextArticle()
      */
-    function selectPreviousArticle($_ret = 0)
+    public function selectPreviousArticle($_ret = 0)
     {
         $response = $this->cmdLast();
 
@@ -361,7 +361,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @see Net_NNTP_Client::selectArticle()
      * @see Net_NNTP_Client::selectPreviousArticle()
      */
-    function selectNextArticle($_ret = 0)
+    public function selectNextArticle($_ret = 0)
     {
         $response = $this->cmdNext();
 
@@ -407,7 +407,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @see Net_NNTP_Client::selectNextArticle()
      * @see Net_NNTP_Client::selectPreviousArticle()
      */
-    function selectArticle($article = null, $_ret = 0)
+    public function selectArticle($article = null, $_ret = 0)
     {
         $response = $this->cmdStat($article);
 
@@ -457,12 +457,12 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @see Net_NNTP_Client::getHeader()
      * @see Net_NNTP_Client::getBody()
      */
-    function getArticle($article = null, $implode = false)
+    public function getArticle($article = null, $implode = false)
     {
     	// v1.1.x API
     	if (is_string($implode)) {
     	    trigger_error('You are using deprecated API v1.1 in Net_NNTP_Client: getHeader() !', E_USER_NOTICE);
-		     
+
     	    $class = $implode;
     	    $implode = false;
 
@@ -516,12 +516,12 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @see Net_NNTP_Client::getArticle()
      * @see Net_NNTP_Client::getBody()
      */
-    function getHeader($article = null, $implode = false)
+    public function getHeader($article = null, $implode = false)
     {
     	// v1.1.x API
     	if (is_string($implode)) {
     	    trigger_error('You are using deprecated API v1.1 in Net_NNTP_Client: getHeader() !', E_USER_NOTICE);
-		     
+
     	    $class = $implode;
     	    $implode = false;
 
@@ -575,12 +575,12 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @see Net_NNTP_Client::getHeader()
      * @see Net_NNTP_Client::getArticle()
      */
-    function getBody($article = null, $implode = false)
+    public function getBody($article = null, $implode = false)
     {
     	// v1.1.x API
     	if (is_string($implode)) {
     	    trigger_error('You are using deprecated API v1.1 in Net_NNTP_Client: getHeader() !', E_USER_NOTICE);
-		     
+
     	    $class = $implode;
     	    $implode = false;
 
@@ -627,12 +627,12 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @access public
      * @ignore
      */
-    function post($article)
+    public function post($article)
     {
     	// API v1.0
     	if (func_num_args() >= 4) {
 
-    	    // 
+    	    //
     	    trigger_error('You are using deprecated API v1.0 in Net_NNTP_Client: post() !', E_USER_NOTICE);
 
     	    //
@@ -692,7 +692,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      *  - (object)	Pear_Error on failure
      * @access public
      */
-    function mail($groups, $subject, $body, $additional = null)
+    public function mail($groups, $subject, $body, $additional = null)
     {
     	// Check if server will receive an article
     	$post = $this->cmdPost();
@@ -732,11 +732,11 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      *                           - 2: return an array('y'=>year, 'm'=>month,'d'=>day)
      *
      * @return mixed <br>
-     *  - (mixed)	
+     *  - (mixed)
      *  - (object)	Pear_Error on failure
      * @access public
      */
-    function getDate($format = 1)
+   public function getDate($format = 1)
     {
         $date = $this->cmdDate();
         if (PEAR::isError($date)) {
@@ -775,14 +775,14 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @param mixed	$time	<br>
      *  - (integer)	A timestamp
      *  - (string)	Somthing parseable by strtotime() like '-1 week'
-     * @param string	$distributions	(optional) 
+     * @param string	$distributions	(optional)
      *
      * @return mixed <br>
-     *  - (array)	
+     *  - (array)
      *  - (object)	Pear_Error on failure
      * @access public
      */
-    function getNewGroups($time, $distributions = null)
+    public function getNewGroups($time, $distributions = null)
     {
     	switch (true) {
     	    case is_integer($time):
@@ -815,16 +815,16 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @param mixed	$time	<br>
      *  - (integer)	A timestamp
      *  - (string)	Somthing parseable by strtotime() like '-1 week'
-     * @param string	$groups	(optional) 
-     * @param string	$distributions	(optional) 
+     * @param string	$groups	(optional)
+     * @param string	$distributions	(optional)
      *
      * @return mixed <br>
-     *  - (array)	
+     *  - (array)
      *  - (object)	Pear_Error on failure
      * @access public
      * @since 1.3.0
      */
-    function getNewArticles($time, $groups = '*', $distribution = null)
+    public function getNewArticles($time, $groups = '*', $distribution = null)
     {
     	switch (true) {
     	    case is_integer($time):
@@ -862,7 +862,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @see Net_NNTP_Client::getDescriptions()
      * @see Net_NNTP_Client::selectGroup()
      */
-    function getGroups($wildmat = null)
+    public function getGroups($wildmat = null)
     {
     	$backup = false;
 
@@ -879,15 +879,15 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	    }
     	}
 
-    	// 
+    	//
     	if ($backup == true) {
 
-    	    // 
+    	    //
     	    if (!is_null($wildmat)) {
     	    	return $this->throwError("The server does not support the 'LIST ACTIVE' command, and the 'LIST' command does not support the wildmat parameter!", null, null);
     	    }
-	    
-    	    // 
+
+    	    //
     	    $groups2 = $this->cmdList();
     	    if (PEAR::isError($groups2)) {
     		// Ignore...
@@ -919,7 +919,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * <b>Usage example:</b>
      * {@example docs/examples/phpdoc/getDescriptions.php}
      *
-     * @param mixed	$wildmat	(optional) 
+     * @param mixed	$wildmat	(optional)
      *
      * @return mixed <br>
      *  - (array)	Associated array with descriptions of known groups
@@ -927,7 +927,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @access public
      * @see Net_NNTP_Client::getGroups()
      */
-    function getDescriptions($wildmat = null)
+    public function getDescriptions($wildmat = null)
     {
     	if (is_array($wildmat)) {
 	    $wildmat = implode(',', $wildmat);
@@ -940,7 +940,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	}
 
     	// TODO: add xgtitle as backup
-	
+
     	return $descriptions;
     }
 
@@ -979,7 +979,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      *                          - '<message number>-'
      *                          - '<message-id>'
      * @param boolean	$_names	(optional) experimental parameter! Use field names as array kays
-     * @param boolean	$_forceNames	(optional) experimental parameter! 
+     * @param boolean	$_forceNames	(optional) experimental parameter!
      *
      * @return mixed <br>
      *  - (array)	Nested array of article overview data
@@ -988,7 +988,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @see Net_NNTP_Client::getHeaderField()
      * @see Net_NNTP_Client::getOverviewFormat()
      */
-    function getOverview($range = null, $_names = true, $_forceNames = true)
+    public function getOverview($range = null, $_names = true, $_forceNames = true)
     {
     	// API v1.0
     	switch (true) {
@@ -1000,7 +1000,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 		break;
 
 	    default:
-    	    	// 
+    	    	//
     	        trigger_error('You are using deprecated API v1.0 in Net_NNTP_Client: getOverview() !', E_USER_NOTICE);
 
     	        // Fetch overview via API v1.3
@@ -1015,7 +1015,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 
     	    	    // Rename 'Number' field into 'number'
     	    	    $article = array_merge(array('number' => array_shift($article)), $article);
-		
+
     	    	    // Use 'Message-ID' field as key
     	            $articles[$article['Message-ID']] = $article;
     	        }
@@ -1045,7 +1045,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	    	// Cache format
     	        $this->_overviewFormatCache = $format;
 
-    	    // 
+    	    //
     	    } else {
     	        $format = $this->_overviewFormatCache;
     	    }
@@ -1058,7 +1058,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 
     	        // Field counter
     	        $i = 0;
-		
+
 		// Loop through forld names in format
     	        foreach ($f as $tag => $full) {
 
@@ -1071,7 +1071,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	            }
     	        }
 
-    	        // Replace article 
+    	        // Replace article
 	        $overview[$key] = $f;
     	    }
     	}
@@ -1118,7 +1118,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @access public
      * @see Net_NNTP_Client::getOverview()
      */
-    function getOverviewFormat($_forceNames = true, $_full = false)
+    public function getOverviewFormat($_forceNames = true, $_full = false)
     {
         $format = $this->cmdListOverviewFmt();
     	if (PEAR::isError($format)) {
@@ -1167,13 +1167,13 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      *                            '<message-id>'
      *
      * @return mixed <br>
-     *  - (array)	Nested array of 
+     *  - (array)	Nested array of
      *  - (object)	Pear_Error on failure
      * @access public
      * @see Net_NNTP_Client::getOverview()
      * @see Net_NNTP_Client::getReferences()
      */
-    function getHeaderField($field, $range = null)
+    public function getHeaderField($field, $range = null)
     {
     	$fields = $this->cmdXHdr($field, $range);
     	if (PEAR::isError($fields)) {
@@ -1204,12 +1204,6 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 
     // }}}
 
-
-
-
-
-
-
     // {{{ getGroupArticles()
 
     /**
@@ -1225,12 +1219,12 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @param mixed	$range	(optional) Experimental!
      *
      * @return mixed <br>
-     *  - (array)	
+     *  - (array)
      *  - (object)	Pear_Error on failure
      * @access public
      * @since 1.3.0
      */
-    function getGroupArticles($range = null)
+    public function getGroupArticles($range = null)
     {
         $summary = $this->cmdListgroup();
     	if (PEAR::isError($summary)) {
@@ -1241,7 +1235,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	if ($summary['group'] !== null) {
     	    $this->_selectedGroupSummary = $summary;
     	}
-	
+
     	//
     	return $summary['articles'];
     }
@@ -1276,7 +1270,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @access public
      * @see Net_NNTP_Client::getHeaderField()
      */
-    function getReferences($range = null)
+    public function getReferences($range = null)
     {
     	$backup = false;
 
@@ -1338,10 +1332,6 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 
     // }}}
 
-
-
-
-
     // {{{ count()
 
     /**
@@ -1360,7 +1350,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @see Net_NNTP_Client::selectGroup()
      * @ignore
      */
-    function count()
+    public function count()
     {
         return $this->_selectedGroupSummary['count'];
     }
@@ -1384,7 +1374,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @see Net_NNTP_Client::selectGroup()
      * @ignore
      */
-    function last()
+    public function last()
     {
     	return $this->_selectedGroupSummary['last'];
     }
@@ -1408,7 +1398,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @see Net_NNTP_Client::selectGroup()
      * @ignore
      */
-    function first()
+    public function first()
     {
     	return $this->_selectedGroupSummary['first'];
     }
@@ -1432,18 +1422,12 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @see Net_NNTP_Client::selectGroup()
      * @ignore
      */
-    function group()
+    public function group()
     {
     	return $this->_selectedGroupSummary['group'];
     }
 
     // }}}
-
-
-
-
-
-
 
     // {{{ isConnected()
 
@@ -1457,7 +1441,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @deprecated	since v1.3.0 due to use of protected method: Net_NNTP_Protocol_Client::isConnected()
      * @ignore
      */
-    function isConnected()
+    public function isConnected()
     {
 	trigger_error('You are using deprecated API v1.0 in Net_NNTP_Client: isConnected() !', E_USER_NOTICE);
         return parent::_isConnected();
@@ -1472,7 +1456,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @deprecated
      * @ignore
      */
-    function getArticleRaw($article, $implode = false)
+    public function getArticleRaw($article, $implode = false)
     {
     	trigger_error('You are using deprecated API v1.0 in Net_NNTP_Client: getArticleRaw() !', E_USER_NOTICE);
     	return $this->getArticle($article, $implode);
@@ -1487,7 +1471,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @deprecated
      * @ignore
      */
-    function getHeaderRaw($article = null, $implode = false)
+    public function getHeaderRaw($article = null, $implode = false)
     {
     	trigger_error('You are using deprecated API v1.0 in Net_NNTP_Client: getHeaderRaw() !', E_USER_NOTICE);
     	return $this->getHeader($article, $implode);
@@ -1502,7 +1486,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @deprecated
      * @ignore
      */
-    function getBodyRaw($article = null, $implode = false)
+    public function getBodyRaw($article = null, $implode = false)
     {
     	trigger_error('You are using deprecated API v1.0 in Net_NNTP_Client: getBodyRaw() !', E_USER_NOTICE);
         return $this->getBody($article, $implode);
@@ -1517,7 +1501,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @deprecated
      * @ignore
      */
-    function getNewNews($time, $groups = '*', $distribution = null)
+    public function getNewNews($time, $groups = '*', $distribution = null)
     {
     	trigger_error('You are using deprecated API v1.1 in Net_NNTP_Client: getNewNews() !', E_USER_NOTICE);
     	return $this->getNewArticles($time, $groups, $distribution);
@@ -1532,7 +1516,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @deprecated
      * @ignore
      */
-    function getReferencesOverview($first, $last)
+    public function getReferencesOverview($first, $last)
     {
 	trigger_error('You are using deprecated API v1.0 in Net_NNTP_Client: getReferencesOverview() !', E_USER_NOTICE);
     	return $this->getReferences($first . '-' . $last);

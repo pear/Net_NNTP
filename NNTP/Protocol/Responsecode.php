@@ -2,14 +2,14 @@
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4 foldmethod=marker: */
 
 /**
- * 
- * 
+ *
+ *
  * PHP versions 4 and 5
  *
  * <pre>
  * +-----------------------------------------------------------------------+
  * |                                                                       |
- * | W3C® SOFTWARE NOTICE AND LICENSE                                      |
+ * | W3Cï¿½ SOFTWARE NOTICE AND LICENSE                                      |
  * | http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231   |
  * |                                                                       |
  * | This work (and included software, documentation such as READMEs,      |
@@ -61,10 +61,10 @@
  * @package    Net_NNTP
  * @author     Heino H. Gehlsen <heino@gehlsen.dk>
  * @copyright  2002-2011 Heino H. Gehlsen <heino@gehlsen.dk>. All Rights Reserved.
- * @license    http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231 W3C® SOFTWARE NOTICE AND LICENSE
+ * @license    http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231 W3Cï¿½ SOFTWARE NOTICE AND LICENSE
  * @version    SVN: $Id$
  * @link       http://pear.php.net/package/Net_NNTP
- * @see        
+ * @see
  * @since      File available since release 1.3.0
  */
 
@@ -251,14 +251,8 @@ define('NET_NNTP_PROTOCOL_RESPONSECODE_NO_SUCH_ARTICLE_NUMBER', 423);
  */
 define('NET_NNTP_PROTOCOL_RESPONSECODE_NO_SUCH_ARTICLE_ID', 430);
 
-
-
-
-
 // }}}
 // {{{ Constants: Transferring
-
-
 
 /**
  * 'Send article to be transferred' (RFC977)
@@ -295,12 +289,8 @@ define('NET_NNTP_PROTOCOL_RESPONSECODE_TRANSFER_FAILURE', 436);
  */
 define('NET_NNTP_PROTOCOL_RESPONSECODE_TRANSFER_REJECTED', 437);
 
-
-
 // }}}
 // {{{ Constants: Posting
-
-
 
 /**
  * 'Send article to be posted' (RFC977)
@@ -330,13 +320,8 @@ define('NET_NNTP_PROTOCOL_RESPONSECODE_POSTING_PROHIBITED', 440);
  */
 define('NET_NNTP_PROTOCOL_RESPONSECODE_POSTING_FAILURE', 441);
 
-
-
-
 // }}}
 // {{{ Constants: Authorization
-
-
 
 /**
  * 'Authorization required for this command' (RFC2980)
@@ -366,13 +351,8 @@ define('NET_NNTP_PROTOCOL_RESPONSECODE_AUTHORIZATION_ACCEPTED', 250);
  */
 define('NET_NNTP_PROTOCOL_RESPONSECODE_AUTHORIZATION_REJECTED', 452);
 
-
-
-
 // }}}
 // {{{ Constants: Authentication
-
-
 
 /**
  * 'Authentication required' (RFC2980)
@@ -401,12 +381,9 @@ define('NET_NNTP_PROTOCOL_RESPONSECODE_AUTHENTICATION_ACCEPTED', 281);
  * @access     public
  */
 define('NET_NNTP_PROTOCOL_RESPONSECODE_AUTHENTICATION_REJECTED', 482);
-    
 
 // }}}
 // {{{ Constants: Misc
-
-
 
 /**
  * 'Help text follows' (Draft)
