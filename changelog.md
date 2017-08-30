@@ -1,4 +1,4 @@
-Release 1.5.2
+Release v1.5.2
 ----------------
 - Fix bug #20941 (PR #2 @ GitHub): "Clear openssl error messages before and after fgets calls" (thanks @zrtq) (@heino)
 - Fix bug #21236: "Line starting with dot is not dot stuffed" (thanks @mesa57 / Jan Franken) (@heino)
@@ -7,7 +7,7 @@ Release 1.5.2
 (Released: 2017-08-30)
 
 
-Release 1.5.2RC1
+Release v1.5.2-RC1
 ----------------
 - Fix bug #20941 (PR #2 @ GitHub): "Clear openssl error messages before and after fgets calls" (thanks @zrtq) (@heino)
 - Fix bug #21236: "Line starting with dot is not dot stuffed" (thanks @mesa57 / Jan Franken) (@heino)
@@ -27,7 +27,7 @@ Release v1.5.1
 (Released: 2017-08-14)
 
 
-Release 1.5.1-RC1
+Release v1.5.1-RC1
 ----------------
 - Fix a few serious typos (@heino)
 - Better handling of timeouts (@heino)
