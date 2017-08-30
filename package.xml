@@ -32,11 +32,11 @@ The protocol implementation does not parse the actual article data, but at the c
 
  <date>2017-08-30</date>
  <version>
-  <release>1.5.2RC1</release>
+  <release>1.5.2</release>
   <api>0.9.0</api>
  </version>
  <stability>
-  <release>beta</release>
+  <release>stable</release>
   <api>alpha</api>
  </stability>
 
