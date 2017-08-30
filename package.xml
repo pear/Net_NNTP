@@ -30,7 +30,7 @@ The protocol implementation does not parse the actual article data, but at the c
   <active>no</active>
  </contributor>
 
- <date>2017-08-19</date>
+ <date>2017-08-30</date>
  <version>
   <release>1.5.2RC1</release>
   <api>0.9.0</api>
@@ -133,6 +133,24 @@ The protocol implementation does not parse the actual article data, but at the c
  <phprelease />
 
  <changelog>
+
+  <release>
+   <date>2017-08-19</date>
+   <time>12:00:00</time>
+   <version>
+    <release>1.5.2RC1</release>
+    <api>0.9.0</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>alpha</api>
+   </stability>
+
+   <notes> - Fix bug #20941, PR #2 @ GitHub: "Clear openssl error messages before and after fgets calls" (thanks @zrtq)
+ - Fix bug #21236: "Line starting with dot is not dot stuffed" (thanks @mesa57 / Jan Franken)
+ - Change to absolute file locations in require-once()
+   </notes>
+  </release>
 
   <release>
    <date>2017-08-14</date>
